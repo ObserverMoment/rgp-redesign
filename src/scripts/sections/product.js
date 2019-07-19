@@ -197,8 +197,9 @@ register('product', {
     const inactiveImage = this.container.querySelector(
       selectors.imageWrapperById(id),
     );
-
-    activeImage.classList.add(classes.hide);
+    if (activeImage) {
+      activeImage.classList.add(classes.hide);
+    }
     inactiveImage.classList.remove(classes.hide);
   },
 

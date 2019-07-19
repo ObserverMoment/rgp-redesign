@@ -1,7 +1,7 @@
 @charset 'UTF-8';
 
 /**
- * [replace with theme name] | Built with Slate
+ * RGP Custom Theme | Built with Slate
  */
 @import '~normalize.css/normalize';
 
@@ -30,11 +30,13 @@
 @import './components/address-forms';
 
 // Sections
+@import 'sections/header';
 @import './sections/blog-posts';
 @import './sections/collection-list';
 @import './sections/featured-collection';
 @import './sections/image-with-text';
 
 // Templates
+@import './templates/collection';
 @import './templates/gift_card';
 @import './templates/product';

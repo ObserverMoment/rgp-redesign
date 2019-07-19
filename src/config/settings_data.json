@@ -7,13 +7,22 @@
           "type": "collection-list",
           "blocks": {
             "collection-list-0": {
-              "type": "collection"
+              "type": "collection",
+              "settings": {
+                "collection": "poker-chips"
+              }
             },
             "collection-list-1": {
-              "type": "collection"
+              "type": "collection",
+              "settings": {
+                "collection": "poker-table-tops"
+              }
             },
             "collection-list-2": {
-              "type": "collection"
+              "type": "collection",
+              "settings": {
+                "collection": "poker-tables"
+              }
             }
           },
           "block_order": [
