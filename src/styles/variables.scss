@@ -1,9 +1,14 @@
 // Text colors
-$color-body-text: var(--color-body-text);
+$color-body-text-1: var(--color-body-text-1);
+$color-body-text-2: var(--color-body-text-2);
+$color-text-light-1: var(--color-text-light-1);
 
 // Background colors
 $color-body: var(--color-main-background);
 $color-body-lighten: var(--color-main-background-lighten);
+
+// Collection colours
+$product-image-bg: #fff;
 
 // Placeholders
 $placeholder-color-foreground: #161d25;
@@ -12,6 +17,9 @@ $placeholder-color-background: #f9fafb;
 // Other colors
 $color-accent: var(--color-accent);
 $color-border: var(--color-border);
+$color-tag-item-bg: var(--color-tag-item-bg);
+$color-info-box-item-bg: var(--color-info-box-item-bg);
+$color-product-info-bg: var(--color-product-info-bg);
 
 // Helper colors for form error states
 $color-disabled: #000000;
@@ -23,6 +31,7 @@ $color-success-bg: #000000;
 
 // Typography
 $font-heading: var(--font-heading);
+$font-heading-weight: var(--font-heading-weight);
 $font-body: var(--font-body);
 $font-body-weight: var(--font-body-weight);
 $font-body-style: var(--font-body-style);

@@ -9,15 +9,16 @@
 import {getUrlWithVariant, ProductForm} from '@shopify/theme-product-form';
 import {formatMoney} from '@shopify/theme-currency';
 import {register} from '@shopify/theme-sections';
-import {forceFocus} from '@shopify/theme-a11y';
+// import {forceFocus} from '@shopify/theme-a11y';
+import Flickity from 'flickity';
 
 const classes = {
   hide: 'hide',
 };
 
-const keyboardKeys = {
-  ENTER: 13,
-};
+// const keyboardKeys = {
+//   ENTER: 13,
+// };
 
 const selectors = {
   submitButton: '[data-submit-button]',
@@ -33,12 +34,13 @@ const selectors = {
   thumbnail: '[data-product-single-thumbnail]',
   thumbnailById: (id) => `[data-thumbnail-id='${id}']`,
   thumbnailActive: '[data-product-single-thumbnail][aria-current]',
+  galleryCarousel: '[data-product-carousel]',
 };
 
 register('product', {
   async onLoad() {
     const productFormElement = document.querySelector(selectors.productForm);
-
+    console.log('onLoad', this)
     this.product = await this.getProductJson(
       productFormElement.dataset.productHandle,
     );
@@ -46,17 +48,30 @@ register('product', {
       onOptionChange: this.onFormOptionChange.bind(this),
     });
 
-    this.onThumbnailClick = this.onThumbnailClick.bind(this);
-    this.onThumbnailKeyup = this.onThumbnailKeyup.bind(this);
+    // Initialise the flickity gallery.
+    const elem = document.querySelector(selectors.galleryCarousel);
+    new Flickity(elem, {
+      // options
+      // lazyLoad: true,
+      pageDots: true,
+      // freeScroll: true,
+      // contain: true,
+      wrapAround: true,
+    });
 
-    this.container.addEventListener('click', this.onThumbnailClick);
-    this.container.addEventListener('keyup', this.onThumbnailKeyup);
+    // Display the gallery once initialised. IE9 safe. Remove the hide class if it exists.
+    elem.className = elem.className.replace(/\bhide\b/g, '');
+    // this.onThumbnailClick = this.onThumbnailClick.bind(this);
+    // this.onThumbnailKeyup = this.onThumbnailKeyup.bind(this);
+
+    // this.container.addEventListener('click', this.onThumbnailClick);
+    // this.container.addEventListener('keyup', this.onThumbnailKeyup);
   },
 
   onUnload() {
     this.productForm.destroy();
-    this.removeEventListener('click', this.onThumbnailClick);
-    this.removeEventListener('keyup', this.onThumbnailKeyup);
+    // this.removeEventListener('click', this.onThumbnailClick);
+    // this.removeEventListener('keyup', this.onThumbnailKeyup);
   },
 
   getProductJson(handle) {
@@ -76,33 +91,34 @@ register('product', {
     this.updateBrowserHistory(variant);
   },
 
-  onThumbnailClick(event) {
-    const thumbnail = event.target.closest(selectors.thumbnail);
+  // onThumbnailClick(event) {
+  //   console.log('onThumbnailClick', this)
+  //   const thumbnail = event.target.closest(selectors.thumbnail);
+  //   console.log('thumbnail', thumbnail)
+  //   if (!thumbnail) {
+  //     return;
+  //   }
+  //
+  //   event.preventDefault();
+  //
+  //   // this.renderFeaturedImage(thumbnail.dataset.thumbnailId);
+  //   // this.renderActiveThumbnail(thumbnail.dataset.thumbnailId);
+  // },
 
-    if (!thumbnail) {
-      return;
-    }
-
-    event.preventDefault();
-
-    this.renderFeaturedImage(thumbnail.dataset.thumbnailId);
-    this.renderActiveThumbnail(thumbnail.dataset.thumbnailId);
-  },
-
-  onThumbnailKeyup(event) {
-    if (
-      event.keyCode !== keyboardKeys.ENTER ||
-      !event.target.closest(selectors.thumbnail)
-    ) {
-      return;
-    }
-
-    const visibleFeaturedImageWrapper = this.container.querySelector(
-      selectors.visibleImageWrapper,
-    );
-
-    forceFocus(visibleFeaturedImageWrapper);
-  },
+  // onThumbnailKeyup(event) {
+  //   if (
+  //     event.keyCode !== keyboardKeys.ENTER ||
+  //     !event.target.closest(selectors.thumbnail)
+  //   ) {
+  //     return;
+  //   }
+  //
+  //   const visibleFeaturedImageWrapper = this.container.querySelector(
+  //     selectors.visibleImageWrapper,
+  //   );
+  //
+  //   forceFocus(visibleFeaturedImageWrapper);
+  // },
 
   renderSubmitButton(variant) {
     const submitButton = this.container.querySelector(selectors.submitButton);
@@ -122,14 +138,14 @@ register('product', {
     }
   },
 
-  renderImages(variant) {
-    if (!variant || variant.featured_image === null) {
-      return;
-    }
-
-    this.renderFeaturedImage(variant.featured_image.id);
-    this.renderActiveThumbnail(variant.featured_image.id);
-  },
+  // renderImages(variant) {
+  //   if (!variant || variant.featured_image === null) {
+  //     return;
+  //   }
+  //
+  //   this.renderFeaturedImage(variant.featured_image.id);
+  //   this.renderActiveThumbnail(variant.featured_image.id);
+  // },
 
   renderPrice(variant) {
     const priceElement = this.container.querySelector(selectors.productPrice);
@@ -174,34 +190,34 @@ register('product', {
     }
   },
 
-  renderActiveThumbnail(id) {
-    const activeThumbnail = this.container.querySelector(
-      selectors.thumbnailById(id),
-    );
-    const inactiveThumbnail = this.container.querySelector(
-      selectors.thumbnailActive,
-    );
-
-    if (activeThumbnail === inactiveThumbnail) {
-      return;
-    }
-
-    inactiveThumbnail.removeAttribute('aria-current');
-    activeThumbnail.setAttribute('aria-current', true);
-  },
-
-  renderFeaturedImage(id) {
-    const activeImage = this.container.querySelector(
-      selectors.visibleImageWrapper,
-    );
-    const inactiveImage = this.container.querySelector(
-      selectors.imageWrapperById(id),
-    );
-    if (activeImage) {
-      activeImage.classList.add(classes.hide);
-    }
-    inactiveImage.classList.remove(classes.hide);
-  },
+  // renderActiveThumbnail(id) {
+  //   const activeThumbnail = this.container.querySelector(
+  //     selectors.thumbnailById(id),
+  //   );
+  //   const inactiveThumbnail = this.container.querySelector(
+  //     selectors.thumbnailActive,
+  //   );
+  //
+  //   if (activeThumbnail === inactiveThumbnail) {
+  //     return;
+  //   }
+  //
+  //   inactiveThumbnail.removeAttribute('aria-current');
+  //   activeThumbnail.setAttribute('aria-current', true);
+  // },
+  //
+  // renderFeaturedImage(id) {
+  //   const activeImage = this.container.querySelector(
+  //     selectors.visibleImageWrapper,
+  //   );
+  //   const inactiveImage = this.container.querySelector(
+  //     selectors.imageWrapperById(id),
+  //   );
+  //   if (activeImage) {
+  //     activeImage.classList.add(classes.hide);
+  //   }
+  //   inactiveImage.classList.remove(classes.hide);
+  // },
 
   updateBrowserHistory(variant) {
     const enableHistoryState = this.productForm.element.dataset

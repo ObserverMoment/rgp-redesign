@@ -19,8 +19,14 @@
       },
       {
         "type": "color",
-        "id": "color_body_text",
-        "label": "Text",
+        "id": "color_body_text_1",
+        "label": "Text1",
+        "default": "#161d25"
+      },
+      {
+        "type": "color",
+        "id": "color_body_text_2",
+        "label": "Text2",
         "default": "#161d25"
       },
       {

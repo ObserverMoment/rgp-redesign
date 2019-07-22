@@ -1,0 +1,16 @@
+.social-sharing {
+  a {
+    padding: 12px 20px;
+    box-shadow: 1px 1px 1px 1px #d6d6d6;
+    text-transform: uppercase;
+    text-decoration: none;
+    margin: 10px;
+    color: $color-body-text-2;
+    font-size: 0.8em;
+    background: #b2efc5;
+
+    span {
+      margin-left: 8px;
+    }
+  }
+}
