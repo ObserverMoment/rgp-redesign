@@ -29,6 +29,37 @@
 }
 
 /**
+* Keyframe creators - creates a 'namespaced' keyframes object with the settings configured from args.
+*/
+@mixin createFadeKeyFrames ($instanceName, $startOpacity, $endOpacity) {
+  @keyframes #{$instanceName} {
+    0% {
+      opacity: $startOpacity;
+    }
+    100% {
+      transform: $endOpacity;
+    }
+  }
+}
+
+@mixin createSlideKeyFrames (
+  $instanceName,
+  $slideStartX: 0,
+  $slideStartY: 0,
+  $slideEndX: 0,
+  $slideEndY: 0
+  ) {
+    @keyframes #{$instanceName} {
+      0% {
+        transform: translate($slideStartX, $slideStartY);
+      }
+      100% {
+        transform: translate($slideEndX, $slideEndY);
+      }
+    }
+}
+
+/**
  * Outputs list of transition properties
  *
  * Accepts:

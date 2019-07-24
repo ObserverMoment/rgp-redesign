@@ -1,42 +1,24 @@
+@include createSlideKeyFrames(product-page-slide, 0, 20px);
+@include createFadeKeyFrames(product-page-fadein, 0, 1);
+
 .product-single {
+  padding: 10px 40px;
+  animation: product-page-fadein 0.4s ease-in-out, product-page-slide 0.5s ease-in-out;
   &__upper {
     display: flex;
-  }
-  &__lower {
-    display: flex;
-    padding: 30px 10px;
-    div {
-      flex-basis: 50%;
-      padding: 20px;
-      ul {
-        list-style-type: none;
-        margin: 0;
-        padding: 0;
-        li {
-          margin: 5px 0;
-          padding: 10px;
-          background: $color-info-box-item-bg;
-          box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
-          color: $color-text-light-1;
-          border-radius: 6px;
-        }
-      }
-    }
   }
   &__images {
     position: relative;
     width: 64%;
+    padding: 10px;
     &__gallery {
+      background: $product-image-bg;
+      width: 100%;
       overflow: hidden;
       outline: none;
-      background: $product-image-bg;
-      height: 100%;
-      .hide {
-        display: none;
-      }
-      &-item {
+      padding: 20px;
+      &__item {
         width: 100%;
-        padding: 20px;
         display: flex;
         justify-content: center;
         align-items: center;
@@ -45,7 +27,31 @@
           width: 100%;
         }
       }
+      &__nav {
+        overflow: hidden;
+        outline: none;
+        &__wrapper {
+          margin: auto;
+          width: 80%;
+        }
+        &__item {
+          border: 4px solid transparent;
+          cursor: pointer;
+          transition: border-color 0.6s;
+          border-radius: 10px;
+          padding: 3px;
+          box-sizing: border-box;
+          width: 120px;
+          &.is-nav-selected {
+            border: 4px solid rgb(60, 177, 132);
+          }
+          &__image {
+            border-radius: 10px;
+          }
+        }
+      }
     }
+
   }
   &__info {
     width: 36%;
@@ -53,21 +59,24 @@
     background: $color-product-info-bg;
     text-align: center;
     color: $color-body-text-2;
+    box-shadow: 0 1px 4px 2px rgba(0, 0, 0, 0.1);
+    z-index: 1;
+    border: 1px solid #f9f9f9;
     &__add-form {
       margin: 20px 0 40px 0;
     }
     &__price {
-      font-size: 2.4em;
-      font-weight: bold;
+      font-size: 2em;
+      color: #d8a82f;
     }
     &__submit {
       background: #323d48;
-      box-shadow: 1px 1px 1px 1px rgba(0,0,0,0.3);
+      box-shadow: 1px 1px 2px 1px rgba(0,0,0,0.2);
       padding: 12px 28px;
       text-transform: uppercase;
       color: $color-text-light-1;
       border: none;
-      border-radius: 18px;
+      border-radius: 2px;
       margin: 10px;
     }
     &__tags {
@@ -86,19 +95,38 @@
       }
     }
   }
+  &__lower {
+    padding: 30px 10px;
+    div {
+      padding: 20px;
+      ul {
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+        li {
+          margin: 5px 0;
+          padding: 10px;
+          background: $color-info-box-item-bg;
+          box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+          color: $color-text-light-1;
+          border-radius: 6px;
+        }
+      }
+    }
+  }
 }
 
 // Flickity gallery styling.
 .flickity-button.flickity-prev-next-button {
-  border-radius: 50%;
-  height: 30px;
-  width: 30px;
+  border-radius: 6px;
+  height: 45px;
+  width: 45px;
   display: flex;
   justify-content: center;
   align-items: center;
   position: absolute;
-  margin-top: -35%;
-  z-index: 100;
+  z-index: 10;
+  background: $product-image-bg;
   &.previous {
     left: 15px;
   }

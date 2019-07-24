@@ -10,7 +10,8 @@ import {getUrlWithVariant, ProductForm} from '@shopify/theme-product-form';
 import {formatMoney} from '@shopify/theme-currency';
 import {register} from '@shopify/theme-sections';
 // import {forceFocus} from '@shopify/theme-a11y';
-import Flickity from 'flickity';
+// import Flickity from 'flickity';
+// import Flickity from 'flickity-as-nav-for';
 
 const classes = {
   hide: 'hide',
@@ -31,36 +32,21 @@ const selectors = {
   imageWrapperById: (id) => `${selectors.imageWrapper}[data-image-id='${id}']`,
   productForm: '[data-product-form]',
   productPrice: '[data-product-price]',
-  thumbnail: '[data-product-single-thumbnail]',
-  thumbnailById: (id) => `[data-thumbnail-id='${id}']`,
-  thumbnailActive: '[data-product-single-thumbnail][aria-current]',
-  galleryCarousel: '[data-product-carousel]',
 };
 
 register('product', {
   async onLoad() {
     const productFormElement = document.querySelector(selectors.productForm);
-    console.log('onLoad', this)
     this.product = await this.getProductJson(
       productFormElement.dataset.productHandle,
     );
+
     this.productForm = new ProductForm(productFormElement, this.product, {
       onOptionChange: this.onFormOptionChange.bind(this),
     });
 
-    // Initialise the flickity gallery.
-    const elem = document.querySelector(selectors.galleryCarousel);
-    new Flickity(elem, {
-      // options
-      // lazyLoad: true,
-      pageDots: true,
-      // freeScroll: true,
-      // contain: true,
-      wrapAround: true,
-    });
+    console.log(this);
 
-    // Display the gallery once initialised. IE9 safe. Remove the hide class if it exists.
-    elem.className = elem.className.replace(/\bhide\b/g, '');
     // this.onThumbnailClick = this.onThumbnailClick.bind(this);
     // this.onThumbnailKeyup = this.onThumbnailKeyup.bind(this);
 
@@ -83,7 +69,7 @@ register('product', {
   onFormOptionChange(event) {
     const variant = event.dataset.variant;
 
-    this.renderImages(variant);
+    // this.renderImages(variant);
     this.renderPrice(variant);
     this.renderComparePrice(variant);
     this.renderSubmitButton(variant);
