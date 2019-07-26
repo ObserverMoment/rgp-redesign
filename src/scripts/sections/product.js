@@ -11,10 +11,11 @@ import {formatMoney} from '@shopify/theme-currency';
 import {register} from '@shopify/theme-sections';
 // import {forceFocus} from '@shopify/theme-a11y';
 // import Flickity from 'flickity';
-// import Flickity from 'flickity-as-nav-for';
+import Flickity from 'flickity-as-nav-for';
 
 const classes = {
   hide: 'hide',
+  visible: 'visible',
 };
 
 // const keyboardKeys = {
@@ -32,20 +33,96 @@ const selectors = {
   imageWrapperById: (id) => `${selectors.imageWrapper}[data-image-id='${id}']`,
   productForm: '[data-product-form]',
   productPrice: '[data-product-price]',
+  imagesElem: '[data-images-elem]',
+  galleryElem: '[data-gallery]',
+  galleryItems: '[data-product-gallery-item]',
+  galleryNavElem: '[data-nav]',
+  galleryNavItems: '[data-product-gallery-nav-item]',
 };
+
+let flickityGallery = null;
+let flickityNav = null;
+const galleryElems = document.querySelectorAll(selectors.galleryItems);
+const galleryNavElems = document.querySelectorAll(selectors.galleryNavItems);
+
+// New function possible solution.
+// 1. Get product images.
+// 2. Filter by current variant.
+// 3. For each valid image - create an image node (cut this out of liquid file and construct in JS)
+// 5. Destroy flickity instance (if exists)
+// 6. Initialise a new one.
+// 7. For each new node do flickityInstance.append. Does this actually append to the DOM - or just save a reference? Run some tests - are actual /// dom nodes removed?????
+// 8. Add .visible class to all nodes (or do this before initialising Flickity?)
+
+// Pass a copy to avoid actually deleting items from the nodelist.
+function handleImageUpdates(elements, variantName, flickityInstance) {
+  // Get all of the nodes.
+  // console.log('elements copy?', elements);
+  // Clear all elements first.
+  const oldElements = flickityInstance.getCellElements();
+  flickityInstance.remove(oldElements);
+  flickityInstance.destroy();
+
+  elements.forEach((element) => {
+    // console.log('element.dataset.imageAlt.toLowerCase()', element.dataset.imageAlt.toLowerCase());
+    if (element.dataset.imageAlt.toLowerCase() === variantName.toLowerCase()) {
+      // Add to Flickity and make sure visible class is set.
+      if (!element.classList.contains(classes.visible)) {
+        element.classList.add(classes.visible);
+      }
+      flickityInstance.append(element);
+      // console.log('updated', flickityInstance.cells);
+    } else {
+      element.classList.remove(classes.visible);
+    }
+  });
+  // console.log('galleryElems', galleryElems);
+  console.log('updated', flickityInstance.cells);
+}
+
+function initialiseGallery() {
+  const imagesElem = document.querySelector(selectors.imagesElem);
+  const galleryElem = document.querySelector(selectors.galleryElem);
+  const currentVariant = galleryElem.dataset.currentVariant;
+  const galleryNavElem = document.querySelector(selectors.galleryNavElem);
+
+  const galleryElemsCopy = Array.prototype.map.call(galleryElems, (elem) => elem.cloneNode(true));
+  const galleryNavElemsCopy = Array.prototype.map.call(galleryNavElems, (elem) => elem.cloneNode(true));
+
+  flickityGallery = new Flickity(galleryElem, {
+    wrapAround: true,
+    percentPosition: false,
+    setGallerySize: false,
+    ImagesLoaded: true,
+  });
+  flickityNav = new Flickity(galleryNavElem, {
+    asNavFor: galleryElem,
+    contain: true,
+    pageDots: false,
+    prevNextButtons: false,
+    percentPosition: false,
+    ImagesLoaded: true,
+  });
+
+  imagesElem.classList.remove(classes.hide);
+
+  handleImageUpdates(galleryElemsCopy, currentVariant, flickityGallery);
+  handleImageUpdates(galleryNavElemsCopy, currentVariant, flickityNav);
+
+}
+
+initialiseGallery();
 
 register('product', {
   async onLoad() {
     const productFormElement = document.querySelector(selectors.productForm);
-    this.product = await this.getProductJson(
-      productFormElement.dataset.productHandle,
-    );
+    const productHandle = productFormElement.dataset.productHandle;
+    this.product = await this.getProductJson(productHandle);
+    // this.productImages = await this.getProductImages(productHandle);
 
     this.productForm = new ProductForm(productFormElement, this.product, {
       onOptionChange: this.onFormOptionChange.bind(this),
     });
-
-    console.log(this);
 
     // this.onThumbnailClick = this.onThumbnailClick.bind(this);
     // this.onThumbnailKeyup = this.onThumbnailKeyup.bind(this);
@@ -66,15 +143,38 @@ register('product', {
     });
   },
 
+  // getProductImages(handle) {
+  //   return fetch(`/products/${handle}/images.json`).then((response) => {
+  //     return response.json();
+  //   });
+  // },
+
   onFormOptionChange(event) {
     const variant = event.dataset.variant;
+    console.log('variant', variant);
 
-    // this.renderImages(variant);
+    this.renderImages(variant);
     this.renderPrice(variant);
     this.renderComparePrice(variant);
     this.renderSubmitButton(variant);
 
     this.updateBrowserHistory(variant);
+  },
+
+  renderImages(variant) {
+    if (!variant || variant.featured_image === null) {
+      return;
+    }
+
+    const galleryElemsCopy = Array.prototype.map.call(galleryElems, (elem) => {
+      return elem.cloneNode(true);
+    });
+    const galleryNavElemsCopy = Array.prototype.map.call(galleryNavElems, (elem) => {
+      return elem.cloneNode(true);
+    });
+
+    handleImageUpdates(galleryElemsCopy, variant.title, flickityGallery);
+    handleImageUpdates(galleryNavElemsCopy, variant.title, flickityNav);
   },
 
   // onThumbnailClick(event) {
@@ -123,15 +223,6 @@ register('product', {
       submitButtonText.innerText = theme.strings.soldOut;
     }
   },
-
-  // renderImages(variant) {
-  //   if (!variant || variant.featured_image === null) {
-  //     return;
-  //   }
-  //
-  //   this.renderFeaturedImage(variant.featured_image.id);
-  //   this.renderActiveThumbnail(variant.featured_image.id);
-  // },
 
   renderPrice(variant) {
     const priceElement = this.container.querySelector(selectors.productPrice);
