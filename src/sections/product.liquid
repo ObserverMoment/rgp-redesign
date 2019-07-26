@@ -9,12 +9,11 @@
           data-gallery
           data-current-variant="{{  current_variant.title }}"
         >
-
+        {% comment %}
           {% for image in product.images %}
             <div
               class="product-single__images__gallery__item"
               data-product-gallery-item
-              data-image-alt="{{ image.alt }}"
             >
               <img
                 class="product-single__images__gallery__item__image"
@@ -23,6 +22,7 @@
               >
             </div>
           {% endfor %}
+        {% endcomment %}
 
         </div>
         <div class="product-single__images__gallery__nav__wrapper">
@@ -30,12 +30,11 @@
             class="product-single__images__gallery__nav"
             data-nav
           >
-
+          {% comment %}
             {% for image in product.images %}
               <div
                 class="product-single__images__gallery__nav__item"
                 data-product-gallery-nav-item
-                data-image-alt="{{ image.alt }}"
               >
                 <img
                   class="product-single__images__gallery__nav__item__image"
@@ -43,7 +42,7 @@
                 >
               </div>
             {% endfor %}
-
+            {% endcomment %}
           </div>
         </div>
       {% endif %}
@@ -51,6 +50,7 @@
 
     <div class="product-single__info">
       <h1>{{ product.title }}</h1>
+      <p>By {{ product.vendor }}</p>
 
       {% if product.tags.size > 1 %}
         <div class="product-single__info__tags">
@@ -66,13 +66,20 @@
         {% form 'product', product, data-product-form: '', data-product-handle: product.handle, data-enable-history-state: 'true' %}
           {% unless product.has_only_default_variant %}
             {% for option in product.options_with_values %}
-              <div class="js">
+              <div class="product-single__info__add-form__option-{{ option.name }}">
+                <div class="product-single__info__add-form__option-{{ option.name }}__title">
+                  CHOOSE {{ option.name | upcase }}
+                </div>
                 {% for value in option.values %}
                   <input
                     type="radio" id="Option{{ option.position }}-{{ value }}"
                     name="options[{{ option.name }}]" value="{{ value }}"{% if option.selected_value == value %} checked{% endif %}
                   >
-                  <label for="Option{{ option.position }}-{{ value }}">{{ value }}</label>
+                  <label
+                    for="Option{{ option.position }}-{{ value }}"
+                    class="product-single__info__add-form__option-{{ option.name }}__value-{{ value }}"
+                  >
+                  </label>
                 {% endfor %}
               </div>
             {% endfor %}
@@ -125,16 +132,16 @@
           </button>
         {% endform %}
       </div>
-
+      {% comment %}
       {% if section.settings.show_share_buttons %}
         {% include 'social-sharing', share_title: product.title, share_permalink: product.url, share_image: product %}
       {% endif %}
+      {% endcomment %}
     </div>
   </div>
 
   <div class="product-single__lower">
     {{ product.description }}
-    {{ current_variant.title }}
   </div>
 
 </section>

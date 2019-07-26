@@ -9,18 +9,22 @@
 import {getUrlWithVariant, ProductForm} from '@shopify/theme-product-form';
 import {formatMoney} from '@shopify/theme-currency';
 import {register} from '@shopify/theme-sections';
-// import {forceFocus} from '@shopify/theme-a11y';
-// import Flickity from 'flickity';
 import Flickity from 'flickity-as-nav-for';
 
 const classes = {
   hide: 'hide',
-  visible: 'visible',
+  galleryItem: 'product-single__images__gallery__item',
+  galleryItemImage: 'product-single__images__gallery__item__image',
+  galleryNavItem: 'product-single__images__gallery__nav__item',
+  galleryNavItemImage: 'product-single__images__gallery__nav__item__image',
 };
 
-// const keyboardKeys = {
-//   ENTER: 13,
-// };
+const colourChangeOptions = ['Green', 'Red', 'Blue', 'Black'];
+
+const attributes = {
+  galleryItemData: 'data-product-gallery-item',
+  galleryNavItemData: 'data-product-gallery-nav-item',
+};
 
 const selectors = {
   submitButton: '[data-submit-button]',
@@ -35,106 +39,118 @@ const selectors = {
   productPrice: '[data-product-price]',
   imagesElem: '[data-images-elem]',
   galleryElem: '[data-gallery]',
-  galleryItems: '[data-product-gallery-item]',
   galleryNavElem: '[data-nav]',
-  galleryNavItems: '[data-product-gallery-nav-item]',
 };
 
 let flickityGallery = null;
 let flickityNav = null;
-const galleryElems = document.querySelectorAll(selectors.galleryItems);
-const galleryNavElems = document.querySelectorAll(selectors.galleryNavItems);
 
-// New function possible solution.
-// 1. Get product images.
-// 2. Filter by current variant.
-// 3. For each valid image - create an image node (cut this out of liquid file and construct in JS)
-// 5. Destroy flickity instance (if exists)
-// 6. Initialise a new one.
-// 7. For each new node do flickityInstance.append. Does this actually append to the DOM - or just save a reference? Run some tests - are actual /// dom nodes removed?????
-// 8. Add .visible class to all nodes (or do this before initialising Flickity?)
+// Must be cdn.shopify.com/s/files/1/0168/1113/0934/products/W_3985{_dimension}.jpg?v=1563988014.
+const galleryImageSize = '_750x750';
+const thumbnailImageSize = '_130x130';
 
-// Pass a copy to avoid actually deleting items from the nodelist.
-function handleImageUpdates(elements, variantName, flickityInstance) {
-  // Get all of the nodes.
-  // console.log('elements copy?', elements);
-  // Clear all elements first.
-  const oldElements = flickityInstance.getCellElements();
-  flickityInstance.remove(oldElements);
-  flickityInstance.destroy();
-
-  elements.forEach((element) => {
-    // console.log('element.dataset.imageAlt.toLowerCase()', element.dataset.imageAlt.toLowerCase());
-    if (element.dataset.imageAlt.toLowerCase() === variantName.toLowerCase()) {
-      // Add to Flickity and make sure visible class is set.
-      if (!element.classList.contains(classes.visible)) {
-        element.classList.add(classes.visible);
-      }
-      flickityInstance.append(element);
-      // console.log('updated', flickityInstance.cells);
-    } else {
-      element.classList.remove(classes.visible);
-    }
-  });
-  // console.log('galleryElems', galleryElems);
-  console.log('updated', flickityInstance.cells);
-}
-
-function initialiseGallery() {
-  const imagesElem = document.querySelector(selectors.imagesElem);
-  const galleryElem = document.querySelector(selectors.galleryElem);
-  const currentVariant = galleryElem.dataset.currentVariant;
-  const galleryNavElem = document.querySelector(selectors.galleryNavElem);
-
-  const galleryElemsCopy = Array.prototype.map.call(galleryElems, (elem) => elem.cloneNode(true));
-  const galleryNavElemsCopy = Array.prototype.map.call(galleryNavElems, (elem) => elem.cloneNode(true));
-
-  flickityGallery = new Flickity(galleryElem, {
-    wrapAround: true,
-    percentPosition: false,
-    setGallerySize: false,
-    ImagesLoaded: true,
-  });
-  flickityNav = new Flickity(galleryNavElem, {
-    asNavFor: galleryElem,
-    contain: true,
-    pageDots: false,
-    prevNextButtons: false,
-    percentPosition: false,
-    ImagesLoaded: true,
-  });
-
-  imagesElem.classList.remove(classes.hide);
-
-  handleImageUpdates(galleryElemsCopy, currentVariant, flickityGallery);
-  handleImageUpdates(galleryNavElemsCopy, currentVariant, flickityNav);
-
-}
-
-initialiseGallery();
+const imagesElem = document.querySelector(selectors.imagesElem);
+const galleryElem = document.querySelector(selectors.galleryElem);
+const galleryNavElem = document.querySelector(selectors.galleryNavElem);
 
 register('product', {
   async onLoad() {
     const productFormElement = document.querySelector(selectors.productForm);
     const productHandle = productFormElement.dataset.productHandle;
     this.product = await this.getProductJson(productHandle);
-    // this.productImages = await this.getProductImages(productHandle);
+    this.productImages = (await this.getProductImages(productHandle)).product.images;
 
     this.productForm = new ProductForm(productFormElement, this.product, {
       onOptionChange: this.onFormOptionChange.bind(this),
     });
 
-    // this.onThumbnailClick = this.onThumbnailClick.bind(this);
-    // this.onThumbnailKeyup = this.onThumbnailKeyup.bind(this);
+    this.initGallery();
+  },
 
-    // this.container.addEventListener('click', this.onThumbnailClick);
-    // this.container.addEventListener('keyup', this.onThumbnailKeyup);
+  initGallery() {
+    const currentVariant = galleryElem.dataset.currentVariant;
+
+    // Get the relevant images.
+    const imagesToDisplay = this.filterImagesByVariant(currentVariant);
+
+    this.createGalleryNodes(imagesToDisplay);
+    this.createThumbnailNodes(imagesToDisplay);
+
+    imagesElem.classList.remove(classes.hide);
+
+    this.initFlickity();
+  },
+
+  filterImagesByVariant(variant) {
+    return this.productImages.filter((image) => image.alt === variant);
+  },
+
+  removeAllChildren(element) {
+    while (element.firstChild) {
+      element.removeChild(element.firstChild);
+    }
+  },
+
+  createGalleryNodes(imagesToDisplay) {
+    // For each image object. Create a div and an img and append to gallery.
+    imagesToDisplay.forEach((image) => {
+      const div = document.createElement('DIV');
+      div.setAttribute(attributes.galleryItemData, '');
+      div.className = classes.galleryItem;
+      const img = document.createElement('IMG');
+      img.className = classes.galleryItemImage;
+      img.src = image.src.replace('.jpg', `${galleryImageSize}.jpg`);
+      img.alt = `${this.product.title} - ${image.alt}`;
+      div.appendChild(img);
+      galleryElem.appendChild(div);
+    });
+  },
+
+  createThumbnailNodes(imagesToDisplay) {
+    // For each image object. Create a div and an img and append to nav.
+    imagesToDisplay.forEach((image) => {
+      const div = document.createElement('DIV');
+      div.setAttribute(attributes.galleryNavItemData, '');
+      div.className = classes.galleryNavItem;
+      const img = document.createElement('IMG');
+      img.className = classes.galleryNavItemImage;
+      img.src = image.src.replace('.jpg', `${thumbnailImageSize}.jpg`);
+      img.alt = `${this.product.title} - ${image.alt}`;
+      div.appendChild(img);
+      galleryNavElem.appendChild(div);
+    });
+  },
+
+  destroyFlickity() {
+    if (flickityGallery) {
+      flickityGallery.destroy();
+    }
+    if (flickityNav) {
+      flickityNav.destroy();
+    }
+  },
+
+  initFlickity() {
+    flickityGallery = new Flickity(galleryElem, {
+      wrapAround: true,
+      percentPosition: false,
+      setGallerySize: false,
+      ImagesLoaded: true,
+      pageDots: false,
+    });
+    flickityNav = new Flickity(galleryNavElem, {
+      asNavFor: galleryElem,
+      contain: true,
+      pageDots: false,
+      prevNextButtons: false,
+      percentPosition: false,
+      ImagesLoaded: true,
+      setGallerySize: false,
+    });
   },
 
   onUnload() {
     this.productForm.destroy();
-    // this.removeEventListener('click', this.onThumbnailClick);
-    // this.removeEventListener('keyup', this.onThumbnailKeyup);
   },
 
   getProductJson(handle) {
@@ -143,68 +159,41 @@ register('product', {
     });
   },
 
-  // getProductImages(handle) {
-  //   return fetch(`/products/${handle}/images.json`).then((response) => {
-  //     return response.json();
-  //   });
-  // },
+  getProductImages(handle) {
+    return fetch(`/products/${handle}/images.json`).then((response) => {
+      return response.json();
+    });
+  },
 
   onFormOptionChange(event) {
     const variant = event.dataset.variant;
-    console.log('variant', variant);
 
-    this.renderImages(variant);
+    if (colourChangeOptions.includes(variant.title)) {
+      // Update the gallery for colour changes only.
+      // Get the relevant images.
+      const imagesToDisplay = this.filterImagesByVariant(variant.title);
+
+      // Remove flickity.
+      this.destroyFlickity();
+
+      // Remove all previous image nodes.
+      this.removeAllChildren(galleryElem);
+      this.removeAllChildren(galleryNavElem);
+
+      // Recreate the new nodes.
+      this.createGalleryNodes(imagesToDisplay);
+      this.createThumbnailNodes(imagesToDisplay);
+
+      // Restart flickity.
+      this.initFlickity();
+    }
+
     this.renderPrice(variant);
     this.renderComparePrice(variant);
     this.renderSubmitButton(variant);
 
     this.updateBrowserHistory(variant);
   },
-
-  renderImages(variant) {
-    if (!variant || variant.featured_image === null) {
-      return;
-    }
-
-    const galleryElemsCopy = Array.prototype.map.call(galleryElems, (elem) => {
-      return elem.cloneNode(true);
-    });
-    const galleryNavElemsCopy = Array.prototype.map.call(galleryNavElems, (elem) => {
-      return elem.cloneNode(true);
-    });
-
-    handleImageUpdates(galleryElemsCopy, variant.title, flickityGallery);
-    handleImageUpdates(galleryNavElemsCopy, variant.title, flickityNav);
-  },
-
-  // onThumbnailClick(event) {
-  //   console.log('onThumbnailClick', this)
-  //   const thumbnail = event.target.closest(selectors.thumbnail);
-  //   console.log('thumbnail', thumbnail)
-  //   if (!thumbnail) {
-  //     return;
-  //   }
-  //
-  //   event.preventDefault();
-  //
-  //   // this.renderFeaturedImage(thumbnail.dataset.thumbnailId);
-  //   // this.renderActiveThumbnail(thumbnail.dataset.thumbnailId);
-  // },
-
-  // onThumbnailKeyup(event) {
-  //   if (
-  //     event.keyCode !== keyboardKeys.ENTER ||
-  //     !event.target.closest(selectors.thumbnail)
-  //   ) {
-  //     return;
-  //   }
-  //
-  //   const visibleFeaturedImageWrapper = this.container.querySelector(
-  //     selectors.visibleImageWrapper,
-  //   );
-  //
-  //   forceFocus(visibleFeaturedImageWrapper);
-  // },
 
   renderSubmitButton(variant) {
     const submitButton = this.container.querySelector(selectors.submitButton);
@@ -266,35 +255,6 @@ register('product', {
       comparePriceElement.classList.add(classes.hide);
     }
   },
-
-  // renderActiveThumbnail(id) {
-  //   const activeThumbnail = this.container.querySelector(
-  //     selectors.thumbnailById(id),
-  //   );
-  //   const inactiveThumbnail = this.container.querySelector(
-  //     selectors.thumbnailActive,
-  //   );
-  //
-  //   if (activeThumbnail === inactiveThumbnail) {
-  //     return;
-  //   }
-  //
-  //   inactiveThumbnail.removeAttribute('aria-current');
-  //   activeThumbnail.setAttribute('aria-current', true);
-  // },
-  //
-  // renderFeaturedImage(id) {
-  //   const activeImage = this.container.querySelector(
-  //     selectors.visibleImageWrapper,
-  //   );
-  //   const inactiveImage = this.container.querySelector(
-  //     selectors.imageWrapperById(id),
-  //   );
-  //   if (activeImage) {
-  //     activeImage.classList.add(classes.hide);
-  //   }
-  //   inactiveImage.classList.remove(classes.hide);
-  // },
 
   updateBrowserHistory(variant) {
     const enableHistoryState = this.productForm.element.dataset
