@@ -1,10 +1,16 @@
 {
   "current": {
-    "color_accent": "#c4cdd5",
-    "color_body_text": "#20252b",
-    "color_main_bg": "#dcdcdc",
-    "font_heading": "cabin_n4",
-    "font_body": "cabin_n4",
+    "color_accent": "#5b18d1",
+    "color_body_text_1": "#161d25",
+    "color_body_text_2": "#161d25",
+    "color_text_light_1": "#fff",
+    "color_main_bg": "#ffffff",
+    "color_tag_item_bg": "#134465",
+    "color_product_info_bg": "#fdfdfd",
+    "color_info_box_item_bg": "#2e2e2e",
+    "font_heading": "assistant_n4",
+    "font_body": "assistant_n4",
+    "font_script_style": "lobster_two_n4",
     "share_image": "",
     "social_sharing_blog": true,
     "share_facebook": true,
@@ -34,6 +40,8 @@
     "checkout_accent_color": "#197bbd",
     "checkout_button_color": "#197bbd",
     "checkout_error_color": "#e32c2b",
+    "color_text-light-1": "#7b1984",
+    "color_body_text": "#20252b",
     "sections": {
       "collection-list": {
         "type": "collection-list",
@@ -104,12 +112,23 @@
         "settings": {
           "show_share_buttons": true
         }
+      },
+      "blog-posts": {
+        "type": "blog-posts",
+        "settings": {
+          "title": "Blog posts",
+          "blog": "news",
+          "post_limit": 3,
+          "blog_show_author": true,
+          "blog_show_date": true
+        }
       }
     },
     "content_for_index": [
       "collection-list",
       "featured-collection",
-      "featured-product"
+      "featured-product",
+      "blog-posts"
     ]
   },
   "presets": {

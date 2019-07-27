@@ -3,11 +3,11 @@
   {%- assign current_variant = product.selected_or_first_available_variant -%}
 
   <div class="product-single__upper">
-    <div class="product-single__images hide" data-images-elem>
+    <div class="product-single__images hidden" data-images-elem>
       {% if product.images.size > 1 %}
         <div class="product-single__images__gallery"
           data-gallery
-          data-current-variant="{{  current_variant.title }}"
+          data-current-variant-id="{{  current_variant.id }}"
         >
         {% comment %}
           {% for image in product.images %}
@@ -50,7 +50,6 @@
 
     <div class="product-single__info">
       <h1>{{ product.title }}</h1>
-      <p>By {{ product.vendor }}</p>
 
       {% if product.tags.size > 1 %}
         <div class="product-single__info__tags">
@@ -98,8 +97,14 @@
             </select>
           </noscript>
 
-          <label for="Quantity">{{ 'products.product.quantity' | t }}</label>
-          <input type="number" id="Quantity" name="quantity" value="1" min="1">
+          <div class="product-single__info__add-form__quantity">
+            <label for="Quantity">{{ 'products.product.quantity' | t }}</label>
+            <div class="product-single__info__add-form__quantity__inputs">
+              <i data-decrement-product-qty class="far fa-minus-square"></i>
+              <input type="number" id="add-product-quantity-input" name="quantity" value="1" min="1">
+              <i data-increment-product-qty class="far fa-plus-square"></i>
+            </div>
+          </div>
 
           <div data-price-wrapper>
             <span class="product-single__info__price" data-product-price>
@@ -121,7 +126,9 @@
             class="product-single__info__submit"
             name="add"
             data-submit-button
-            {% unless current_variant.available %}disabled="disabled"{% endunless %}>
+            {% unless current_variant.available %}disabled="disabled"{% endunless %}
+          >
+              <span><i class="fas fa-cart-plus"></i></span>
               <span data-submit-button-text>
                 {% if current_variant.available %}
                   {{ 'products.product.add_to_cart' | t }}

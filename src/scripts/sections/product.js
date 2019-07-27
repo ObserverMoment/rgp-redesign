@@ -12,7 +12,7 @@ import {register} from '@shopify/theme-sections';
 import Flickity from 'flickity-as-nav-for';
 
 const classes = {
-  hide: 'hide',
+  hidden: 'hidden',
   galleryItem: 'product-single__images__gallery__item',
   galleryItemImage: 'product-single__images__gallery__item__image',
   galleryNavItem: 'product-single__images__gallery__nav__item',
@@ -31,15 +31,14 @@ const selectors = {
   submitButtonText: '[data-submit-button-text]',
   comparePrice: '[data-compare-price]',
   comparePriceText: '[data-compare-text]',
-  priceWrapper: '[data-price-wrapper]',
-  imageWrapper: '[data-product-image-wrapper]',
-  visibleImageWrapper: `[data-product-image-wrapper]:not(.${classes.hide})`,
-  imageWrapperById: (id) => `${selectors.imageWrapper}[data-image-id='${id}']`,
   productForm: '[data-product-form]',
   productPrice: '[data-product-price]',
   imagesElem: '[data-images-elem]',
   galleryElem: '[data-gallery]',
   galleryNavElem: '[data-nav]',
+  increaseQtyIcon: '[data-increment-product-qty]',
+  decreaseQtyIcon: '[data-decrement-product-qty]',
+  productQtyInput: 'add-product-quantity-input',
 };
 
 let flickityGallery = null;
@@ -53,6 +52,8 @@ const imagesElem = document.querySelector(selectors.imagesElem);
 const galleryElem = document.querySelector(selectors.galleryElem);
 const galleryNavElem = document.querySelector(selectors.galleryNavElem);
 
+let currentVariant = null;
+
 register('product', {
   async onLoad() {
     const productFormElement = document.querySelector(selectors.productForm);
@@ -60,29 +61,54 @@ register('product', {
     this.product = await this.getProductJson(productHandle);
     this.productImages = (await this.getProductImages(productHandle)).product.images;
 
+    // Get the initial variant from the dataSet item passed by the gallery element.
+    const initialVariantId = galleryElem.dataset.currentVariantId;
+    if (this.product.variants) {
+      currentVariant = this.product.variants.find((variant) => variant.id === parseInt(initialVariantId, 10));
+    }
+
     this.productForm = new ProductForm(productFormElement, this.product, {
       onOptionChange: this.onFormOptionChange.bind(this),
     });
 
     this.initGallery();
+    this.initListeners();
+  },
+
+  initListeners() {
+    const inputElem = document.getElementById(selectors.productQtyInput);
+
+    document.querySelector(selectors.increaseQtyIcon).addEventListener('click', () => {
+      const newValue = parseInt(inputElem.value, 10) + 1;
+      inputElem.setAttribute('value', newValue);
+      this.updateQuantity(currentVariant, newValue);
+    });
+    document.querySelector(selectors.decreaseQtyIcon).addEventListener('click', () => {
+      if (parseInt(inputElem.value, 10) <= 1) {
+        return;
+      }
+      const newValue = parseInt(inputElem.value, 10) - 1;
+      inputElem.setAttribute('value', newValue);
+      this.updateQuantity(currentVariant, newValue);
+    });
   },
 
   initGallery() {
-    const currentVariant = galleryElem.dataset.currentVariant;
-
     // Get the relevant images.
-    const imagesToDisplay = this.filterImagesByVariant(currentVariant);
+    const imagesToDisplay = this.filterImagesByColour(currentVariant.title);
 
     this.createGalleryNodes(imagesToDisplay);
     this.createThumbnailNodes(imagesToDisplay);
 
-    imagesElem.classList.remove(classes.hide);
+    // Trying to avoid any FOUC. Needs testing for effectiveness.
+    imagesElem.classList.remove(classes.hidden);
 
     this.initFlickity();
   },
 
-  filterImagesByVariant(variant) {
-    return this.productImages.filter((image) => image.alt === variant);
+  filterImagesByColour(colour) {
+    // Hacky - currently using image alt in Shopify BE to define the colour!!
+    return this.productImages.filter((image) => image.alt.toLowerCase() === colour.toLowerCase());
   },
 
   removeAllChildren(element) {
@@ -166,12 +192,12 @@ register('product', {
   },
 
   onFormOptionChange(event) {
-    const variant = event.dataset.variant;
+    currentVariant = event.dataset.variant;
 
-    if (colourChangeOptions.includes(variant.title)) {
-      // Update the gallery for colour changes only.
+    // Update the gallery for colour changes only.
+    if (colourChangeOptions.includes(currentVariant.title)) {
       // Get the relevant images.
-      const imagesToDisplay = this.filterImagesByVariant(variant.title);
+      const imagesToDisplay = this.filterImagesByColour(currentVariant.title);
 
       // Remove flickity.
       this.destroyFlickity();
@@ -188,11 +214,17 @@ register('product', {
       this.initFlickity();
     }
 
-    this.renderPrice(variant);
-    this.renderComparePrice(variant);
-    this.renderSubmitButton(variant);
+    // Get current quantity.
+    const qty = parseInt(document.getElementById(selectors.productQtyInput).value, 10);
+    this.updateQuantity(currentVariant, qty);
 
-    this.updateBrowserHistory(variant);
+    this.renderSubmitButton(currentVariant);
+    this.updateBrowserHistory(currentVariant);
+  },
+
+  updateQuantity(variant, qty) {
+    this.renderPrice(variant, qty);
+    this.renderComparePrice(variant, qty);
   },
 
   renderSubmitButton(variant) {
@@ -213,28 +245,22 @@ register('product', {
     }
   },
 
-  renderPrice(variant) {
-    const priceElement = this.container.querySelector(selectors.productPrice);
-    const priceWrapperElement = this.container.querySelector(
-      selectors.priceWrapper,
-    );
-
-    priceWrapperElement.classList.toggle(classes.hide, !variant);
-
+  renderPrice(variant, qty) {
+    const priceElement = document.querySelector(selectors.productPrice);
     if (variant) {
-      priceElement.innerText = formatMoney(variant.price, theme.moneyFormat);
+      priceElement.innerText = formatMoney(variant.price * qty, theme.moneyFormat);
     }
   },
 
-  renderComparePrice(variant) {
+  renderComparePrice(variant, qty) {
     if (!variant) {
       return;
     }
 
-    const comparePriceElement = this.container.querySelector(
+    const comparePriceElement = document.querySelector(
       selectors.comparePrice,
     );
-    const compareTextElement = this.container.querySelector(
+    const compareTextElement = document.querySelector(
       selectors.comparePriceText,
     );
 
@@ -244,15 +270,15 @@ register('product', {
 
     if (variant.compare_at_price > variant.price) {
       comparePriceElement.innerText = formatMoney(
-        variant.compare_at_price,
+        variant.compare_at_price * qty,
         theme.moneyFormat,
       );
-      compareTextElement.classList.remove(classes.hide);
-      comparePriceElement.classList.remove(classes.hide);
+      compareTextElement.classList.remove(classes.hidden);
+      comparePriceElement.classList.remove(classes.hidden);
     } else {
       comparePriceElement.innerText = '';
-      compareTextElement.classList.add(classes.hide);
-      comparePriceElement.classList.add(classes.hide);
+      compareTextElement.classList.add(classes.hidden);
+      comparePriceElement.classList.add(classes.hidden);
     }
   },
 
