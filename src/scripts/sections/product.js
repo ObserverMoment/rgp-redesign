@@ -45,8 +45,8 @@ let flickityGallery = null;
 let flickityNav = null;
 
 // Must be cdn.shopify.com/s/files/1/0168/1113/0934/products/W_3985{_dimension}.jpg?v=1563988014.
-const galleryImageSize = '_750x750';
-const thumbnailImageSize = '_130x130';
+const galleryImageSize = '_850x850';
+const thumbnailImageSize = '_140x140';
 
 const imagesElem = document.querySelector(selectors.imagesElem);
 const galleryElem = document.querySelector(selectors.galleryElem);

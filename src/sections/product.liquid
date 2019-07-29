@@ -1,8 +1,10 @@
 <section data-section-id="{{ section.id }}" data-section-type="product" class="product-single">
 
   {%- assign current_variant = product.selected_or_first_available_variant -%}
+  {%- assign info_sections = product.description | split: '##section' -%}
+  <h1 class="product-single__heading">{{ product.title }}</h1>
 
-  <div class="product-single__upper">
+  <div class="product-single">
     <div class="product-single__images hidden" data-images-elem>
       {% if product.images.size > 1 %}
         <div class="product-single__images__gallery"
@@ -49,18 +51,6 @@
     </div>
 
     <div class="product-single__info">
-      <h1>{{ product.title }}</h1>
-
-      {% if product.tags.size > 1 %}
-        <div class="product-single__info__tags">
-          {% for tag in product.tags %}
-            <div class="product-single__info__tags__tag">
-              {{ tag }}
-            </div>
-          {% endfor %}
-        </div>
-      {% endif %}
-
       <div class="product-single__info__add-form">
         {% form 'product', product, data-product-form: '', data-product-handle: product.handle, data-enable-history-state: 'true' %}
           {% unless product.has_only_default_variant %}
@@ -99,7 +89,7 @@
 
           <div class="product-single__info__add-form__quantity">
             <label for="Quantity">{{ 'products.product.quantity' | t }}</label>
-            <div class="product-single__info__add-form__quantity__inputs">
+            <div class="product-single__add-form__quantity__inputs">
               <i data-decrement-product-qty class="far fa-minus-square"></i>
               <input type="number" id="add-product-quantity-input" name="quantity" value="1" min="1">
               <i data-increment-product-qty class="far fa-plus-square"></i>
@@ -139,16 +129,72 @@
           </button>
         {% endform %}
       </div>
+
+      <div class="product-single__info__delivery-info">
+        <div class="">
+          <i class="fas fa-shipping-fast"></i>
+        </div>
+        Auto pull in delivery info somehow: <br />
+        Courier: DPD<br />
+        Dispatch: Usually same day when ordered by 2pm<br />
+        Ship time: Usually next working day<br />
+      </div>
+
+      <div class="product-single__info__custom-info">
+        <div class="">
+          <i class="fas fa-clipboard-list"></i>
+        </div>
+        {{ info_sections[0] | strip }}
+      </div>
+
+      <div class="product-single__info__trustbox-mini">
+        <div class="product-single__info__trustbox-mini__trustbox">
+          {{ 'tp-placeholder-2.png' | asset_url | img_tag: 'tp-screen' }}
+        </div>
+        <div class="product-single__info__trustbox-mini__return-icon">
+          <div>
+            <i class="fas fa-undo-alt"></i>
+          </div>
+          <div>
+            Stress free returns. Just send it back within 30 days for a full refund.
+          </div>
+        </div>
+      </div>
+
+      <div class="product-single__info__payment-icons">
+        <i class="fab fa-cc-visa"></i>
+        <i class="fab fa-cc-mastercard"></i>
+        <i class="fab fa-cc-amex"></i>
+        <i class="fab fa-cc-apple-pay"></i>
+        <i class="fab fa-cc-stripe"></i>
+        <i class="fab fa-cc-paypal"></i>
+      </div>
+
+    </div>
+
+      <!-- {% if product.tags.size > 1 %}
+        <div class="product-single__info__tags">
+          {% for tag in product.tags %}
+            <div class="product-single__info__tags__tag">
+              {{ tag }}
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %} -->
+
       {% comment %}
       {% if section.settings.show_share_buttons %}
         {% include 'social-sharing', share_title: product.title, share_permalink: product.url, share_image: product %}
       {% endif %}
       {% endcomment %}
+    <div class="product-single__details">
+      <div class="product-single__details__bullet-points">
+        {{ info_sections[1] | strip }}
+      </div>
+      <div class="product-single__details__description">
+        {{ info_sections[2] | strip }}
+      </div>
     </div>
-  </div>
-
-  <div class="product-single__lower">
-    {{ product.description }}
   </div>
 
 </section>
