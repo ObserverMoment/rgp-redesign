@@ -1,0 +1,56 @@
+{%- comment -%}
+  Responsive full width image with text area on the left and info overlay box on the right.
+{%- endcomment -%}
+
+<section data-section-id="{{ section.id }}" data-section-type="home-hero" class="home-hero">
+  <div class="home-hero__image">
+    {% if section.settings.image != blank %}
+      {% include 'responsive-image' with image: section.settings.image, max_width: 1800, max_height: 500 %}
+    {% else %}
+      {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+    {% endif %}
+  </div>
+  <div class="home-hero__text">
+    <div class="home-hero__text__title">
+      <h1>{{ section.settings.title }}</h1>
+    </div>
+    <div class="home-hero__text__content">
+      {{ section.settings.text }}
+    </div>
+  </div>
+  <div class="home-hero__overlay-card">
+    I will be a hero, baby baby - probably a trustbox!!
+  </div>
+</section>
+
+
+{% schema %}
+  {
+    "name": "Hero Image",
+    "settings": [
+      {
+        "type": "image_picker",
+        "id": "image",
+        "label": "Choose a hero image"
+      },
+      {
+        "type": "text",
+        "id": "title",
+        "label": "Heading",
+        "default": "A home hero"
+      },
+      {
+        "type": "richtext",
+        "id": "text",
+        "label": "Text content",
+        "default": "<p>My custom text with <strong>formatting!</strong></p>"
+      }
+    ],
+    "presets": [
+      {
+        "name": "Main hero image",
+        "category": "Hero Image"
+      }
+    ]
+  }
+{% endschema %}

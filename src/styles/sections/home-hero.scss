@@ -1,0 +1,36 @@
+@keyframes cooltest {
+  0% {
+    filter: hue-rotate(15deg) saturate(1) invert(45%);
+  }
+  50% {
+    filter: hue-rotate(165deg) saturate(20) invert(75%);
+  }
+  100% {
+    filter: hue-rotate(265deg) saturate(3) invert(25%);
+  }
+}
+
+.home-hero {
+  margin-top: -120px;
+  &__image {
+    img { animation: 20s cooltest infinite; }
+  }
+  &__text {
+    position: absolute;
+    top: 30%;
+    left: 5%;
+    color: white;
+    &__title {
+
+    }
+  }
+  &__overlay-card {
+    @include card;
+    position: absolute;
+    top: 30%;
+    right: 10%;
+    width: 300px;
+    height: 500px;
+    background: white;
+  }
+}

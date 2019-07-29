@@ -1,18 +1,40 @@
 .header {
   &-content {
+    color: white;
     display: flex;
     justify-content: space-between;
     margin: 0;
     height: 120px;
-    background-repeat: no-repeat;
-    background-position: center;
-    background-size: cover;
+    z-index: 10;
+    a {
+      color: white;
+    }
   }
   &-left {
     display: flex;
+    z-index: 5;
+    box-sizing: border-box;
+    &__logo-image {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+    }
+    &__main-nav {
+      margin-left: 250px;
+      margin-top: 8px;
+      ul {
+        list-style-type: none;
+        display: flex;
+        li {
+          margin-left: 10px;
+          a { text-decoration: none; }
+        }
+      }
+    }
   }
   &-right {
     display: flex;
+    z-index: 5;
   }
 }
 

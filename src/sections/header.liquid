@@ -10,7 +10,7 @@
   Theme Store optional settings
   - Home page only: only shows on the home page
 {%- endcomment -%}
-<section data-section-id="{{ section.id }}" data-section-type="header">
+<section data-section-id="{{ section.id }}" data-section-type="header" class="header">
   {%- if section.settings.announcement_bar_enabled -%}
     <div>
       {%- if section.settings.announcement_bar_home_page_only == false or template.name == 'index' -%}
@@ -28,27 +28,19 @@
   <header role="banner">
     <div class="header-content">
       <div class="header-left">
-        {% if template.name == 'index' %}
-          <h1>
-        {% else %}
-          <div class="h1">
-        {% endif %}
-            <a href="/" class="logo-image">
-              {% if section.settings.logo != blank %}
-                {% capture image_size %}{{ section.settings.logo_max_width }}x{% endcapture %}
-                <img src="{{ section.settings.logo | img_url: image_size }}"
-                    srcset="{{ section.settings.logo | img_url: image_size }} 1x, {{ section.settings.logo | img_url: image_size, scale: 2 }} 2x"
-                    alt="{{ section.settings.logo.alt | default: shop.name }}">
-              {% else %}
-                {{ shop.name }}
-              {% endif %}
-            </a>
-        {% if template.name == 'index' %}
-          </h1>
-        {% else %}
-          </div>
-        {% endif %}
-        <nav role="navigation">
+        <div class="header-left__logo-image">
+          <a href="/" class="">
+            {% if section.settings.logo != blank %}
+              {% capture image_size %}{{ section.settings.logo_max_width }}x{% endcapture %}
+              <img src="{{ section.settings.logo | img_url: image_size }}"
+                  srcset="{{ section.settings.logo | img_url: image_size }} 1x, {{ section.settings.logo | img_url: image_size, scale: 2 }} 2x"
+                  alt="{{ section.settings.logo.alt | default: shop.name }}">
+            {% else %}
+              {{ shop.name }}
+            {% endif %}
+          </a>
+        </div>
+        <nav role="navigation" class="header-left__main-nav">
           <ul>
             {% for link in linklists[section.settings.menu].links %}
               {% if link.links != blank %}
@@ -129,7 +121,7 @@
         </a>
       </div>
     </div>
-    
+
   </header>
 </section>
 

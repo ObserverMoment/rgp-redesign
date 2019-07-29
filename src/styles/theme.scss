@@ -23,7 +23,6 @@
 
 // Components
 @import './components/buttons';
-@import './components/hero-banner';
 @import './components/icons';
 @import './components/placeholders';
 @import './components/responsive-images';
@@ -31,7 +30,8 @@
 @import './components/social-sharing';
 
 // Sections
-@import 'sections/header';
+@import './sections/header';
+@import './sections/home-hero';
 @import './sections/blog-posts';
 @import './sections/collection-list';
 @import './sections/featured-collection';

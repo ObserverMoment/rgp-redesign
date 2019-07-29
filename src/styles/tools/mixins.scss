@@ -37,7 +37,7 @@
       opacity: $startOpacity;
     }
     100% {
-      transform: $endOpacity;
+      opacity: $endOpacity;
     }
   }
 }

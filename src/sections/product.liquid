@@ -172,7 +172,8 @@
 
     </div>
 
-      <!-- {% if product.tags.size > 1 %}
+      {% comment %}
+      {% if product.tags.size > 1 %}
         <div class="product-single__info__tags">
           {% for tag in product.tags %}
             <div class="product-single__info__tags__tag">
@@ -180,8 +181,9 @@
             </div>
           {% endfor %}
         </div>
-      {% endif %} -->
-
+      {% endif %}
+      {% endcomment %}
+      
       {% comment %}
       {% if section.settings.show_share_buttons %}
         {% include 'social-sharing', share_title: product.title, share_permalink: product.url, share_image: product %}
