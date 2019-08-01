@@ -11,8 +11,12 @@ import {formatMoney} from '@shopify/theme-currency';
 import {register} from '@shopify/theme-sections';
 import Flickity from 'flickity-as-nav-for';
 
+import {addItemsToCart} from '../utils/api';
+
 const classes = {
   hidden: 'hidden',
+  active: 'active',
+  flashOnce: 'flash-once',
   galleryItem: 'product-single__images__gallery__item',
   galleryItemImage: 'product-single__images__gallery__item__image',
   galleryNavItem: 'product-single__images__gallery__nav__item',
@@ -27,6 +31,11 @@ const attributes = {
 };
 
 const selectors = {
+  addProductForm: '[data-product-form]',
+  productQuantityInput: '[data-product-quantity-input]',
+  miniCartContent: '[data-cart-mini-content]',
+  miniCartQty: '[data-cart-mini-qty]',
+  miniCartToggle: '[data-cart-mini-toggle]',
   submitButton: '[data-submit-button]',
   submitButtonText: '[data-submit-button-text]',
   comparePrice: '[data-compare-price]',
@@ -38,7 +47,6 @@ const selectors = {
   galleryNavElem: '[data-nav]',
   increaseQtyIcon: '[data-increment-product-qty]',
   decreaseQtyIcon: '[data-decrement-product-qty]',
-  productQtyInput: 'add-product-quantity-input',
 };
 
 let flickityGallery = null;
@@ -76,7 +84,8 @@ register('product', {
   },
 
   initListeners() {
-    const inputElem = document.getElementById(selectors.productQtyInput);
+    // Quantity increment / decrement functionality.
+    const inputElem = document.querySelector(selectors.productQuantityInput);
 
     document.querySelector(selectors.increaseQtyIcon).addEventListener('click', () => {
       const newValue = parseInt(inputElem.value, 10) + 1;
@@ -90,6 +99,35 @@ register('product', {
       const newValue = parseInt(inputElem.value, 10) - 1;
       inputElem.setAttribute('value', newValue);
       this.updateQuantity(currentVariant, newValue);
+    });
+
+    // Ajax add to cart functionality.
+    document.querySelector(selectors.addProductForm).addEventListener('submit', async (event) => {
+      event.preventDefault();
+      // Get the quantity.
+      const quantity = document.querySelector(selectors.productQuantityInput).value;
+      // Get the variant id;
+      const id = currentVariant && currentVariant.id;
+      // Fetch request to post /cart/add.js
+      if (quantity > 0 && id) {
+        const addData = {id, quantity}
+        try {
+          const json = await addItemsToCart(addData);
+          console.log(json);
+          const cartData = await getCartData();
+          console.log(cartData);
+          // Get the new updated cart data.
+          // Save it to global data object
+          // Open mini cart.
+          const miniCartQtyElem = document.querySelector(selectors.miniCartQty);
+          const prevCartQty = parseInt(miniCartQtyElem.textContent, 10);
+          miniCartQtyElem.textContent = prevCartQty + parseInt(quantity, 10);
+          document.querySelector(selectors.miniCartContent).classList.add(classes.active);
+        } catch (err) {
+          // Need to handle errors such as when there is not enough stock vs how many they are adding - or whatever.
+          console.log(err);
+        }
+      }
     });
   },
 
@@ -108,7 +146,7 @@ register('product', {
 
   filterImagesByColour(colour) {
     // Hacky - currently using image alt in Shopify BE to define the colour!!
-    return this.productImages.filter((image) => image.alt.toLowerCase() === colour.toLowerCase());
+    return this.productImages.filter((image) => image.alt && image.alt.toLowerCase() === colour.toLowerCase());
   },
 
   removeAllChildren(element) {
@@ -215,7 +253,7 @@ register('product', {
     }
 
     // Get current quantity.
-    const qty = parseInt(document.getElementById(selectors.productQtyInput).value, 10);
+    const qty = parseInt(document.querySelector(selectors.productQuantityInput).value, 10);
     this.updateQuantity(currentVariant, qty);
 
     this.renderSubmitButton(currentVariant);

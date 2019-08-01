@@ -13,7 +13,8 @@
     "no-alert": 0,
     "no-console": 0,
     "no-new": 0,
-    "node/shebang": 0
+    "node/shebang": 0,
+    "camelcase": 0,
   },
   "globals": {
     "document": true,

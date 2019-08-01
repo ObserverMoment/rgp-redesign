@@ -5,6 +5,9 @@ import 'lazysizes/plugins/bgset/ls.bgset';
 import 'lazysizes';
 import 'lazysizes/plugins/respimg/ls.respimg';
 
+// Header is needed on every page
+import '../sections/header';
+
 import '../../styles/theme.scss';
 import '../../styles/theme.scss.liquid';
 

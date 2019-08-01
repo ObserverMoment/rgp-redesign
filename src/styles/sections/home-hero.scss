@@ -11,9 +11,9 @@
 }
 
 .home-hero {
-  margin-top: -120px;
+  margin-top: -80px;
   &__image {
-    img { animation: 20s cooltest infinite; }
+    img { max-height: 60vh; filter: hue-rotate(185deg) saturate(26) invert(5%); }
   }
   &__text {
     position: absolute;
@@ -22,6 +22,14 @@
     color: white;
     &__title {
 
+    }
+    &__content {
+      a {
+        text-decoration: none;
+        color: #25c26d;
+        font-weight: bold;
+        &:hover { text-decoration: underline; }
+      }
     }
   }
   &__overlay-card {

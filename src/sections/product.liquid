@@ -91,7 +91,7 @@
             <label for="Quantity">{{ 'products.product.quantity' | t }}</label>
             <div class="product-single__add-form__quantity__inputs">
               <i data-decrement-product-qty class="far fa-minus-square"></i>
-              <input type="number" id="add-product-quantity-input" name="quantity" value="1" min="1">
+              <input type="number" id="add-product-quantity-input" name="quantity" value="1" min="1" data-product-quantity-input>
               <i data-increment-product-qty class="far fa-plus-square"></i>
             </div>
           </div>
@@ -183,7 +183,7 @@
         </div>
       {% endif %}
       {% endcomment %}
-      
+
       {% comment %}
       {% if section.settings.show_share_buttons %}
         {% include 'social-sharing', share_title: product.title, share_permalink: product.url, share_image: product %}

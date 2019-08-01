@@ -26,18 +26,11 @@
   {%- endif -%}
 
   <header role="banner">
-    <div class="header-content">
+    <div class="header-content {% unless template.name == 'index' %}no-hero-image{% endunless %}">
       <div class="header-left">
         <div class="header-left__logo-image">
           <a href="/" class="">
-            {% if section.settings.logo != blank %}
-              {% capture image_size %}{{ section.settings.logo_max_width }}x{% endcapture %}
-              <img src="{{ section.settings.logo | img_url: image_size }}"
-                  srcset="{{ section.settings.logo | img_url: image_size }} 1x, {{ section.settings.logo | img_url: image_size, scale: 2 }} 2x"
-                  alt="{{ section.settings.logo.alt | default: shop.name }}">
-            {% else %}
-              {{ shop.name }}
-            {% endif %}
+            {% include 'rgp-logo' %}
           </a>
         </div>
         <nav role="navigation" class="header-left__main-nav">
@@ -72,6 +65,7 @@
       </div>
 
       <div class="header-right">
+        {% comment %}
         <form action="/search" method="get" role="search">
           <label for="Search-{{ section.id }}" class="label-hidden">
             {{ 'general.search.placeholder' | t }}
@@ -88,37 +82,90 @@
             <span class="icon-fallback-text">{{ 'general.search.submit' | t }}</span>
           </button>
         </form>
+        {% endcomment %}
+
+        <div class="header-right__help">
+          <div class="header-right__help__toggle" data-help-panel-toggle>
+            Help
+          </div>
+          <div class="header-right__help__content" data-help-panel-content>
+            <div class="header-right__help__content__close" data-help-panel-close>
+              <i class="far fa-times-circle"></i>
+            </div>
+            <div class="header-right__help__content__elements">
+              <div class="header-right__help__content__elements__message">
+                I am all the stuff and links
+              </div>
+              <div class="header-right__help__content__elements__flex-container">
+                These should all be snippets...
+                <div class="">
+                  List one
+                </div>
+                <div class="">
+                  List three
+                </div>
+                <div class="">
+                  List two
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
         {% if shop.customer_accounts_enabled %}
-          <ul>
+          <div class="header-right__account">
             {% if customer %}
-              <li>
-                {% if customer.first_name != blank %}
-                  {% capture first_name %}<a href="/account">{{ customer.first_name }}</a>{% endcapture %}
-                  {{ 'layout.customer.logged_in_as_html' | t: first_name: first_name }}
-                {% else %}
-                  <a href="/account">{{ 'layout.customer.account' | t }}</a>
-                {% endif %}
-              </li>
-              <li>
-                {{ 'layout.customer.log_out' | t | customer_logout_link }}
-              </li>
+              {% if customer.first_name != blank %}
+                {% capture first_name %}<a href="/account">{{ customer.first_name }}</a>{% endcapture %}
+                {{ 'layout.customer.logged_in_as_html' | t: first_name: first_name }}
+              {% else %}
+                <a href="/account">{{ 'layout.customer.account' | t }}</a>
+              {% endif %}
+              {{ 'layout.customer.log_out' | t | customer_logout_link }}
             {% else %}
-              <li>
-                {{ 'layout.customer.log_in' | t | customer_login_link }}
-              </li>
-              <li>
-                {{ 'layout.customer.create_account' | t | customer_register_link }}
-              </li>
+              <div class="header-right__account__toggle" data-account-panel-toggle>
+                My account
+              </div>
+              <div class="header-right__account__content" data-account-panel-content>
+                <div class="header-right__account__content__close" data-account-panel-close>
+                  <i class="far fa-times-circle"></i>
+                </div>
+                <div class="header-right__account__content__elements">
+                  <div class="header-right__account__content__elements__message">
+                    Create an account or log in to view your orders and personal information.
+                  </div>
+                  <div class="header-right__account__content__elements__flex-container">
+                    <div class="header-right__account__content__links">
+                      {{ 'layout.customer.log_in' | t | customer_login_link }}
+                    </div>
+                    <div class="header-right__account__content__links">
+                      {{ 'layout.customer.create_account' | t | customer_register_link }}
+                    </div>
+                  </div>
+                </div>
+              </div>
             {% endif %}
-          </ul>
+          </div>
         {% endif %}
 
-        <a href="/cart">
-          {% include 'icon-cart' %}
-          {{ 'layout.cart.title' | t }}
-          ({{ cart.item_count }} {{ 'layout.cart.items_count' | t: count: cart.item_count }})
-        </a>
+        <div class="header-right__cart">
+          <div class="header-right__cart__info" data-cart-mini-toggle>
+            <div class="header-right__cart__info__icon">
+              {% include 'icon-cart' %}
+            </div>
+            <div class="header-right__cart__info__quantity" data-cart-mini-qty>
+              {{ cart.item_count }}
+            </div>
+          </div>
+          <div class="header-right__cart__popup" data-cart-mini-content>
+            <div class="header-right__cart__popup__close" data-cart-mini-close>
+              <i class="far fa-times-circle"></i>
+            </div>
+            {% include 'mini-cart' %}
+            <a href="/cart">Go to cart page</a>
+          </div>
+        </div>
+
       </div>
     </div>
 
@@ -169,21 +216,6 @@
       {
         "type": "header",
         "content": "Header"
-      },
-      {
-        "type": "image_picker",
-        "id": "logo",
-        "label": "Logo image"
-      },
-      {
-        "type": "range",
-        "id": "logo_max_width",
-        "min": 50,
-        "max": 450,
-        "step": 10,
-        "unit": "px",
-        "label": "Custom logo width",
-        "default": 250
       },
       {
         "type": "link_list",
