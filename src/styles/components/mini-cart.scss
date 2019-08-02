@@ -3,4 +3,11 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  &__line {
+    display: flex;
+    height: 150px;
+    &__image {
+      width: 100px;
+    }
+  }
 }

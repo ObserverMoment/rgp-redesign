@@ -61,7 +61,8 @@
   border: 0px solid rgba(80, 112, 133, 0.4);
   box-shadow: 0px 0px 0px 0px rgba(55, 69, 79, 0.4);
   &.active {
-    max-height: 800px;
+    height: 100%;
+    max-height: 600px;
     padding: 25px;
     border-width: 1px;
     box-shadow: 1px 1px 4px 1px rgba(55, 69, 79, 0.4);
@@ -96,6 +97,8 @@
     }
   }
 }
+
+// Styles begin.
 .header {
   &-content {
     color: white;
@@ -208,7 +211,7 @@
       }
       &__popup {
         @include mini-cart-dropdown;
-        width: 500px;
+        width: 800px;
       }
     }
   }

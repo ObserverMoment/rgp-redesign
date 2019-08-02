@@ -4,7 +4,9 @@
     "plugin:shopify/jquery"
   ],
   "env": {
-    "jest": true
+    "jest": true,
+    "node": true,
+    "browser": true,
   },
   "rules": {
     "babel/no-invalid-this": 0,

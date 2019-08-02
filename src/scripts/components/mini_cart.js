@@ -1,8 +1,8 @@
-import {getCartData} from '../utils/api'
+import {getCartData} from '../utils/api';
 
 const getElements = {
   miniCartContainer: () => document.querySelector('[data-mini-cart-container]'),
-}
+};
 
 const wrapperClass = 'mini-cart';
 
@@ -19,79 +19,102 @@ const classes = {
   removeLine: `${wrapperClass}__line__remove-line`,
 };
 
-/*
-  * @param {parent} = Element
-  * @param {children} = Element[]
-*/
-function makeNode({
-    elementType = 'DIV', className = '', innerHTML = null, attributes = null, parent = null, children = null,
-  }) {
-  // Make node.
-  const node = document.createElement(elementType);
+function buildElement({nodeDef, parent}) {
+  console.log('nodeDef', nodeDef);
+  const {
+    type = 'DIV', className = '', innerHTML = null,
+    attributes = null,
+  } = nodeDef;
+  // Make the node.
+  const node = document.createElement(type);
   node.className = className;
 
-  // Append to parent if exists.
-  if (parent) {
-    parent.appendChild(node);
-  }
-
-  if (innerHTML) {
-    node.innerHTML = innerHTML;
-  }
-
+  // Add all the attributes (props).
   if (attributes) {
     Object.entries(attributes).forEach(([key, value]) => {
       node.setAttribute(key, value);
     });
   }
 
-  // Append children if exist.
-  if (children) {
-    children.forEach((child) => {
-      node.appendChild(child);
-    });
+  // Insert the content - this should usually just be text.
+  if (innerHTML) {
+    node.innerHTML = innerHTML;
   }
+
+  // Append to parent.
+  if (!parent) {
+    throw Error('A parent is required to make a node - make sure you have passed a parent element via [parent] attribute');
+  }
+  parent.appendChild(node);
+
   return node;
+}
+
+/*
+  * @param {parent} = Element
+  * @param {children} = Element[]
+*/
+function makeNode({Node, quantity = 1, parent}) {
+  const {
+     root = null, children = null,
+  } = Node;
+
+  try {
+    if (root) {
+      if (!children) {
+        throw Error('You must provide some children for the root element');
+      }
+      children.forEach((child) => makeNode({Node: child, parent: root}));
+    } else {
+      // Handle multiple identical siblings.
+      let i = 1;
+      while (i <= quantity) {
+        const newNode = buildElement({nodeDef: Node.Node, parent});
+        if (children) {
+          children.forEach((child) => makeNode({Node: child, parent: newNode}));
+        }
+        i++;
+      }
+    }
+  } catch (err) {
+    console.log(err);
+  }
 }
 
 async function renderMiniCart() {
   const data = await getCartData();
   const miniCartContainer = getElements.miniCartContainer();
 
-  const containerChildren = data.items
-    .map(({featured_image, product_title, variant_title, quantity, final_price, final_line_price}) => {
-
-      const infoUnitChildren = [
-        makeNode({className: classes.unitCost, innerHTML: final_price}),
-        makeNode({className: classes.infoUnitQuantity, innerHTML: quantity}),
-      ];
-
-      const infoChildren = [
-        makeNode({className: classes.infoTitle, innerHTML: `${product_title} (${variant_title})`}),
-        makeNode({className: classes.infoUnit, children: infoUnitChildren}),
-      ];
-
-      const imageAttributes = {
-        src: featured_image.url,
-      };
-
-      const imageChildren = [
-        makeNode({elementType: 'IMG', className: classes.imageElem, attributes: imageAttributes}),
-      ];
-
-      const lineChildren = [
-        makeNode({className: classes.imageWrapper, children: imageChildren}),
-        makeNode({className: classes.info, children: infoChildren}),
-        makeNode({className: classes.totalPrice, innerHTML: final_line_price}),
-      ];
-
-      const cartLine = makeNode({className: classes.cartLine, parent: miniCartContainer, children: lineChildren});
-      return cartLine;
-    });
-
-  containerChildren.forEach((child) => {
-    miniCartContainer.appendChild(child);
+  makeNode({
+    Node: {
+      root: miniCartContainer,
+      children: data.items
+        .map(({featured_image, product_title, variant_title, quantity, final_price, final_line_price}) => (
+          {
+            Node: {className: classes.cartLine}, children: [
+              {
+                Node: {className: classes.imageWrapper}, children: [
+                  {Node: {type: 'IMG', className: classes.imageElem, attributes: {src: featured_image.url}}},
+                ],
+              },
+              {
+                Node: {className: classes.info}, children: [
+                  {Node: {className: classes.infoTitle, innerHTML: `${product_title} (${variant_title})`}},
+                  {Node: {className: classes.infoUnit}, children: [
+                    {Node: {className: classes.unitCost, innerHTML: final_price}},
+                    {Node: {className: classes.infoUnitQuantity, innerHTML: quantity}},
+                  ]},
+                ],
+              },
+              {
+                Node: {className: classes.totalPrice, innerHTML: final_line_price},
+              },
+            ],
+          }
+        )),
+    },
   });
+
 }
 
 export {renderMiniCart};

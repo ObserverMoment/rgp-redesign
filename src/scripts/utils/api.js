@@ -1,5 +1,3 @@
-import fetch from 'node-fetch';
-
 async function getCartData() {
   const res = await fetch('/cart.js', {
     headers: {
