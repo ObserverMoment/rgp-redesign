@@ -47,56 +47,6 @@
   }
 }
 
-@mixin mini-cart-dropdown {
-  position: fixed;
-  top: 10px;
-  right: 10px;
-  height: 0;
-  background: white;
-  color: black;
-  transition: height 0.3s ease-out, padding 0.1s ease-out, border-width 0.4s ease-out;
-  border-radius: 2px;
-  overflow: hidden;
-  padding: 0 25px;
-  border: 0px solid rgba(80, 112, 133, 0.4);
-  box-shadow: 0px 0px 0px 0px rgba(55, 69, 79, 0.4);
-  &.active {
-    height: 100%;
-    max-height: 600px;
-    padding: 25px;
-    border-width: 1px;
-    box-shadow: 1px 1px 4px 1px rgba(55, 69, 79, 0.4);
-    overflow-y: scroll;
-  }
-  &__elements {
-    opacity: 0;
-    transform: translateY(20px);
-    transition: opacity 0.4s ease-out, transform 0.6s ease-out;
-    color: $color-body-text-1;
-    &__flex-container {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-    a {
-      color: $color-body-text-1;
-      text-decoration: none;
-    }
-  }
-  &.active &__elements { opacity: 1; transform: translateY(0); }
-  &__close {
-    position: absolute;
-    top: -5px;
-    right: 6px;
-    font-size: 1.8em;
-    color: #444444;
-    cursor: pointer;
-    transition: 0.2s color;
-    &:hover {
-      color: black;
-    }
-  }
-}
 
 // Styles begin.
 .header {
@@ -105,10 +55,13 @@
     display: flex;
     justify-content: space-between;
     margin: 0;
-    height: 80px;
-    z-index: 10;
+    height: $header-height;
+    z-index: 20;
+    position: fixed;
+    width: 100%;
     &.no-hero-image {
       background: #212121;
+      margin-top: -$header-height;
     }
   }
   &-left {
@@ -117,7 +70,7 @@
     box-sizing: border-box;
     &__logo-image {
       position: absolute;
-      top: 20px;
+      top: 26%;
       left: 20px;
       width: 220px;
       .rgp-logo {
@@ -131,7 +84,7 @@
     }
     &__main-nav {
       margin-left: 210px;
-      margin-top: 9px;
+      margin-top: 10px;
       ul {
         list-style-type: none;
         display: flex;
@@ -156,7 +109,9 @@
     &__help {
       &__toggle {
         cursor: pointer;
-        &:hover { border-bottom: 1px solid #c2c2c2; }
+        transition: border-color 0.5s;
+        border-bottom: 1px solid transparent;
+        &:hover { border-color: #c2c2c2; transition: border-color 0.5s; }
       }
       &__content {
         @include header-info-dropdown;
@@ -166,7 +121,9 @@
     &__account {
       &__toggle {
         cursor: pointer;
-        &:hover { border-bottom: 1px solid #c2c2c2; }
+        transition: border-color 0.5s;
+        border-bottom: 1px solid transparent;
+        &:hover { border-color: #c2c2c2; transition: border-color 0.5s; }
       }
       &__content {
         @include header-info-dropdown;
@@ -195,8 +152,12 @@
         padding: 6px;
         &:hover { cursor: pointer; background: #807f7f; }
         &__icon {
+          display: flex;
+          justify-content: center;
+          align-items: center;
           margin-right: 7px;
           color: #141414;
+          > i { font-size: 1.2em; }
         }
         &__quantity {
           color: $color-text-light-1;
@@ -210,8 +171,35 @@
         }
       }
       &__popup {
-        @include mini-cart-dropdown;
-        width: 800px;
+        position: fixed;
+        top: 0;
+        right: 0;
+        height: 100%;
+        max-height: 100vh;
+        overflow-y: scroll;
+        transition: transform 0.3s ease-out;
+        border-radius: 2px;
+        padding: 20px 25px 10px 25px;
+        border: 1px solid rgba(80, 112, 133, 0.4);
+        box-shadow: 1px 1px 4px 1px rgba(55, 69, 79, 0.4);
+        transform: translateX(600px);
+        background: $color-body;
+        color: $color-body-text-1;
+        &.active {
+          transform: translateX(0);
+        }
+        &__close {
+          position: absolute;
+          top: 0;
+          right: 12px;
+          font-size: 2.1em;
+          color: #444444;
+          cursor: pointer;
+          transition: 0.2s color;
+          &:hover {
+            color: black;
+          }
+        }
       }
     }
   }

@@ -11,7 +11,15 @@ import {formatMoney} from '@shopify/theme-currency';
 import {register} from '@shopify/theme-sections';
 import Flickity from 'flickity-as-nav-for';
 
-import {addItemsToCart} from '../utils/api';
+import {addItemsToCart, getCollectionData} from '../utils/api';
+
+async function getCollData(collectionHandle) {
+  const collections = await getCollectionData(collectionHandle);
+  console.log('collections', collections);
+  return collections;
+}
+
+getCollData('poker-tables');
 
 const classes = {
   hidden: 'hidden',
@@ -110,14 +118,10 @@ register('product', {
       const id = currentVariant && currentVariant.id;
       // Fetch request to post /cart/add.js
       if (quantity > 0 && id) {
-        const addData = {id, quantity}
+        const addData = {id, quantity};
         try {
-          const json = await addItemsToCart(addData);
-          console.log(json);
-          const cartData = await getCartData();
-          console.log(cartData);
-          // Get the new updated cart data.
-          // Save it to global data object
+          await addItemsToCart(addData);
+
           // Open mini cart.
           const miniCartQtyElem = document.querySelector(selectors.miniCartQty);
           const prevCartQty = parseInt(miniCartQtyElem.textContent, 10);

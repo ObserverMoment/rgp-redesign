@@ -3,11 +3,46 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  &__icon {
+    > i { font-size: 2em; }
+  }
+  > div { border-bottom: 1px solid #e8e8e8; }
   &__line {
     display: flex;
-    height: 150px;
+    height: 110px;
     &__image {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100px;
       width: 100px;
     }
+    &__info {
+      font-size: 0.8em;
+      padding: 10px;
+      max-width: 300px;
+      &__unit {
+        display: flex;
+        justify-content: flex-start;
+        &__price { font-weight: bold; margin-right: 12px; }
+        &__quantity { font-weight: bold; }
+      }
+    }
+    &__total-price {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      font-weight: bold;
+      font-size: 0.9em;
+    }
+  }
+  &__shipping-total, &__cart-total {
+    font-weight: bold;
+    color: #965260;
+    padding: 10px 0 10px 30px;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
   }
 }

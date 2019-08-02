@@ -16,3 +16,8 @@ html {
   padding: 0;
   margin: 0;
 }
+
+// Pushes it below the header.
+main {
+  margin-top: $header-height;
+}

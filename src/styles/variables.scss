@@ -71,3 +71,6 @@ $breakpoints: (
   $large-up '(min-width: #{$grid-large})',
   $widescreen '(min-width: #{$grid-widescreen})'
 );
+
+// Layout.
+$header-height: 80px;
