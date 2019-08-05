@@ -1,43 +1,43 @@
+// Define element type constants - all will be passed to createElement, except Root which must already be an element in the DOM.
+const elems = {
+  Root: 'root',
+  Div: 'div',
+  Span: 'span',
+  H1: 'h1',
+  H2: 'h2',
+  Img: 'img',
+  Ul: 'ul',
+  Li: 'li',
+  Link: 'a',
+};
+
 /*
- ** Example of tree definition structure.
- {
-   Node: {root: miniCartContainer},
-     children: data.items
-       .map(({featured_image, product_title, variant_title, quantity, final_price, final_line_price}) => (
-         {
-           Node: {className: classes.cartLine}, children: [
-             {
-               Node: {className: classes.imageWrapper}, children: [
-                 {Node: {type: 'IMG', className: classes.imageElem, attributes: {src: featured_image.url}}},
-               ],
-             },
-             {
-               Node: {className: classes.info}, children: [
-                 {Node: {className: classes.infoTitle, innerHTML: `${product_title} (${variant_title})`}},
-                 {Node: {className: classes.infoUnit}, children: [
-                   {Node: {className: classes.unitCost, innerHTML: final_price}},
-                   {Node: {className: classes.infoUnitQuantity, innerHTML: quantity}},
-                 ]},
-               ],
-             },
-             {
-               Node: {className: classes.totalPrice, innerHTML: final_line_price},
-             },
-           ],
-         }
-       )),
-   },
- }
+** Example of tree definition structure.
+const tree = [
+  Root, {rootElem: 'minicartContainer'}, [
+    Div, {className: 'somename', innerHTML: 'innerHTML', attributes: 'attributes'}, [
+      Img, {className: 'name', attributes: ''}, [
+        Ul, {className: 'unordered list', attributes: {'data-main-list': '', 'data-other-custom-attribute': 'anything'}}, [
+          Li, {className: 'list item', quantity: 9, classNameSuffix: 'index'},
+        ],
+      ],
+    ],
+  ],
+];
 */
 
-function buildElement({Node, parent}) {
+
+function buildElement({elementType, config, parent}) {
   const {
-    type = 'DIV', className = '', innerHTML = null,
+    className = null, innerHTML = null,
     attributes = null,
-  } = Node;
+  } = config;
   // Make the node.
-  const node = document.createElement(type);
-  node.className = className;
+  const node = document.createElement(elementType);
+
+  if (className) {
+    node.className = className;
+  }
 
   // Add all the attributes (props).
   if (attributes) {
@@ -53,27 +53,32 @@ function buildElement({Node, parent}) {
 
   // Append to parent.
   if (!parent) {
-    throw Error('A parent is required to make a node - make sure you have passed a parent element via [parent] attribute');
+    throw Error('A parent is required to make a node - make sure you have passed a parent element via {parent} attribute');
   }
   parent.appendChild(node);
 
   return node;
 }
 
-function render({Node, children, quantity = 1, parent}) {
+
+function render([elementType, config, children], parent) {
   try {
-    if (Node.root) {
-      if (!children || !Array.isArray(children) || children.length < 1) {
-        throw Error('You must provide some children for the root element');
+    if (elementType === 'root') {
+      if (!(config.rootElem instanceof Element || config.rootElem instanceof HTMLDocument)) {
+        throw Error('The top level of your tree must be a DOM element');
       }
-      children.forEach((child) => render({Node: child.Node, children: child.children, parent: Node.root}));
+      if (!children || !Array.isArray(children) || children.length < 1) {
+        throw Error('You must provide and array of children for the root element');
+      }
+      children.forEach(([_type, _config, _children]) => render([_type, _config, _children], config.rootElem));
     } else {
       // Handle multiple identical siblings.
       let i = 1;
-      while (i <= quantity) {
-        const newNode = buildElement({Node, parent});
+      const numSiblings = config.quantity || 1;
+      while (i <= numSiblings) {
+        const newNode = buildElement({elementType, config, parent});
         if (children) {
-          children.forEach((child) => render({Node: child.Node, children: child.children, parent: newNode}));
+          children.forEach(([_type_, _config_, _children_]) => render([_type_, _config_, _children_], newNode));
         }
         i++;
       }
@@ -100,4 +105,4 @@ function formatMoney(input, currencyCode) {
   }
 }
 
-export {render, formatMoney};
+export {render, formatMoney, elems};

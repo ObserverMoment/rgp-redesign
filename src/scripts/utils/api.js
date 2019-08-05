@@ -1,11 +1,17 @@
+import 'whatwg-fetch';
+
+const config = {
+  headers: {
+    'Content-Type': 'application/json',
+    'X-Requested-With': 'XMLHttpRequest',
+  },
+  credentials: 'same-origin',
+};
+
 async function getCollectionData(collectionHandle) {
-  const res = await fetch('/collections/poker-tables/products/riverboat-tl-poker-table-in-green-speed-cloth-and-folding-legs-213cm.json', {
-    headers: {
-      'Content-Type': 'application/json',
-      'X-Requested-With': 'XMLHttpRequest',
-    },
+  const res = await fetch(`/collections/${collectionHandle}/products.json`, {
+    ...config,
     method: 'GET',
-    credentials: 'same-origin',
   });
   const json = await res.json();
   return json;
@@ -13,29 +19,37 @@ async function getCollectionData(collectionHandle) {
 
 async function getCartData() {
   const res = await fetch('/cart.js', {
-    headers: {
-      'Content-Type': 'application/json',
-      'X-Requested-With': 'XMLHttpRequest',
-    },
+    ...config,
     method: 'GET',
-    credentials: 'same-origin',
   });
   const json = await res.json();
+  console.log('cart data', json);
   return json;
 }
 
 async function addItemsToCart(addData) {
   const res = await fetch('/cart/add.js', {
-    headers: {
-      'Content-Type': 'application/json',
-      'X-Requested-With': 'XMLHttpRequest',
-    },
+    ...config,
     method: 'POST',
     body: JSON.stringify(addData),
-    credentials: 'same-origin',
   });
   const json = await res.json();
   return json;
 }
 
-export {addItemsToCart, getCartData, getCollectionData};
+async function submitCartToCheckout() {
+  const res = await fetch('/cart/checkout.js', {
+    ...config,
+    method: 'POST',
+    redirect: 'follow',
+  });
+  console.log('cart post res', res);
+  if (res.redirected) {
+    window.location.href = res.url;
+  }
+  // const json = await res.json();
+  // console.log('cart post json', json);
+  // return json;
+}
+
+export {addItemsToCart, getCartData, getCollectionData, submitCartToCheckout};

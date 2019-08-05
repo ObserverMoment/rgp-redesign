@@ -118,7 +118,6 @@
             data-submit-button
             {% unless current_variant.available %}disabled="disabled"{% endunless %}
           >
-              <span><i class="fas fa-cart-plus"></i></span>
               <span data-submit-button-text>
                 {% if current_variant.available %}
                   {{ 'products.product.add_to_cart' | t }}
@@ -126,6 +125,7 @@
                   {{ 'products.product.sold_out' | t }}
                 {% endif %}
               </span>
+              <span class="product-single__info__submit__icon"><i class="fas fa-plus"></i></span>
           </button>
         {% endform %}
       </div>

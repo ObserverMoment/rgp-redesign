@@ -183,15 +183,33 @@ $radio-button-width: calc(#{$radio-button-height} * 1);
       font-family: $font-script-style;
     }
     &__submit {
-      background: $color-info-box-item-bg;
+      background: #161616;
       box-shadow: 1px 1px 10px 1px rgba(0,0,0,0.1);
       padding: 12px 28px;
       text-transform: uppercase;
       color: $color-text-light-1;
       border: none;
-      border-radius: 14px;
+      border-radius: 2px;
       margin: 10px;
-      i { margin-right: 8px;}
+      font-size: 0.9em;
+      width: 200px;
+      &__icon {
+        opacity: 0;
+        font-size: 0;
+        transition: all 0.5s;
+        margin-top: 5px;
+        transform: translate3d(-5px,-1px,0);
+        position: relative;
+        bottom: 4px;
+        left: -5px;
+      }
+      &:hover &__icon {
+        opacity: 1;
+        font-size: 0.7em;
+        transform: translate3d(0,0,0);
+        left: 2px;
+        bottom: 1px;
+      }
     }
     &__delivery-info {
       @include card;
