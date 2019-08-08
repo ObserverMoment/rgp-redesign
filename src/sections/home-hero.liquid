@@ -5,7 +5,11 @@
 <section data-section-id="{{ section.id }}" data-section-type="home-hero" class="home-hero">
   <div class="home-hero__image">
     {% if section.settings.image != blank %}
-      {% include 'responsive-image' with image: section.settings.image, max_width: 1800, max_height: 500 %}
+      {% include 'responsive-image' with
+        image: section.settings.image,
+        image_class: "home-hero__image__img"
+        max_width: 1800,
+        max_height: 600 %}
     {% else %}
       {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
     {% endif %}
@@ -19,7 +23,7 @@
     </div>
   </div>
   <div class="home-hero__overlay-card">
-    I will be a hero, baby baby - probably a trustbox!!
+    {% include 'trustbox-list-widget' %}
   </div>
 </section>
 

@@ -11,15 +11,9 @@ import {formatMoney} from '@shopify/theme-currency';
 import {register} from '@shopify/theme-sections';
 import Flickity from 'flickity-as-nav-for';
 
-import {addItemsToCart, getCollectionData} from '../utils/api';
+import {addItemsToCart} from '../utils/api';
 
-async function getCollData(collectionHandle) {
-  const collections = await getCollectionData(collectionHandle);
-  console.log('collections', collections);
-  return collections;
-}
-
-getCollData('poker-tables');
+import {renderMiniCart} from '../components/mini_cart';
 
 const classes = {
   hidden: 'hidden',
@@ -121,12 +115,18 @@ register('product', {
         const addData = {id, quantity};
         try {
           await addItemsToCart(addData);
+          await renderMiniCart();
 
-          // Open mini cart.
-          const miniCartQtyElem = document.querySelector(selectors.miniCartQty);
-          const prevCartQty = parseInt(miniCartQtyElem.textContent, 10);
-          miniCartQtyElem.textContent = prevCartQty + parseInt(quantity, 10);
-          document.querySelector(selectors.miniCartContent).classList.add(classes.active);
+          // Open mini cart after a short pause. Allow time for the add to cart button to change.
+          setTimeout(() => {
+            const miniCartQtyElem = document.querySelector(selectors.miniCartQty);
+            const prevCartQty = parseInt(miniCartQtyElem.textContent, 10);
+            miniCartQtyElem.textContent = prevCartQty + parseInt(quantity, 10);
+            document.querySelector(selectors.miniCartContent).classList.add(classes.active);
+          }, 100);
+
+          // Not complete!!!!!!!!!!! Need to change the add to cart button to 'added (tick)'. Plus disable the button.
+          // Then after a couple of seconds switch it back.
         } catch (err) {
           // Need to handle errors such as when there is not enough stock vs how many they are adding - or whatever.
           console.log(err);

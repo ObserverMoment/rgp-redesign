@@ -1,6 +1,6 @@
 @mixin header-info-dropdown {
   position: fixed;
-  top: 10px;
+  top: 5px;
   right: 10px;
   height: 0;
   background: white;
@@ -10,12 +10,12 @@
   overflow: hidden;
   padding: 0 25px;
   border: 0px solid rgba(80, 112, 133, 0.4);
-  box-shadow: 0px 0px 0px 0px rgba(55, 69, 79, 0.4);
+  box-shadow: 0px 0px 0px 0px rgba(0, 0, 0, 0);
   &.active {
-    height: 200px;
+    height: 205px;
     padding: 25px;
     border-width: 1px;
-    box-shadow: 1px 1px 4px 1px rgba(55, 69, 79, 0.4);
+    box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.3);
   }
   &__elements {
     opacity: 0;
@@ -35,7 +35,7 @@
   &.active &__elements { opacity: 1; transform: translateY(0); }
   &__close {
     position: absolute;
-    top: -5px;
+    top: -1px;
     right: 6px;
     font-size: 1.8em;
     color: #444444;
@@ -51,7 +51,7 @@
 // Styles begin.
 .header {
   &-content {
-    color: white;
+    color: #f3f5f0;
     display: flex;
     justify-content: space-between;
     margin: 0;
@@ -59,9 +59,11 @@
     z-index: 20;
     position: fixed;
     width: 100%;
+    background: white;
     &.no-hero-image {
-      background: #212121;
       margin-top: -$header-height;
+      color: $color-body-text-1;
+      box-shadow: 0 0 4px 1px rgba(0,0,0,0.1);
     }
   }
   &-left {
@@ -74,11 +76,12 @@
       left: 20px;
       width: 220px;
       .rgp-logo {
-        &-text {
-          fill: white;
-        }
-        &-highlight {
-          fill: #DAA528;
+        &-text { fill: white; }
+        &-highlight { fill: #DAA528; }
+      }
+      &.no-hero-image {
+        .rgp-logo {
+          &-text { fill: black; }
         }
       }
     }
@@ -99,6 +102,9 @@
           }
         }
       }
+      &.no-hero-image {
+        a { color: $color-body-text-1; }
+      }
     }
   }
   &-right {
@@ -115,7 +121,7 @@
       }
       &__content {
         @include header-info-dropdown;
-        width: calc(100vw - 35px);
+        width: calc(100vw - 20px);
       }
     }
     &__account {
@@ -148,15 +154,16 @@
         align-items: center;
         transition: 0.3s all;
         border-radius: 2px;
-        background: #bbbbbb;
+        background: white;;
+        border: 1px solid $color-body-text-1;
         padding: 6px;
-        &:hover { cursor: pointer; background: #807f7f; }
+        &:hover { cursor: pointer; border-color: #0d0d0d; background: #006b5b; }
         &__icon {
           display: flex;
           justify-content: center;
           align-items: center;
           margin-right: 7px;
-          color: #141414;
+          color: #323d48;
           > i { font-size: 1.2em; }
         }
         &__quantity {
@@ -168,6 +175,7 @@
           align-items: center;
           width: 24px;
           height: 24px;
+          font-size: 0.9em;
         }
       }
       &__popup {

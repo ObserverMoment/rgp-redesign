@@ -28,12 +28,12 @@
   <header role="banner">
     <div class="header-content {% unless template.name == 'index' %}no-hero-image{% endunless %}">
       <div class="header-left">
-        <div class="header-left__logo-image">
+        <div class="header-left__logo-image {% unless template.name == 'index' %}no-hero-image{% endunless %}">
           <a href="/" class="">
             {% include 'rgp-logo' %}
           </a>
         </div>
-        <nav role="navigation" class="header-left__main-nav">
+        <nav role="navigation" class="header-left__main-nav {% unless template.name == 'index' %}no-hero-image{% endunless %}">
           <ul>
             {% for link in linklists[section.settings.menu].links %}
               {% if link.links != blank %}

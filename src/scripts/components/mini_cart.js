@@ -3,14 +3,15 @@ import {render, formatMoney, elems} from '../utils/Renderer';
 import {ShoppingBasket} from '../utils/icons';
 
 const getElements = {
+  // headerMinicartQty is rendered in header.liquid.
+  headerMinicartQty: () => document.querySelector('[data-cart-mini-qty]'),
   miniCartContainer: () => document.querySelector('[data-mini-cart-container]'),
   submitCartButton: () => document.querySelector('[data-mini-cart-checkout]'),
 };
 
 (function addListeners() {
   getElements.submitCartButton().addEventListener('click', async () => {
-    const res = await submitCartToCheckout();
-    console.log('res', res);
+    await submitCartToCheckout();
   });
 })();
 
@@ -38,9 +39,16 @@ const classes = {
 
 async function renderMiniCart() {
   const data = await getCartData();
+
+  getElements.headerMinicartQty().innerHTML = data.item_count;
   const miniCartContainer = getElements.miniCartContainer();
 
-  const totalShippingCost = 99900;
+  // Clear any previously rendered cart.
+  // !!NOTE: This is only safe to do if there are definitely no event listeners on its children!!
+  // Otherwise this would lead to memory leaks.
+  miniCartContainer.innerHTML = '';
+
+  const totalShippingCost = 'TODO';
 
   const totalCartPrice = data.items.reduce((acum, next) => {
     return acum + next.final_line_price;
@@ -51,7 +59,7 @@ async function renderMiniCart() {
   render([
     Root, {rootElem: miniCartContainer}, [
       [Div, {className: classes.icon, innerHTML: ShoppingBasket}],
-      [H2, {innerHTML: 'Review your basket'}],
+      [H2, {innerHTML: 'Your basket'}],
       ...data.items.map(
         ({featured_image, product_title, variant_title, quantity, final_price, final_line_price, url}) => (
           [Div, {className: classes.cartLine}, [

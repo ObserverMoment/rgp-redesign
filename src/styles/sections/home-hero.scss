@@ -13,11 +13,13 @@
 .home-hero {
   margin-top: -80px;
   &__image {
-    img { max-height: 60vh; filter: hue-rotate(185deg) saturate(26) invert(5%); }
+    height: 700px;
+    overflow-y: hidden;
+    &__img { filter: hue-rotate(185deg) saturate(86) invert(5%); }
   }
   &__text {
     position: absolute;
-    top: 30%;
+    top: 15%;
     left: 5%;
     color: white;
     &__title {
@@ -35,10 +37,10 @@
   &__overlay-card {
     @include card;
     position: absolute;
-    top: 30%;
-    right: 10%;
-    width: 300px;
-    height: 500px;
+    top: 100px;
+    right: 20px;
+    width: 600px;
+    height: 520px;
     background: white;
   }
 }

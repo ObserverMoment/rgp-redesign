@@ -23,7 +23,6 @@ async function getCartData() {
     method: 'GET',
   });
   const json = await res.json();
-  console.log('cart data', json);
   return json;
 }
 
@@ -37,19 +36,39 @@ async function addItemsToCart(addData) {
   return json;
 }
 
+// To remove an item pass quantity of zero. Can only update a single line quantity at a time.
+// @param {updateData} = { key: lineKey, quantity: newQuantity }
+async function updateCartLineQuantity(updateData) {
+  const res = await fetch('/cart/change.js', {
+    ...config,
+    method: 'POST',
+    body: JSON.stringify(updateData),
+  });
+  const json = await res.json();
+  return json;
+}
+
+// https://help.shopify.com/en/themes/development/getting-started/using-ajax-api#update-cart
+// Update endpoint for any of the cart data. can also update multiple things / lines at once.
+async function updateCart(updateData) {
+  const res = await fetch('/cart/update.js', {
+    ...config,
+    method: 'POST',
+    body: JSON.stringify(updateData),
+  });
+  const json = await res.json();
+  return json;
+}
+
 async function submitCartToCheckout() {
   const res = await fetch('/cart/checkout.js', {
     ...config,
     method: 'POST',
     redirect: 'follow',
   });
-  console.log('cart post res', res);
   if (res.redirected) {
     window.location.href = res.url;
   }
-  // const json = await res.json();
-  // console.log('cart post json', json);
-  // return json;
 }
 
-export {addItemsToCart, getCartData, getCollectionData, submitCartToCheckout};
+export {addItemsToCart, updateCartLineQuantity, updateCart, getCartData, getCollectionData, submitCartToCheckout};
