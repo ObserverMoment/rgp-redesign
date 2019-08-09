@@ -32,6 +32,7 @@
     "@shopify/theme-rte": "^1.0.0-alpha.7",
     "@shopify/theme-sections": "^1.1.0",
     "@shopify/theme-variants": "^1.0.0-alpha.8",
+    "eventemitter3": "^4.0.0",
     "flickity": "^2.2.1",
     "flickity-as-nav-for": "^2.0.1",
     "flickity-imagesloaded": "^2.0.0",

@@ -140,7 +140,7 @@ const classes = {
     });
   });
 
-  // Listen textarea user typing - automatic debounce api call.
+  // Listen textarea user typing - automatic debounced api call.
   getElements.orderNoteTextarea().addEventListener('keyup', debounce(2000, async (event) => {
     await updateCart({note: event.target.value});
     const confirmNoteSaved = getElements.confirmNoteSaved();

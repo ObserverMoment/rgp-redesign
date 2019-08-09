@@ -13,9 +13,8 @@
 .home-hero {
   margin-top: -80px;
   &__image {
-    height: 700px;
+    height: calc(100vh);
     overflow-y: hidden;
-    &__img { filter: hue-rotate(185deg) saturate(86) invert(5%); }
   }
   &__text {
     position: absolute;
@@ -40,7 +39,7 @@
     top: 100px;
     right: 20px;
     width: 600px;
-    height: 520px;
+    height: 720px;
     background: white;
   }
 }

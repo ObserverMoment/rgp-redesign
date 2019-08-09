@@ -26,14 +26,14 @@
   {%- endif -%}
 
   <header role="banner">
-    <div class="header-content {% unless template.name == 'index' %}no-hero-image{% endunless %}">
-      <div class="header-left">
-        <div class="header-left__logo-image {% unless template.name == 'index' %}no-hero-image{% endunless %}">
+    <div class="header-content {% unless template.name == 'index' %}no-hero-image{% endunless %}" data-header-content>
+      <div class="header-content__left">
+        <div class="header-content__left__logo-image">
           <a href="/" class="">
             {% include 'rgp-logo' %}
           </a>
         </div>
-        <nav role="navigation" class="header-left__main-nav {% unless template.name == 'index' %}no-hero-image{% endunless %}">
+        <nav role="navigation" class="header-content__left__main-nav">
           <ul>
             {% for link in linklists[section.settings.menu].links %}
               {% if link.links != blank %}
@@ -64,7 +64,7 @@
         </nav>
       </div>
 
-      <div class="header-right">
+      <div class="header-content__right">
         {% comment %}
         <form action="/search" method="get" role="search">
           <label for="Search-{{ section.id }}" class="label-hidden">
@@ -84,19 +84,19 @@
         </form>
         {% endcomment %}
 
-        <div class="header-right__help">
-          <div class="header-right__help__toggle" data-help-panel-toggle>
-            Help
+        <div class="header-content__right__help">
+          <div class="header-content__right__help__toggle" data-help-panel-toggle>
+            Info
           </div>
-          <div class="header-right__help__content" data-help-panel-content>
-            <div class="header-right__help__content__close" data-help-panel-close>
+          <div class="header-content__right__help__content" data-help-panel-content>
+            <div class="header-content__right__help__content__close" data-help-panel-close>
               <i class="far fa-times-circle"></i>
             </div>
-            <div class="header-right__help__content__elements">
-              <div class="header-right__help__content__elements__message">
+            <div class="header-content__right__help__content__elements">
+              <div class="header-content__right__help__content__elements__message">
                 I am all the stuff and links
               </div>
-              <div class="header-right__help__content__elements__flex-container">
+              <div class="header-content__right__help__content__elements__flex-container">
                 These should all be snippets...
                 <div class="">
                   List one
@@ -113,7 +113,7 @@
         </div>
 
         {% if shop.customer_accounts_enabled %}
-          <div class="header-right__account">
+          <div class="header-content__right__account">
             {% if customer %}
               {% if customer.first_name != blank %}
                 {% capture first_name %}<a href="/account">{{ customer.first_name }}</a>{% endcapture %}
@@ -123,22 +123,22 @@
               {% endif %}
               {{ 'layout.customer.log_out' | t | customer_logout_link }}
             {% else %}
-              <div class="header-right__account__toggle" data-account-panel-toggle>
+              <div class="header-content__right__account__toggle" data-account-panel-toggle>
                 My account
               </div>
-              <div class="header-right__account__content" data-account-panel-content>
-                <div class="header-right__account__content__close" data-account-panel-close>
+              <div class="header-content__right__account__content" data-account-panel-content>
+                <div class="header-content__right__account__content__close" data-account-panel-close>
                   <i class="far fa-times-circle"></i>
                 </div>
-                <div class="header-right__account__content__elements">
-                  <div class="header-right__account__content__elements__message">
+                <div class="header-content__right__account__content__elements">
+                  <div class="header-content__right__account__content__elements__message">
                     Create an account or log in to view your orders and personal information.
                   </div>
-                  <div class="header-right__account__content__elements__flex-container">
-                    <div class="header-right__account__content__links">
+                  <div class="header-content__right__account__content__elements__flex-container">
+                    <div class="header-content__right__account__content__links">
                       {{ 'layout.customer.log_in' | t | customer_login_link }}
                     </div>
-                    <div class="header-right__account__content__links">
+                    <div class="header-content__right__account__content__links">
                       {{ 'layout.customer.create_account' | t | customer_register_link }}
                     </div>
                   </div>
@@ -148,17 +148,17 @@
           </div>
         {% endif %}
 
-        <div class="header-right__cart">
-          <div class="header-right__cart__info" data-cart-mini-toggle>
-            <div class="header-right__cart__info__icon">
+        <div class="header-content__right__cart">
+          <div class="header-content__right__cart__info" data-cart-mini-toggle>
+            <div class="header-content__right__cart__info__icon">
               <i class="fas fa-shopping-basket"></i>
             </div>
-            <div class="header-right__cart__info__quantity" data-cart-mini-qty>
+            <div class="header-content__right__cart__info__quantity" data-cart-mini-qty>
               {{ cart.item_count }}
             </div>
           </div>
-          <div class="header-right__cart__popup" data-cart-mini-content>
-            <div class="header-right__cart__popup__close" data-cart-mini-close>
+          <div class="header-content__right__cart__popup" data-cart-mini-content>
+            <div class="header-content__right__cart__popup__close" data-cart-mini-close>
               <i class="far fa-times-circle"></i>
             </div>
             {% include 'mini-cart' %}

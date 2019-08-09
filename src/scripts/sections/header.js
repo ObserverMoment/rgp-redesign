@@ -3,14 +3,16 @@
  * ------------------------------------------------------------------------------
  * @namespace header
  */
-
 import {renderMiniCart} from '../components/mini_cart';
+import {scrollPosEmitter} from '../utils/global_events';
 
 const classes = {
   active: 'active',
+  noHeroImage: 'no-hero-image',
 };
 
 const selectors = {
+  headerContent: '[data-header-content]',
   accountPanelToggle: '[data-account-panel-toggle]',
   accountPanelClose: '[data-account-panel-close]',
   accountPanelContent: '[data-account-panel-content]',
@@ -33,7 +35,23 @@ function toggleShowContent(event, elem) {
   }
 }
 
+function updateHeaderStyle() {
+  const headerContent = document.querySelector(selectors.headerContent);
+  if (window.scrollY > 400) {
+    console.log('make header small and white');
+    headerContent.classList.add(classes.noHeroImage);
+  } else {
+    console.log('make header big');
+    headerContent.classList.remove(classes.noHeroImage);
+  }
+}
+
 function initEventListeners() {
+  // Subscribe updateHeaderStyle to the scroll event.
+  scrollPosEmitter.on('scrolling', () => {
+    updateHeaderStyle();
+  });
+
   const accountPanelContent = document.querySelector(selectors.accountPanelContent);
   const helpPanelContent = document.querySelector(selectors.helpPanelContent);
   const miniCartContent = document.querySelector(selectors.miniCartContent);

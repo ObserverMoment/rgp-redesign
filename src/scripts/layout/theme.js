@@ -14,6 +14,11 @@ import '../../styles/theme.scss.liquid';
 import {focusHash, bindInPageLinks} from '@shopify/theme-a11y';
 import {cookiesEnabled} from '@shopify/theme-cart';
 
+// Initialises global event listeners and emitters.
+import {setupGlobalEmitters} from '../utils/global_events';
+
+setupGlobalEmitters();
+
 // Common a11y fixes
 focusHash();
 bindInPageLinks();

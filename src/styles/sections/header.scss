@@ -59,156 +59,156 @@
     z-index: 20;
     position: fixed;
     width: 100%;
-    background: white;
-    &.no-hero-image {
-      margin-top: -$header-height;
-      color: $color-body-text-1;
-      box-shadow: 0 0 4px 1px rgba(0,0,0,0.1);
-    }
-  }
-  &-left {
-    display: flex;
-    z-index: 5;
-    box-sizing: border-box;
-    &__logo-image {
-      position: absolute;
-      top: 26%;
-      left: 20px;
-      width: 220px;
-      .rgp-logo {
-        &-text { fill: white; }
-        &-highlight { fill: #DAA528; }
-      }
-      &.no-hero-image {
+    background: none;
+    &__left {
+      display: flex;
+      z-index: 5;
+      box-sizing: border-box;
+      &__logo-image {
+        position: absolute;
+        top: 26%;
+        left: 20px;
+        width: 220px;
         .rgp-logo {
-          &-text { fill: black; }
+          &-text { fill: white; }
+          &-highlight { fill: #DAA528; }
         }
       }
-    }
-    &__main-nav {
-      margin-left: 210px;
-      margin-top: 10px;
-      ul {
-        list-style-type: none;
-        display: flex;
-        li {
-          margin-left: 20px;
-          a {
-            text-decoration: none;
-            border-bottom: 1px solid transparent;
-            transition: border-color 0.5s;
-            color: white;
-            &:hover { border-bottom: 1px solid #c2c2c2; }
+      &__main-nav {
+        margin-left: 210px;
+        margin-top: 10px;
+        ul {
+          list-style-type: none;
+          display: flex;
+          li {
+            margin-left: 20px;
+            a {
+              text-decoration: none;
+              border-bottom: 1px solid transparent;
+              transition: border-color 0.5s;
+              color: white;
+              &:hover { border-bottom: 1px solid #c2c2c2; }
+            }
           }
         }
       }
-      &.no-hero-image {
-        a { color: $color-body-text-1; }
+    }
+    &__right {
+      display: flex;
+      z-index: 5;
+      align-items: center;
+      > div { margin-right: 20px; }
+      &__help {
+        &__toggle {
+          cursor: pointer;
+          transition: border-color 0.5s;
+          border-bottom: 1px solid transparent;
+          &:hover { border-color: #c2c2c2; transition: border-color 0.5s; }
+        }
+        &__content {
+          @include header-info-dropdown;
+          width: calc(100vw - 20px);
+        }
+      }
+      &__account {
+        &__toggle {
+          cursor: pointer;
+          transition: border-color 0.5s;
+          border-bottom: 1px solid transparent;
+          &:hover { border-color: #c2c2c2; transition: border-color 0.5s; }
+        }
+        &__content {
+          @include header-info-dropdown;
+          width: 500px;
+          &__links {
+            height: 40px;
+            padding: 0 15px;
+            background: #242424;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 6px;
+            margin: 10px;
+            > a { color: white; font-fize: 0.6em; font-weight: bold; display: flex; justify-content: center; align-items: center; }
+          }
+        }
+      }
+      &__cart {
+        &__info {
+          display: flex;
+          justify-content: flex-end;
+          align-items: center;
+          transition: 0.3s all;
+          border-radius: 2px;
+          background: white;;
+          border: 1px solid $color-body-text-1;
+          padding: 6px;
+          &:hover { cursor: pointer; border-color: #0d0d0d; background: #006b5b; }
+          &__icon {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #323d48;
+            > i { font-size: 1.2em; }
+          }
+          &__quantity {
+            color: $color-text-light-1;
+            background: #043c7e;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 24px;
+            height: 24px;
+            font-size: 0.9em;
+            position: absolute;
+            top: 12px;
+            right: 12px;
+          }
+        }
+        &__popup {
+          position: fixed;
+          top: 0;
+          right: 0;
+          height: 100%;
+          max-height: 100vh;
+          overflow-y: scroll;
+          transition: transform 0.3s ease-out;
+          border-radius: 2px;
+          padding: 20px 25px 10px 25px;
+          border: 1px solid rgba(80, 112, 133, 0.4);
+          box-shadow: 1px 1px 4px 1px rgba(55, 69, 79, 0.4);
+          transform: translateX(600px);
+          background: $color-body;
+          color: $color-body-text-1;
+          &.active {
+            transform: translateX(0);
+          }
+          &__close {
+            position: absolute;
+            top: 0;
+            right: 12px;
+            font-size: 2.1em;
+            color: #444444;
+            cursor: pointer;
+            transition: 0.2s color;
+            &:hover {
+              color: black;
+            }
+          }
+        }
       }
     }
   }
-  &-right {
-    display: flex;
-    z-index: 5;
-    align-items: center;
-    > div { margin-right: 20px; }
-    &__help {
-      &__toggle {
-        cursor: pointer;
-        transition: border-color 0.5s;
-        border-bottom: 1px solid transparent;
-        &:hover { border-color: #c2c2c2; transition: border-color 0.5s; }
-      }
-      &__content {
-        @include header-info-dropdown;
-        width: calc(100vw - 20px);
-      }
-    }
-    &__account {
-      &__toggle {
-        cursor: pointer;
-        transition: border-color 0.5s;
-        border-bottom: 1px solid transparent;
-        &:hover { border-color: #c2c2c2; transition: border-color 0.5s; }
-      }
-      &__content {
-        @include header-info-dropdown;
-        width: 500px;
-        &__links {
-          height: 40px;
-          padding: 0 15px;
-          background: #242424;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          border-radius: 6px;
-          margin: 10px;
-          > a { color: white; font-fize: 0.6em; font-weight: bold; display: flex; justify-content: center; align-items: center; }
-        }
-      }
-    }
-    &__cart {
-      &__info {
-        display: flex;
-        justify-content: flex-end;
-        align-items: center;
-        transition: 0.3s all;
-        border-radius: 2px;
-        background: white;;
-        border: 1px solid $color-body-text-1;
-        padding: 6px;
-        &:hover { cursor: pointer; border-color: #0d0d0d; background: #006b5b; }
-        &__icon {
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          margin-right: 7px;
-          color: #323d48;
-          > i { font-size: 1.2em; }
-        }
-        &__quantity {
-          color: $color-text-light-1;
-          background: #043c7e;
-          border-radius: 50%;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          width: 24px;
-          height: 24px;
-          font-size: 0.9em;
-        }
-      }
-      &__popup {
-        position: fixed;
-        top: 0;
-        right: 0;
-        height: 100%;
-        max-height: 100vh;
-        overflow-y: scroll;
-        transition: transform 0.3s ease-out;
-        border-radius: 2px;
-        padding: 20px 25px 10px 25px;
-        border: 1px solid rgba(80, 112, 133, 0.4);
-        box-shadow: 1px 1px 4px 1px rgba(55, 69, 79, 0.4);
-        transform: translateX(600px);
-        background: $color-body;
-        color: $color-body-text-1;
-        &.active {
-          transform: translateX(0);
-        }
-        &__close {
-          position: absolute;
-          top: 0;
-          right: 12px;
-          font-size: 2.1em;
-          color: #444444;
-          cursor: pointer;
-          transition: 0.2s color;
-          &:hover {
-            color: black;
-          }
-        }
-      }
+  // .no-hero-image class is for any page with no hero image available as background. Or after Y scrolling.
+  &-content.no-hero-image {
+    margin-top: -$header-height;
+    color: $color-body-text-1;
+    box-shadow: 0 0 4px 1px rgba(0,0,0,0.1);
+    background: white;
+    a { color: $color-body-text-1; }
+    .rgp-logo {
+      &-text { fill: black; }
     }
   }
 }
