@@ -4,7 +4,9 @@
  * @namespace header
  */
 import {renderMiniCart} from '../components/mini_cart';
-import {scrollPosEmitter} from '../utils/global_events';
+import {scrollPosEmitter, events} from '../utils/global_events';
+
+const {SCROLLING} = events;
 
 const classes = {
   active: 'active',
@@ -37,20 +39,32 @@ function toggleShowContent(event, elem) {
 
 function updateHeaderStyle() {
   const headerContent = document.querySelector(selectors.headerContent);
-  if (window.scrollY > 400) {
-    console.log('make header small and white');
-    headerContent.classList.add(classes.noHeroImage);
+  const urlpath = window.location.pathname;
+  const scrollY = window.scrollY;
+  if (urlpath === '/') {
+    if (scrollY <= 60) {
+      headerContent.className = 'header-content no-bg';
+    } else if (scrollY > 60 && scrollY < 800) {
+      headerContent.className = 'header-content black-bg';
+    } else {
+      headerContent.className = 'header-content white-bg';
+    }
   } else {
-    console.log('make header big');
-    headerContent.classList.remove(classes.noHeroImage);
+    headerContent.className = 'header-content';
+  }
+
+  if (urlpath !== '/' && scrollY > 60) {
+    headerContent.classList.add('scrolled');
+  } else {
+    headerContent.classList.remove('scrolled');
   }
 }
 
 function initEventListeners() {
+  // Initialise header style onload.
+  updateHeaderStyle();
   // Subscribe updateHeaderStyle to the scroll event.
-  scrollPosEmitter.on('scrolling', () => {
-    updateHeaderStyle();
-  });
+  scrollPosEmitter.on(SCROLLING, updateHeaderStyle);
 
   const accountPanelContent = document.querySelector(selectors.accountPanelContent);
   const helpPanelContent = document.querySelector(selectors.helpPanelContent);

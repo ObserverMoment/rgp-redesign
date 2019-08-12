@@ -1,5 +1,6 @@
 import {getCartData, submitCartToCheckout} from '../utils/api';
 import {render, formatMoney, elems} from '../utils/Renderer';
+import {MiniCartLine} from './mini_cart_line';
 import {ShoppingBasket} from '../utils/icons';
 
 const getElements = {
@@ -54,30 +55,13 @@ async function renderMiniCart() {
     return acum + next.final_line_price;
   }, 0);
 
-  const {Root, Div, H2, Img, Span, Link} = elems;
+  const {Root, Div, H2, Span} = elems;
 
   render([
     Root, {rootElem: miniCartContainer}, [
       [Div, {className: classes.icon, innerHTML: ShoppingBasket}],
       [H2, {innerHTML: 'Your basket'}],
-      ...data.items.map(
-        ({featured_image, product_title, variant_title, quantity, final_price, final_line_price, url}) => (
-          [Div, {className: classes.cartLine}, [
-            [Div, {className: classes.imageWrapper}, [
-              [Img, {className: classes.imageElem, attributes: {src: featured_image.url}}],
-            ]],
-            [Div, {className: classes.info}, [
-              [Link, {attributes: {href: url}}, [
-                [Div, {className: classes.infoTitle, innerHTML: `${product_title} (${variant_title})`}],
-              ]],
-              [Div, {className: classes.infoUnit}, [
-                [Div, {className: classes.infoUnitPrice, innerHTML: `Per unit: ${formatMoney(final_price, 'GBP')}`}],
-                [Div, {className: classes.infoUnitQuantity, innerHTML: `Qty: ${quantity}`}],
-              ]],
-            ]],
-            [Div, {className: classes.totalLinePrice, innerHTML: formatMoney(final_line_price, 'GBP')}],
-          ]]),
-      ),
+      ...data.items.map((lineItemObj) => MiniCartLine(lineItemObj)),
       [Div, {className: classes.shippingTotal}, [
         [Span, {className: classes.shippingTotalTitle, innerHTML: 'Shipping'}],
         [Span, {className: classes.shippingTotalAmount, innerHTML: formatMoney(totalShippingCost, 'GBP')}],

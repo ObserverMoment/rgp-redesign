@@ -15,9 +15,7 @@ import {focusHash, bindInPageLinks} from '@shopify/theme-a11y';
 import {cookiesEnabled} from '@shopify/theme-cart';
 
 // Initialises global event listeners and emitters.
-import {setupGlobalEmitters} from '../utils/global_events';
-
-setupGlobalEmitters();
+import '../utils/global_events';
 
 // Common a11y fixes
 focusHash();

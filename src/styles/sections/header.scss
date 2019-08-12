@@ -1,16 +1,20 @@
 @mixin header-info-dropdown {
   position: fixed;
-  top: 5px;
+  top: 4px;
   right: 10px;
   height: 0;
   background: white;
   color: black;
-  transition: height 0.3s ease-out, padding 0.1s ease-out, border-width 0.4s ease-out;
+  transition:
+    height 0.6s cubic-bezier(0.19, 1, 0.22, 1),
+    padding 0.4s cubic-bezier(0.19, 1, 0.22, 1),
+    border-width 0.6s cubic-bezier(0.19, 1, 0.22, 1);
   border-radius: 2px;
   overflow: hidden;
   padding: 0 25px;
   border: 0px solid rgba(80, 112, 133, 0.4);
   box-shadow: 0px 0px 0px 0px rgba(0, 0, 0, 0);
+  z-index: 3;
   &.active {
     height: 205px;
     padding: 25px;
@@ -51,32 +55,39 @@
 // Styles begin.
 .header {
   &-content {
-    color: #f3f5f0;
+    color: $color-body-text-1;
     display: flex;
     justify-content: space-between;
-    margin: 0;
+    margin: 4px;
     height: $header-height;
-    z-index: 20;
+    z-index: 10;
     position: fixed;
-    width: 100%;
-    background: none;
+    width: calc(100% - 8px);
+    background: white;
+    box-shadow: 0 0 4px 1px rgba(0,0,0,0.1);
+    transition: all 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
+    margin-top: -$header-height;
+    &.scrolled {
+      opacity: 0.96;
+      margin-top: calc(4px - #{$header-height});
+    }
     &__left {
       display: flex;
       z-index: 5;
       box-sizing: border-box;
+      align-items: center;
       &__logo-image {
         position: absolute;
-        top: 26%;
+        top: 15px;
         left: 20px;
         width: 220px;
         .rgp-logo {
-          &-text { fill: white; }
+          &-text { fill: $color-body-text-1; }
           &-highlight { fill: #DAA528; }
         }
       }
       &__main-nav {
         margin-left: 210px;
-        margin-top: 10px;
         ul {
           list-style-type: none;
           display: flex;
@@ -86,7 +97,7 @@
               text-decoration: none;
               border-bottom: 1px solid transparent;
               transition: border-color 0.5s;
-              color: white;
+              color: $color-body-text-1;
               &:hover { border-bottom: 1px solid #c2c2c2; }
             }
           }
@@ -107,7 +118,7 @@
         }
         &__content {
           @include header-info-dropdown;
-          width: calc(100vw - 20px);
+          width: calc(100vw - 35px);
         }
       }
       &__account {
@@ -162,18 +173,18 @@
             height: 24px;
             font-size: 0.9em;
             position: absolute;
-            top: 12px;
-            right: 12px;
+            top: 8px;
+            right: 10px;
           }
         }
-        &__popup {
+        &__sidebar {
           position: fixed;
           top: 0;
           right: 0;
           height: 100%;
           max-height: 100vh;
           overflow-y: scroll;
-          transition: transform 0.3s ease-out;
+          transition: transform 0.6s cubic-bezier(0.19, 1, 0.22, 1);
           border-radius: 2px;
           padding: 20px 25px 10px 25px;
           border: 1px solid rgba(80, 112, 133, 0.4);
@@ -200,15 +211,31 @@
       }
     }
   }
-  // .no-hero-image class is for any page with no hero image available as background. Or after Y scrolling.
-  &-content.no-hero-image {
-    margin-top: -$header-height;
-    color: $color-body-text-1;
-    box-shadow: 0 0 4px 1px rgba(0,0,0,0.1);
-    background: white;
-    a { color: $color-body-text-1; }
-    .rgp-logo {
-      &-text { fill: black; }
+  // homepage page header styling.
+  &-content {
+    &.no-bg, &.black-bg, &.white-bg {
+      color: white;
+      box-shadow: 0 0 4px 1px rgba(0,0,0,0.1);
+      background: transparent;
+      margin-top: 0;
+      a { color: white; }
+      .rgp-logo {
+        &-text { fill: white; }
+      }
+    }
+    &.black-bg {
+      background: black;
+      opacity: 0.95;
+    }
+    &.white-bg {
+      margin: 4px;
+      background: white;
+      opacity: 0.97;
+      width: calc(100% - 8px);
+      a { color: $color-body-text-1; }
+      .rgp-logo {
+        &-text { fill: $color-body-text-1; }
+      }
     }
   }
 }

@@ -26,7 +26,10 @@
   {%- endif -%}
 
   <header role="banner">
-    <div class="header-content {% unless template.name == 'index' %}no-hero-image{% endunless %}" data-header-content>
+    <div
+      class="header-content"
+      data-header-content
+    >
       <div class="header-content__left">
         <div class="header-content__left__logo-image">
           <a href="/" class="">
@@ -65,25 +68,6 @@
       </div>
 
       <div class="header-content__right">
-        {% comment %}
-        <form action="/search" method="get" role="search">
-          <label for="Search-{{ section.id }}" class="label-hidden">
-            {{ 'general.search.placeholder' | t }}
-          </label>
-
-          <input type="search"
-            name="q"
-            id="Search-{{ section.id }}"
-            value="{{ search.terms | escape }}"
-            placeholder="{{ 'general.search.placeholder' | t }}">
-
-          <button type="submit" class="button">
-            {% include 'icon-search' %}
-            <span class="icon-fallback-text">{{ 'general.search.submit' | t }}</span>
-          </button>
-        </form>
-        {% endcomment %}
-
         <div class="header-content__right__help">
           <div class="header-content__right__help__toggle" data-help-panel-toggle>
             Info
@@ -157,8 +141,8 @@
               {{ cart.item_count }}
             </div>
           </div>
-          <div class="header-content__right__cart__popup" data-cart-mini-content>
-            <div class="header-content__right__cart__popup__close" data-cart-mini-close>
+          <div class="header-content__right__cart__sidebar" data-cart-mini-content>
+            <div class="header-content__right__cart__sidebar__close" data-cart-mini-close>
               <i class="far fa-times-circle"></i>
             </div>
             {% include 'mini-cart' %}

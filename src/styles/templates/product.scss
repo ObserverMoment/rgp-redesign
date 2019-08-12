@@ -133,10 +133,10 @@ $radio-button-width: calc(#{$radio-button-height} * 1);
             color: white;
             border-radius: 2px;;
           }
-          &__value-Red:before { background: #842637; }
-          &__value-Blue:before { background: #283f88; }
-          &__value-Green:before { background: #3f7947; }
-          &__value-Black:before { background: #2b2b2b; }
+          &__value-Red:before { background: $variant-red; }
+          &__value-Blue:before { background: $variant-blue; }
+          &__value-Green:before { background: $variant-green; }
+          &__value-Black:before { background: $variant-black; }
         }
       }
       &__quantity {
