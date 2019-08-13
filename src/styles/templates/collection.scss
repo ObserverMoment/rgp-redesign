@@ -55,13 +55,12 @@
       }
       &__footer {
         padding: 0 8px;
+        color: $color-body-text-1;
         &__title {
-          color: $color-body-text-1;
           font-size: 0.9em;
           padding: 8px 0;
         }
         &__price {
-          color: $color-body-text-1;
           font-size: 1.1em;
         }
       }

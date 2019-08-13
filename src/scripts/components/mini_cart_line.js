@@ -26,7 +26,6 @@ const classes = {
 
 function MiniCartLine(lineItemObj) {
   const {featured_image, product_title, variant_title, quantity, final_price, final_line_price, url} = lineItemObj;
-  console.log('rendering line item', lineItemObj);
   return (
   [Div, {className: classes.cartLine}, [
     [Div, {className: classes.imageWrapper}, [

@@ -5,16 +5,18 @@
 </div>
 {% endcomment %}
 
-<div class="products-browser">
-  <header role="banner" class="products-browser__header">
-    <h1 class="products-browser__header__heading">Everything we have...</h1>
-    <div class="products-browser__header__filters" data-product-browser-filters>
+<div class="product-browser">
+  <header role="banner" class="product-browser__header">
+    <h1 class="product-browser__header__heading">Everything we have...</h1>
+    <div class="product-browser__header__filters" data-product-browser-filters>
       Probably filters and sorting.
     </div>
   </header>
 
-  <div class="products-browser__products" data-product-browser-products>
-    Products go here...
+  <div class="product-browser__products" data-product-browser-products>
+    {% comment %}
+      Rendered in javascript. See file ../scripts/components/product_browser.js.
+    {% endcomment %}
   </div>
 </div>
 

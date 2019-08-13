@@ -1,0 +1,39 @@
+.footer {
+  background: #ededed;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 10px 20px 5px 20px;
+  a { text-decoration: none; color: inherit; }
+  &__link-list {
+    list-style: none;
+    padding: 4px 8px;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin: 0 0 10px 0;
+    &__item {
+      padding: 4px;
+      margin: 0 8px;
+    }
+  }
+  &__copyright {
+
+  }
+  &__postscript {
+    margin: 15px 0 5px 0;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    &__payment-icons {
+      margin: 0 10px;
+      > i { font-size: 1.6em; margin: 0 10px; color: $color-main-green; }
+    }
+    &__trustbox {
+      margin: 0 10px;
+      padding-bottom: 8px;
+    }
+  }
+
+}

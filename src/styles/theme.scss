@@ -29,6 +29,8 @@
 @import './components/address-forms';
 @import './components/social-sharing';
 @import './components/mini-cart';
+@import './components/product-browser';
+@import './components/product-card';
 
 // Sections
 @import './sections/header';
@@ -37,6 +39,7 @@
 @import './sections/collection-list';
 @import './sections/featured-collection';
 @import './sections/image-with-text';
+@import './sections/footer';
 
 // Templates
 @import './templates/collection';
