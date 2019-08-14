@@ -30,7 +30,7 @@ const tree = [
 function buildElement({elementType, config, parent}) {
   const {
     className = null, innerHTML = null,
-    attributes = null,
+    attributes = null, listeners = null,
   } = config;
   // Make the node.
   const node = document.createElement(elementType);
@@ -43,6 +43,14 @@ function buildElement({elementType, config, parent}) {
   if (attributes) {
     Object.entries(attributes).forEach(([key, value]) => {
       node.setAttribute(key, value);
+    });
+  }
+
+  if (listeners) {
+    Object.entries(listeners).forEach(([eventType, fns]) => {
+      node.addEventListener(eventType, (event) => {
+        fns.forEach((func) => func(event));
+      });
     });
   }
 
@@ -60,7 +68,12 @@ function buildElement({elementType, config, parent}) {
   return node;
 }
 
-
+/*
+  @param elementType: see elems obj.
+  @param config: { className, attributes:{}, innerHTML: '', listeners: { event: [fn,fn], event: [fn,fn] } }
+  @param children: Array[ [elementType, config, children], [elementType, config, children] ]
+  @param parent: do not pass this arg - automatically passed during recursion.
+*/
 function render([elementType, config, children], parent) {
   try {
     if (elementType === 'root') {

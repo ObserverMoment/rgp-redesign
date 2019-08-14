@@ -8,33 +8,30 @@
     {% endif %}
   </header>
 
-  <div class="collection__products">
-    {% for product in collection.products %}
-    <div class="collection__products__product" data-product-id="{{ product.id }}" data-product>
-      <a href="{{ product.url | within: collection }}">
-        <div class="collection__products__product__info" data-product-id="{{ product.id }}" data-product-info>
-          {% comment %}
-            Elements created in JS. See file sections/collection.js
-          {% endcomment %}
-        </div>
-        <div class="collection__products__product__image">
-          {% if product.featured_image != blank %}
+  <div class="collection__products" data-collection-products>
 
-            {% include 'responsive-image' with
-              image: product.featured_image,
-              max_width: 700,
-              max_height: 800
-            %}
+    {% comment %}
+      Elements created in JS. See file sections/collection.js. Noscript fallback below.
+    {% endcomment %}
+  </div>
+
+  <noscript>
+    {% for product in collection.products %}
+    <div style="display:flex,flex-wrap:wrap">
+      <a href="{{ product.url | within: collection }}">
+        <div>
+          {% if product.featured_image != blank %}
+            <a href=" {{ product.featured_image }}"></a>
           {% else %}
-              <span>No image found</span>
+            <span>No image found</span>
           {% endif %}
         </div>
 
-        <div class="collection__products__product__footer">
-          <div class="collection__products__product__footer__title">
+        <div>
+          <div>
             {{ product.title }}
           </div>
-          <div class="collection__products__product__footer__price">
+          <div>
             {% if product.compare_at_price > product.price %}
 
               {% if product.price_varies %}
@@ -69,5 +66,6 @@
       </a>
     </div>
     {% endfor %}
-  </div>
+  </noscript>
+
 </div>

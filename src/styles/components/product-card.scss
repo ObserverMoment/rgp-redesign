@@ -1,3 +1,6 @@
+@include createSlideKeyFrames(product-card-slide, 0, 20px);
+@include createFadeKeyFrames(product-card-fadein, 0, 1);
+
 .product-card {
   box-sizing: border-box;
   margin: 5px;
@@ -9,6 +12,7 @@
   flex-direction: column;
   justify-content: space-between;
   height: 100%;
+  animation: product-card-fadein 0.4s ease-in-out, product-card-slide 0.5s ease-in-out;
   &__meta {
     display: flex;
     justify-content: space-between;
@@ -45,9 +49,12 @@
   }
   &__info {
     padding: 2px 12px;
+    height: 98px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
     &__title {
       font-size: 0.9em;
-      padding: 6px 0;
     }
     &__price {
       font-size: 1.1em;

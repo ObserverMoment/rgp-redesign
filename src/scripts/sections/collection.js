@@ -1,44 +1,37 @@
+import {ProductCard} from '../components/product_card';
 import {getCollectionData} from '../utils/api';
 import {render, elems} from '../utils/Renderer';
 
-const {Root, Div} = elems;
-
-const colours = ['Red', 'Green', 'Blue', 'Black'];
+const {Root, Link} = elems;
 
 const getElements = {
-  allProducts: () => document.querySelectorAll('[data-product]'),
-  allProductInfos: () => document.querySelectorAll('[data-product-info]'),
+  productsContainer: () => document.querySelector('[data-collection-products]'),
 };
 
 const classes = {
-  productColourIcon: 'collection__products__product__info__colour',
+  productLink: 'collection__products__product-link',
 };
 
 const url = window.location.pathname;
 const collectionHandle = url.split('/')[2];
-console.log(collectionHandle);
+
+function renderProductsList(data) {
+  const productsContainer = getElements.productsContainer();
+  const urlRoot = `/collections/${collectionHandle}/products`;
+  render([
+    Root, {rootElem: productsContainer}, data.products
+      .map((product) =>
+        [
+          Link,
+          {className: classes.productLink, attributes: {href: `${urlRoot}/${product.handle}`}},
+          [ProductCard(product, '500x500', true)],
+        ]),
+  ]);
+}
 
 async function initCollection() {
-  const collectionData = await getCollectionData(collectionHandle);
-  console.log('collectionData', collectionData);
-  if (collectionHandle !== 'poker-chips') {
-    // For each product - retrieve the available colour variants and render to the page.
-    const allProductInfos = getElements.allProductInfos();
-    console.log('allProductInfos', allProductInfos);
-    allProductInfos.forEach((productInfoElem) => {
-      // Get the variants of the product.
-      const productData = collectionData.products.find((product) => product.id === parseInt(productInfoElem.dataset.productId, 10));
-      console.log('productData', productData);
-      if (productData && productData.variants) {
-        const colourVariants = productData.variants.filter((variant) => colours.includes(variant.title)).map((colour) => colour.title);
-        render([
-          Root, {rootElem: productInfoElem}, colourVariants.map((title) => [
-            Div, {className: `${classes.productColourIcon} ${title}`},
-          ]),
-        ]);
-      }
-    });
-  }
+  const data = await getCollectionData(collectionHandle);
+  renderProductsList(data);
 }
 
 initCollection();

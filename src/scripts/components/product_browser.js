@@ -30,7 +30,11 @@ function renderProductsList(data) {
   render([
     Root, {rootElem: productsContainer}, data.products
       .map((product) =>
-        [Link, {className: classes.productLink, attributes: {href: `${urlRoot}/${product.handle}`}}, [ProductCard(product, '400x400')]]),
+        [
+          Link,
+          {className: classes.productLink, attributes: {href: `${urlRoot}/${product.handle}`}},
+          [ProductCard(product, '500x500', true)],
+        ]),
   ]);
 }
 
