@@ -1,4 +1,5 @@
 import {load} from '@shopify/theme-sections';
-import '../sections/product';
+import '../components/home_hero';
+import '../components/product_browser';
 
 load('*');

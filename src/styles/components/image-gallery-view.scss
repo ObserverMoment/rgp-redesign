@@ -1,0 +1,39 @@
+.image-gallery {
+  position: relative;
+  &__loading {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    color: $color-text-grey;
+    font-size: 0.9em;
+  }
+  &__actions {
+    opacity: 0;
+    z-index: 20;
+    position: absolute;
+    top: 60%;
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    transition: opacity 0.5s;
+    &.show-gallery-actions {
+      opacity: 1;
+    }
+    &__icon {
+      opacity: 1;
+      transition: opacity 0.5s;
+      &.hide-icon { opacity: 0; }
+      > i {
+        font-size: 30px;
+        color: #4982cc;
+        &:hover {
+          color: #0869e8;
+        }
+      }
+    }
+  }
+}

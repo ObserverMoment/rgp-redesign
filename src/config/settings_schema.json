@@ -19,15 +19,45 @@
       },
       {
         "type": "color",
-        "id": "color_body_text",
-        "label": "Text",
+        "id": "color_body_text_1",
+        "label": "Text 1",
         "default": "#161d25"
       },
       {
         "type": "color",
+        "id": "color_body_text_2",
+        "label": "Text 2",
+        "default": "#161d25"
+      },
+      {
+        "type": "color",
+        "id": "color_text_light_1",
+        "label": "Text 3",
+        "default": "#FFF"
+      },
+      {
+        "type": "color",
         "id": "color_main_bg",
-        "label": "Background",
-        "default": "#fff"
+        "label": "Main background",
+        "default": "#FFF"
+      },
+      {
+        "type": "color",
+        "id": "color_tag_item_bg",
+        "label": "Tag item BG",
+        "default": "#1f343b"
+      },
+      {
+        "type": "color",
+        "id": "color_product_info_bg",
+        "label": "Product page info BG",
+        "default": "#000000"
+      },
+      {
+        "type": "color",
+        "id": "color_info_box_item_bg",
+        "label": "Info box item BG",
+        "default": "#000000"
       }
     ]
   },
@@ -45,6 +75,12 @@
         "id": "font_body",
         "default": "helvetica_n4",
         "label": "Body text"
+      },
+      {
+        "type": "font_picker",
+        "id": "font_script_style",
+        "default": "helvetica_n4",
+        "label": "Script style text"
       }
     ]
   },

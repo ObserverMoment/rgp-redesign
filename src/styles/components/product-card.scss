@@ -1,0 +1,74 @@
+@include createSlideKeyFrames(product-card-slide, 0, 20px);
+@include createFadeKeyFrames(product-card-fadein, 0, 1);
+
+.product-card {
+  box-sizing: border-box;
+  margin: 5px;
+  padding: 10px;
+  border-radius: 2px;
+  box-shadow: 0 0px 4px rgba(0, 0, 0, 0.2);
+  background-color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+  animation: product-card-fadein 0.4s ease-in-out, product-card-slide 0.5s ease-in-out;
+  &__meta {
+    display: flex;
+    justify-content: space-between;
+    &__info {
+      > span {
+        padding: 2px 4px;
+        margin-right: 6px;
+        border: 1px solid transparent;
+        box-shadow: 0 0 1px 1px rgba(0,0,0,0.1);
+        font-size: 0.9em;
+        border-radius: 4px;
+        flex: 1 0 auto;
+      }
+    }
+    &__colours {
+      display: flex;
+      &__colour {
+        width: 25px;
+        height: 25px;
+        margin-left: 6px;
+        border-radius: 100%;
+        border: 1px solid white;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+        &.Red { background: $variant-red; }
+        &.Blue { background: $variant-blue; }
+        &.Green { background: $variant-green; }
+        &.Black { background: $variant-black; }
+      }
+    }
+  }
+  &__image {
+    display: flex;
+    justify-content: center;
+  }
+  &__info {
+    padding: 2px 12px;
+    height: 98px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    &__title {
+      font-size: 0.9em;
+    }
+    &__footer {
+      display: flex;
+      justify-content: space-between;
+      &__more {
+        opacity: 0;
+        transition: opacity 0.5s;
+      }
+      &__price {
+        font-size: 1.1em;
+      }
+    }
+  }
+  &:hover &__info__footer__more {
+    opacity: 1;
+  }
+}

@@ -1,0 +1,106 @@
+{% comment %}<div class="">
+  {% for product in collections.Everything.products %}
+    {{ product.title }}
+  {% endfor %}
+</div>
+{% endcomment %}
+
+<div class="product-browser">
+  <header role="banner" class="product-browser__header">
+    <h1 class="product-browser__header__heading">Everything we have...</h1>
+    <div class="product-browser__header__filters" data-product-browser-filters>
+      Probably filters and sorting.
+    </div>
+  </header>
+
+  <div class="product-browser__products" data-product-browser-products>
+    {% comment %}
+      Rendered in javascript. See file ../scripts/components/product_browser.js.
+    {% endcomment %}
+  </div>
+</div>
+
+{% schema %}
+  {
+    "name": "Homepage Products",
+    "settings": [
+      {
+        "type": "text",
+        "id": "title",
+        "label": "Heading",
+        "default": "Our full range"
+      },
+      {
+        "id": "collection",
+        "type": "collection",
+        "label": "Collection"
+      }
+    ],
+    "presets": [
+      {
+        "name": "Homepage Products",
+        "category": "Collection"
+      }
+    ]
+  }
+{% endschema %}
+
+{% comment %}
+{% for product in collections.Everything.products %}
+<div class="products-browser__products__product" data-product-id="{{ product.id }}" data-product>
+  <a href="{{ product.url | within: collection }}">
+    <div class="products-browser__products__product__info" data-product-id="{{ product.id }}" data-product-info>
+
+    </div>
+    <div class="products-browser__products__product__image">
+      {% if product.featured_image != blank %}
+        {% include 'responsive-image' with
+          image: product.featured_image,
+          max_width: 400,
+          max_height: 400
+        %}
+      {% else %}
+          <span>No image found</span>
+      {% endif %}
+    </div>
+
+    <div class="products-browser__products__product__footer">
+      <div class="products-browser__products__product__footer__title">
+        {{ product.title }}
+      </div>
+      <div class="products-browser__products__product__footer__price">
+        {% if product.compare_at_price > product.price %}
+
+          {% if product.price_varies %}
+            {%- assign sale_price = product.price | money -%}
+            {{ 'products.product.on_sale_from_html' | t: price: sale_price }}
+          {% else %}
+            {{ 'products.product.on_sale' | t }}
+            {{ product.price | money }}
+          {% endif %}
+
+        {% else %}
+
+          {% if product.price_varies %}
+            {%- assign price = product.price | money -%}
+            {{ 'products.product.from_text_html' | t: price: price }}
+          {% else %}
+            {{ product.price | money }}
+          {% endif %}
+
+        {% endif %}
+
+        {% if product.compare_at_price > product.price %}
+          <span class="visually-hidden">{{ 'products.product.regular_price' | t }}</span>
+          <s>{{ product.compare_at_price | money }}</s>
+        {% endif %}
+
+        {% unless product.available %}
+          {{ 'products.product.sold_out' | t }}
+        {% endunless %}
+      </div>
+    </div>
+  </a>
+</div>
+{% endfor %}
+{% endcomment %}

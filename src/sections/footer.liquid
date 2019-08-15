@@ -1,14 +1,16 @@
-<footer>
+<footer class="footer">
 
+  {% comment %}
   {%- assign social_accounts = 'Facebook, Twitter, Pinterest, Instagram, Snapchat, Tumblr, YouTube, Vimeo,' | split: ', ' -%}
-  <ul>
+  <ul class="footer__social-list">
     {% for social in social_accounts %}
       {%- assign social_handle = social | handleize -%}
       {% capture social_link %}social_{{ social_handle }}_link{% endcapture %}
       {% capture social_icon %}icon-{{ social_handle }}{% endcapture %}
 
+
       {% if settings[social_link] != blank %}
-        <li>
+        <li class="footer__social-list__item">
           <a href="{{ settings[social_link] }}" title="{{ 'layout.footer.social_platform' | t: name: shop.name, platform: social }}">
             {% include social_icon %}
             <span class="icon-fallback-text">{{ social }}</span>
@@ -31,18 +33,37 @@
       </ul>
     {% endunless %}
   {% endif %}
+  {% endcomment %}
 
-  {%- assign footer_linklist = section.settings.footer_linklist -%}
-  {% if linklists[footer_linklist].links.size > 0 %}
-    <ul>
-      {% for link in linklists[footer_linklist].links %}
-        <li><a href="{{ link.url }}">{{ link.title }}</a></li>
+  {%- assign footer_linklist_name = section.settings.footer_linklist -%}
+
+  {% if linklists[footer_linklist_name].links.size > 0 %}
+    <ul class="footer__link-list">
+      {% for link in linklists[footer_linklist_name].links %}
+        <li class="footer__link-list__item">
+          <a href="{{ link.url }}">{{ link.title }}</a>
+        </li>
       {% endfor %}
     </ul>
   {% endif %}
 
-  <div>
-    <small>{{ 'layout.footer.copyright' | t }} &copy; {{ 'now' | date: "%Y" }}, {{ shop.name | link_to: '/' }}. {{ powered_by_link }}</small>
+  <div class="footer__copyright">
+      {{ 'layout.footer.copyright' | t }} &copy; {{ 'now' | date: "%Y" }}, {{ shop.name | link_to: '/' }}.
+      Part of Future Markets Limited. UK Registered Company No. 6556958. VAT Registration Number 931546428.
+  </div>
+
+  <div class="footer__postscript">
+    <div class="footer__postscript__payment-icons">
+      <i class="fab fa-cc-visa"></i>
+      <i class="fab fa-cc-mastercard"></i>
+      <i class="fab fa-cc-amex"></i>
+      <i class="fab fa-cc-apple-pay"></i>
+      <i class="fab fa-cc-stripe"></i>
+      <i class="fab fa-cc-paypal"></i>
+    </div>
+    <div class="footer__postscript__trustbox">
+      {% include 'trustbox-micro-widget' %}
+    </div>
   </div>
 </footer>
 
@@ -53,14 +74,14 @@
       {
         "type": "link_list",
         "id": "footer_linklist",
-        "label": "First menu",
+        "label": "Footer menu",
         "default": "footer"
       },
       {
         "type": "checkbox",
         "id": "show_payment_icons",
         "label": "Show payment icons",
-        "default": false
+        "default": true
       }
     ]
   }

@@ -1,0 +1,245 @@
+@mixin header-info-dropdown {
+  position: fixed;
+  top: 4px;
+  right: 10px;
+  height: 0;
+  background: white;
+  color: black;
+  transition:
+    height 0.6s cubic-bezier(0.19, 1, 0.22, 1),
+    padding 0.4s cubic-bezier(0.19, 1, 0.22, 1),
+    border-width 0.6s cubic-bezier(0.19, 1, 0.22, 1);
+  border-radius: 2px;
+  overflow: hidden;
+  padding: 0 25px;
+  border: 0px solid rgba(80, 112, 133, 0.4);
+  box-shadow: 0px 0px 0px 0px rgba(0, 0, 0, 0);
+  z-index: 3;
+  &.active {
+    height: 205px;
+    padding: 25px;
+    border-width: 1px;
+    box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.3);
+  }
+  &__elements {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.4s ease-out, transform 0.6s ease-out;
+    color: $color-body-text-1;
+    &__flex-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    a {
+      color: $color-body-text-1;
+      text-decoration: none;
+    }
+  }
+  &.active &__elements { opacity: 1; transform: translateY(0); }
+  &__close {
+    position: absolute;
+    top: -1px;
+    right: 6px;
+    font-size: 1.8em;
+    color: #444444;
+    cursor: pointer;
+    transition: 0.2s color;
+    &:hover {
+      color: black;
+    }
+  }
+}
+
+
+// Styles begin.
+.header {
+  &-content {
+    color: $color-body-text-1;
+    display: flex;
+    justify-content: space-between;
+    margin: 4px;
+    height: $header-height;
+    z-index: 10;
+    position: fixed;
+    width: calc(100% - 8px);
+    background: white;
+    box-shadow: 0 0 4px 1px rgba(0,0,0,0.1);
+    transition: all 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
+    margin-top: -$header-height;
+    &.scrolled {
+      opacity: 0.96;
+      margin-top: calc(4px - #{$header-height});
+    }
+    &__left {
+      display: flex;
+      z-index: 5;
+      box-sizing: border-box;
+      align-items: center;
+      &__logo-image {
+        position: absolute;
+        top: 15px;
+        left: 20px;
+        width: 220px;
+        .rgp-logo {
+          &-text { fill: $color-body-text-1; }
+          &-highlight { fill: #DAA528; }
+        }
+      }
+      &__main-nav {
+        margin-left: 210px;
+        ul {
+          list-style-type: none;
+          display: flex;
+          li {
+            margin-left: 20px;
+            a {
+              text-decoration: none;
+              border-bottom: 1px solid transparent;
+              transition: border-color 0.5s;
+              color: $color-body-text-1;
+              &:hover { border-bottom: 1px solid #c2c2c2; }
+            }
+          }
+        }
+      }
+    }
+    &__right {
+      display: flex;
+      z-index: 5;
+      align-items: center;
+      > div { margin-right: 20px; }
+      &__help {
+        &__toggle {
+          cursor: pointer;
+          transition: border-color 0.5s;
+          border-bottom: 1px solid transparent;
+          &:hover { border-color: #c2c2c2; transition: border-color 0.5s; }
+        }
+        &__content {
+          @include header-info-dropdown;
+          width: calc(100vw - 35px);
+        }
+      }
+      &__account {
+        &__toggle {
+          cursor: pointer;
+          transition: border-color 0.5s;
+          border-bottom: 1px solid transparent;
+          &:hover { border-color: #c2c2c2; transition: border-color 0.5s; }
+        }
+        &__content {
+          @include header-info-dropdown;
+          width: 500px;
+          &__links {
+            height: 40px;
+            padding: 0 15px;
+            background: #242424;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 6px;
+            margin: 10px;
+            > a { color: white; font-fize: 0.6em; font-weight: bold; display: flex; justify-content: center; align-items: center; }
+          }
+        }
+      }
+      &__cart {
+        &__info {
+          display: flex;
+          justify-content: flex-end;
+          align-items: center;
+          transition: 0.3s all;
+          border-radius: 2px;
+          background: white;;
+          border: 1px solid $color-body-text-1;
+          padding: 6px;
+          &:hover { cursor: pointer; border-color: #0d0d0d; background: #006b5b; }
+          &__icon {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #323d48;
+            > i { font-size: 1.2em; }
+          }
+          &__quantity {
+            color: $color-text-light-1;
+            background: #043c7e;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 24px;
+            height: 24px;
+            font-size: 0.9em;
+            position: absolute;
+            top: 8px;
+            right: 10px;
+          }
+        }
+        &__sidebar {
+          position: fixed;
+          top: 0;
+          right: 0;
+          height: 100%;
+          max-height: 100vh;
+          overflow-y: scroll;
+          transition: transform 0.6s cubic-bezier(0.19, 1, 0.22, 1);
+          border-radius: 2px;
+          padding: 20px 25px 10px 25px;
+          border: 1px solid rgba(80, 112, 133, 0.4);
+          box-shadow: 1px 1px 4px 1px rgba(55, 69, 79, 0.4);
+          transform: translateX(600px);
+          background: $color-body;
+          color: $color-body-text-1;
+          &.active {
+            transform: translateX(0);
+          }
+          &__close {
+            position: absolute;
+            top: 0;
+            right: 12px;
+            font-size: 2.1em;
+            color: #444444;
+            cursor: pointer;
+            transition: 0.2s color;
+            &:hover {
+              color: black;
+            }
+          }
+        }
+      }
+    }
+  }
+  // homepage page header styling.
+  &-content {
+    &.no-bg, &.black-bg, &.white-bg {
+      color: white;
+      box-shadow: 0 0 4px 1px rgba(0,0,0,0.1);
+      background: transparent;
+      margin-top: 0;
+      a { color: white; }
+      .rgp-logo {
+        &-text { fill: white; }
+      }
+    }
+    &.black-bg {
+      background: black;
+      opacity: 0.95;
+    }
+    &.white-bg {
+      margin: 4px;
+      background: white;
+      opacity: 0.97;
+      width: calc(100% - 8px);
+      a { color: $color-body-text-1; }
+      .rgp-logo {
+        &-text { fill: $color-body-text-1; }
+      }
+    }
+  }
+}
+
+.logo-image {
+  padding: 0 5px;
+}

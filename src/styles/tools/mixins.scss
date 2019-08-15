@@ -29,6 +29,37 @@
 }
 
 /**
+* Keyframe creators - creates a 'namespaced' keyframes object with the settings configured from args.
+*/
+@mixin createFadeKeyFrames ($instanceName, $startOpacity, $endOpacity) {
+  @keyframes #{$instanceName} {
+    0% {
+      opacity: $startOpacity;
+    }
+    100% {
+      opacity: $endOpacity;
+    }
+  }
+}
+
+@mixin createSlideKeyFrames (
+  $instanceName,
+  $slideStartX: 0,
+  $slideStartY: 0,
+  $slideEndX: 0,
+  $slideEndY: 0
+  ) {
+    @keyframes #{$instanceName} {
+      0% {
+        transform: translate($slideStartX, $slideStartY);
+      }
+      100% {
+        transform: translate($slideEndX, $slideEndY);
+      }
+    }
+}
+
+/**
  * Outputs list of transition properties
  *
  * Accepts:
@@ -106,4 +137,18 @@
   height: auto;
   margin: 0;
   clip: auto;
+}
+
+/**
+ * Styling for a card.
+ */
+@mixin card {
+  padding: 10px 20px;
+  background: $color-product-info-bg;
+  text-align: center;
+  color: $color-body-text-2;
+  box-shadow: 0 1px 4px 1px rgba(0, 0, 0, 0.1);
+  border: 1px solid #f9f9f9;
+  border-radius: 6px;
+  box-sizing: border-box;
 }

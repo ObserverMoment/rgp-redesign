@@ -1,0 +1,27 @@
+.collection {
+  padding: 15px;
+  &__header {
+    display: flex;
+    align-items: baseline;
+    margin: 20px 8px 15px 8px;
+    flex-wrap: wrap;
+    &__heading {
+      margin: 0 8px 0 0;
+    }
+    &__description {
+      color: $color-body-text-1;
+    }
+  }
+  &__products {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    padding: 10px;
+    &__product-link {
+      width: calc(100% / 3 - 10px);
+      text-decoration: none;
+      color: $color-body-text-1;
+      padding: 12px 2px;
+    }
+  }
+}

@@ -7,15 +7,22 @@ body {
   font-weight: $font-body-weight;
   font-style: $font-body-style;
   font-size: 1.6rem;
+  line-height: 1.8;
 }
 
-h1,
+h1 {
+  font-family: $font-heading;
+  font-size: 2.4rem;
+  margin: 0 0 10px 0;
+  font-weight: $font-heading-weight;
+}
 h2,
 h3,
 h4,
 h5,
 h6 {
   font-family: $font-heading;
+  font-weight: $font-heading-weight;
 }
 
 body,

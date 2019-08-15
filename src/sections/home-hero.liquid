@@ -1,0 +1,116 @@
+{%- comment -%}
+  Responsive full width image with content area on the left and info overlay box on the right.
+{%- endcomment -%}
+
+<section data-section-id="{{ section.id }}" data-section-type="home-hero" class="home-hero" data-home-hero>
+  <div class="home-hero__image">
+    {% if section.settings.image != blank %}
+      {% include 'responsive-image' with
+        image: section.settings.image,
+        image_class: "home-hero__image__img"
+        max_width: 5000 %}
+    {% else %}
+      {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+    {% endif %}
+  </div>
+  <div class="home-hero__content">
+    <div class="home-hero__content__left">
+      <div class="home-hero__content__left__text">
+        <div class="home-hero__content__left__text__title">
+          <h1>{{ section.settings.title }}</h1>
+        </div>
+        <div class="home-hero__content__left__text__subtitle">
+          {{ section.settings.text1 }}<i class="fas fa-check"></i>
+        </div>
+        <div class="home-hero__content__left__text__subtitle">
+          {{ section.settings.text2 }}<i class="fas fa-check"></i>
+        </div>
+        <div class="home-hero__content__left__text__subtitle">
+          {{ section.settings.text3 }}<i class="fas fa-check"></i>
+        </div>
+      </div>
+      <div class="home-hero__content__left__collections">
+        {% for collection in collections %}
+          {% unless collection.title == "Everything" %}
+          <a href="{{ collection.url }}">
+            <div class="home-hero__content__left__collections__collection">
+              <h3 class="home-hero__content__left__collections__collection__title">
+                {% case collection.title %}
+                  {% when "Poker Chipsets" %}
+                    Poker chips
+                  {% when "Poker Mats and Layouts" %}
+                    Mats & layouts
+                  {% when "Poker Table Tops" %}
+                    Table tops
+                  {% when "Poker Tables" %}
+                    Tables
+                {% endcase %}
+              </h3>
+              {% capture image_url %}{% if collection.image %}{{ collection.image | img_url: 'medium' }}{% endif %}{% endcapture %}
+              <img
+                class="home-hero__content__left__collections__collection__image"
+                src="{{ image_url }}" alt=""
+              >
+            </div>
+          </a>
+          {% endunless %}
+        {% endfor %}
+      </div>
+      <div class="home-hero__content__left__browse" data-browse-everything>
+        <div class="home-hero__content__left__browse__text">
+          <div>Browse everything</div>
+          <i class="fas fa-chevron-down"></i>
+        </div>
+      </div>
+    </div>
+    <div class="home-hero__content__right">
+      <div class="home-hero__content__right__overlay-card">
+        {% include 'trustbox-list-widget' %}
+      </div>
+    </div>
+  </div>
+</section>
+
+
+{% schema %}
+  {
+    "name": "Hero Image",
+    "settings": [
+      {
+        "type": "image_picker",
+        "id": "image",
+        "label": "Choose a hero image"
+      },
+      {
+        "type": "text",
+        "id": "title",
+        "label": "Heading",
+        "default": "A home hero"
+      },
+      {
+        "type": "richtext",
+        "id": "text1",
+        "label": "Text content 1",
+        "default": "<p>My custom text with <strong>formatting!</strong></p>"
+      },
+      {
+        "type": "richtext",
+        "id": "text2",
+        "label": "Text content 2",
+        "default": "<p>My custom text with <strong>formatting!</strong></p>"
+      },
+      {
+        "type": "richtext",
+        "id": "text3",
+        "label": "Text content 3",
+        "default": "<p>My custom text with <strong>formatting!</strong></p>"
+      }
+    ],
+    "presets": [
+      {
+        "name": "Main hero image",
+        "category": "Hero Image"
+      }
+    ]
+  }
+{% endschema %}
