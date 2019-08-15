@@ -9,7 +9,6 @@
 import {getUrlWithVariant, ProductForm} from '@shopify/theme-product-form';
 import {formatMoney} from '@shopify/theme-currency';
 import {register} from '@shopify/theme-sections';
-import Flickity from 'flickity-as-nav-for';
 
 import {addItemsToCart} from '../utils/api';
 
