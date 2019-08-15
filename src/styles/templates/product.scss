@@ -4,312 +4,242 @@
 $radio-button-height: 42px;
 $radio-button-width: calc(#{$radio-button-height} * 1);
 
-.product-single {
-  padding: 10px 40px;
-  animation: product-page-fadein 0.4s ease-in-out, product-page-slide 0.5s ease-in-out;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  width: 100%;
+.product {
   &__heading {
     font-size: 1.4em;
+    padding: 15px 0 0 30px;
   }
-  &__images {
-    position: relative;
-    padding: 10px;
-    box-sizing: border-box;
-    opacity: 1;
-    transition: opacity 0.3s;
-    border: 1px solid #f9f9f9;
-    box-shadow: 0 1px 4px 1px rgba(0, 0, 0, 0.1);
-    border-radius: 6px;
-    flex-basis: 70%;
-    max-width: 900px;
-    min-width: 500px;
-    &.hidden {
-      opacity: 0;
-    }
-    &__gallery {
-      background: $product-image-bg;
-      overflow: hidden;
-      outline: none;
-      padding: 20px;
-      height: 600px;
-      &__item {
-        width: 100%;
-        display: flex;
-        justify-content: center;
-        animation: product-page-fadein 2s;
-        &__image {
-
-        }
-      }
-      &__nav {
-        overflow: hidden;
-        outline: none;
-        height: 130px;
-        &__wrapper {
-          margin: auto;
-          width: 80%;
-        }
-        &__item {
-          border: 2px solid transparent;
-          cursor: pointer;
-          transition: border-color 0.6s, filter 0.6s;
-          border-radius: 4px;
-          padding: 3px;
-          box-sizing: border-box;
-          width: 130px;
-          filter: grayscale(95%);
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          &.is-nav-selected {
-            border: 2px solid rgb(60, 177, 132);
-            filter: grayscale(0);
-          }
-          &__image {
-            border-radius: 10px;
-          }
-        }
-      }
-    }
-  }
-  &__info {
-    flex-basis: 30%;
-    max-width: 600px;
-    min-width: 400px;
-    &__add-form {
-      @include card;
-      &__option {
-        padding: 5px;
-        &-Colour {
-          height: 120px;
-          padding: 15px;
-          input[type="radio"] {
-            display: none;
-          }
-          input[type="radio"] + label {
-            position: relative;
-            padding-left: 10%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-            line-height: 20px;
-            display: inline-block;
-            color: #666;
-            margin: 10px;
-            &:before {
-              content: '';
-              position: absolute;
-              left: 0;
-              top: 0;
-              width: $radio-button-width;
-              height: $radio-button-height;
-              border-radius: 100%;
-              border: 3px solid white;
-              box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
-            }
-            &:after {
-              content: '';
-              width: $radio-button-width;
-              height: $radio-button-height;
-              position: absolute;
-              top: 0px;
-              left: 0px;
-              border-radius: 3px;
-              transition: all 0.3s ease;
-              opacity: 0;
-            }
-          }
-          input[type="radio"]:checked + label:after {
-            opacity: 0.9;
-            border: 2px solid #708090;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            content: '\2713';
-            color: white;
-            border-radius: 2px;;
-          }
-          &__value-Red:before { background: $variant-red; }
-          &__value-Blue:before { background: $variant-blue; }
-          &__value-Green:before { background: $variant-green; }
-          &__value-Black:before { background: $variant-black; }
-        }
-      }
-      &__quantity {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        flex-direction: column;
-        i {
-          margin: 8px;
-          &:hover { cursor: pointer; opacity: 0.8; }
-          color: $color-body-text-1;
-          opacity: 0.6;
-          user-select: none;
-        }
-        label { text-transform: uppercase; }
-        input {
-          &:hover { cursor: pointer; }
-          user-select: none;
-          text-align: center;
-          font-size: 1.2em;
-          width: 50px;
-          height: 35px;
-          border: 2px solid rgba(226, 226, 226, 0.7);
-          transition: border-color 0.3s;
-          outline: none;
-          border-radius: 2px;
-          &[type=number]::-webkit-inner-spin-button,
-          &[type=number]::-webkit-outer-spin-button {
-              appearance: none;
-              margin: 0;
-          }
-          &:focus {
-            border-color: rgba(59, 136, 191, 0.7);
-          }
-        }
-      }
-    }
-    &__price {
-      font-size: 1.8em;
-      color: #965260;
-      opacity: 0.9;
-      padding: 4px;
-      font-weight: bold;
-      font-family: $font-script-style;
-    }
-    &__submit {
-      background: #323d48;
-      box-shadow: 1px 1px 10px 1px rgba(0,0,0,0.1);
-      padding: 12px 28px;
-      text-transform: uppercase;
-      color: $color-text-light-1;
-      border: none;
-      border-radius: 2px;
-      margin: 10px;
-      font-size: 0.9em;
-      width: 200px;
-      &__icon {
-        opacity: 0;
-        font-size: 0;
-        transition: all 0.5s;
-        margin-top: 5px;
-        transform: translate3d(-5px,-1px,0);
-        position: relative;
-        bottom: 5px;
-        left: -5px;
-      }
-      &:hover &__icon {
-        opacity: 1;
-        font-size: 0.7em;
-        transform: translate3d(0,0,0);
-        left: 2px;
-        bottom: 1px;
-      }
-    }
-    &__delivery-info {
-      @include card;
-    }
-    &__custom-info {
-      @include card;
-    }
-    &__trustbox-mini {
-      @include card;
+  &__content {
+    padding: 10px 40px;
+    animation: product-page-fadein 0.4s ease-in-out, product-page-slide 0.5s ease-in-out;
+    &__upper {
       display: flex;
-      &__trustbox {
-        flex-basis: 50%;
-      }
-      &__return-icon {
-        flex-basis: 50%;
+      flex-wrap: wrap;
+      &__gallery {
+        min-width: 400px;
+        flex-basis: 70%;
+        @include card;
         display: flex;
-        flex-direction: column;
-        justify-content: center;
+        flex-wrap: nowrap;
+        justify-content: space-around;
         align-items: center;
-        padding: 0 0 0 15px;
-        line-height: 1.4;
-        i { font-size: 2em; color: #07a3d6; }
-      }
-    }
-    &__payment-icons {
-      @include card;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      i { font-size: 2em; color: #1b99e8; }
-    }
-  }
-  &__details {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    margin: 10px;
-    &__bullet-points {
-      @include card;
-      padding: 20px;
-      flex-basis: 700px;
-      font-size: 1.1em;
-      ul {
-        list-style-type: none;
-        margin: 0;
-        padding: 0;
-        li {
-          margin: 5px 0;
+        .image-gallery-nav {
           padding: 10px;
-          background: $color-info-box-item-bg;
-          box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+          flex-basis: 15%;
+          max-height: 600px;
+          overflow-y: auto;
+          img {
+            padding: 4px;
+            border-radius: 3px;
+            transition: all 0.5s;
+            border: 1px solid transparent;
+            &:hover { cursor: pointer; }
+            &.selected-thumbnail { border-color: $color-main-gold; }
+          }
+        }
+        .image-gallery {
+          padding: 20px;
+          flex-basis: 80%;
+        }
+
+      }
+      &__info {
+        flex-basis: 30%;
+        max-width: 600px;
+        min-width: 400px;
+        &__add-form {
+          @include card;
+          &__option {
+            padding: 5px;
+            &-Colour {
+              height: 120px;
+              padding: 15px;
+              input[type="radio"] {
+                display: none;
+              }
+              input[type="radio"] + label {
+                position: relative;
+                padding-left: 10%;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                cursor: pointer;
+                line-height: 20px;
+                display: inline-block;
+                color: #666;
+                margin: 10px;
+                &:before {
+                  content: '';
+                  position: absolute;
+                  left: 0;
+                  top: 0;
+                  width: $radio-button-width;
+                  height: $radio-button-height;
+                  border-radius: 100%;
+                  border: 3px solid white;
+                  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+                }
+                &:after {
+                  content: '';
+                  width: $radio-button-width;
+                  height: $radio-button-height;
+                  position: absolute;
+                  top: 0px;
+                  left: 0px;
+                  border-radius: 3px;
+                  transition: all 0.3s ease;
+                  opacity: 0;
+                }
+              }
+              input[type="radio"]:checked + label:after {
+                opacity: 0.9;
+                border: 2px solid #708090;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                content: '\2713';
+                color: white;
+                border-radius: 2px;;
+              }
+              &__value-Red:before { background: $variant-red; }
+              &__value-Blue:before { background: $variant-blue; }
+              &__value-Green:before { background: $variant-green; }
+              &__value-Black:before { background: $variant-black; }
+            }
+          }
+          &__quantity {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            i {
+              margin: 8px;
+              &:hover { cursor: pointer; opacity: 0.8; }
+              color: $color-body-text-1;
+              opacity: 0.6;
+              user-select: none;
+            }
+            label { text-transform: uppercase; }
+            input {
+              &:hover { cursor: pointer; }
+              user-select: none;
+              text-align: center;
+              font-size: 1.2em;
+              width: 50px;
+              height: 35px;
+              border: 2px solid rgba(226, 226, 226, 0.7);
+              transition: border-color 0.3s;
+              outline: none;
+              border-radius: 2px;
+              &[type=number]::-webkit-inner-spin-button,
+              &[type=number]::-webkit-outer-spin-button {
+                  appearance: none;
+                  margin: 0;
+              }
+              &:focus {
+                border-color: rgba(59, 136, 191, 0.7);
+              }
+            }
+          }
+        }
+        &__price {
+          font-size: 1.8em;
+          color: #965260;
+          opacity: 0.9;
+          padding: 4px;
+          font-weight: bold;
+          font-family: $font-script-style;
+        }
+        &__submit {
+          background: #323d48;
+          box-shadow: 1px 1px 10px 1px rgba(0,0,0,0.1);
+          padding: 12px 28px;
+          text-transform: uppercase;
           color: $color-text-light-1;
-          border-radius: 6px;
+          border: none;
+          border-radius: 2px;
+          margin: 10px;
+          font-size: 0.9em;
+          width: 200px;
+          &__icon {
+            opacity: 0;
+            font-size: 0;
+            transition: all 0.5s;
+            margin-top: 5px;
+            transform: translate3d(-5px,-1px,0);
+            position: relative;
+            bottom: 5px;
+            left: -5px;
+          }
+          &:hover &__icon {
+            opacity: 1;
+            font-size: 0.7em;
+            transform: translate3d(0,0,0);
+            left: 2px;
+            bottom: 1px;
+          }
+        }
+        &__delivery-info {
+          @include card;
+        }
+        &__custom-info {
+          @include card;
+        }
+        &__trustbox-mini {
+          @include card;
+          display: flex;
+          &__trustbox {
+            flex-basis: 50%;
+          }
+          &__return-icon {
+            flex-basis: 50%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 0 0 0 15px;
+            line-height: 1.4;
+            i { font-size: 2em; color: #07a3d6; }
+          }
+        }
+        &__payment-icons {
+          @include card;
+          display: flex;
+          justify-content: space-around;
+          align-items: center;
+          i { font-size: 2em; color: #1b99e8; }
         }
       }
     }
-    &__description {
-      @include card;
-      padding: 20px;
-      flex-basis: 700px;
+    &__lower {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin: 10px;
+      &__bullet-points {
+        @include card;
+        padding: 20px;
+        flex-basis: 700px;
+        font-size: 1.1em;
+        ul {
+          list-style-type: none;
+          margin: 0;
+          padding: 0;
+          li {
+            margin: 5px 0;
+            padding: 10px;
+            background: $color-info-box-item-bg;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+            color: $color-text-light-1;
+            border-radius: 6px;
+          }
+        }
+      }
+      &__description {
+        @include card;
+        padding: 20px;
+        flex-basis: 700px;
+      }
     }
-  }
-}
-
-// Flickity gallery styling.
-.flickity-viewport {
-  height: 95%;
-}
-.flickity-button.flickity-prev-next-button {
-  border-radius: 6px;
-  height: 45px;
-  width: 45px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  position: absolute;
-  z-index: 10;
-  background: $product-image-bg;
-  &.previous {
-    left: 15px;
-  }
-  &.next {
-    right: 15px;
-  }
-
-}
-.flickity-button-icon {
-  width: 20px;
-  fill: grey;
-}
-.flickity-page-dots {
-  list-style-type: none;
-  display: flex;
-  justify-content: center;
-  li {
-    width: 12px;
-    height: 12px;
-    border: 1px solid rgba(0,0,0,0.3);
-    border-radius: 50%;
-    margin: 0 10px;
-    cursor: pointer;
   }
 }

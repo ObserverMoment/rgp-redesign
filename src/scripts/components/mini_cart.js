@@ -1,5 +1,6 @@
+import {formatMoney} from '@shopify/theme-currency';
 import {getCartData, submitCartToCheckout} from '../utils/api';
-import {render, formatMoney, elems} from '../utils/Renderer';
+import {render, elems} from '../utils/Renderer';
 import {MiniCartLine} from './mini_cart_line';
 import {ShoppingBasket} from '../utils/icons';
 
@@ -64,11 +65,11 @@ async function renderMiniCart() {
       ...data.items.map((lineItemObj) => MiniCartLine(lineItemObj)),
       [Div, {className: classes.shippingTotal}, [
         [Span, {className: classes.shippingTotalTitle, innerHTML: 'Shipping'}],
-        [Span, {className: classes.shippingTotalAmount, innerHTML: formatMoney(totalShippingCost, 'GBP')}],
+        [Span, {className: classes.shippingTotalAmount, innerHTML: formatMoney(totalShippingCost, theme.moneyFormat)}],
       ]],
       [Div, {className: classes.cartTotal}, [
         [Span, {className: classes.cartTotalTitle, innerHTML: 'Total'}],
-        [Span, {className: classes.cartTotalAmount, innerHTML: formatMoney(totalCartPrice, 'GBP')}],
+        [Span, {className: classes.cartTotalAmount, innerHTML: formatMoney(totalCartPrice, theme.moneyFormat)}],
       ]],
     ],
   ]);

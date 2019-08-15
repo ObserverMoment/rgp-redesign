@@ -40,7 +40,7 @@ function ImageGallery(imageUrls, initialIndex = 0) {
     const imageElem = getElements.imageElem();
 
     // Fade out...5th arg is an optional callback to work around async nature of requestAnimationFrame
-    smoothFade('out', imageElem, 150, [], () => {
+    smoothFade('out', imageElem, 250, [], () => {
       const leftIcon = getElements.leftScrollIcon();
       const rightIcon = getElements.rightScrollIcon();
       if (newIndex === 0) {
@@ -69,7 +69,7 @@ function ImageGallery(imageUrls, initialIndex = 0) {
         [Img, {
           attributes: {src: imageUrls[initialIndex], [imgDataAttr]: ''},
           listeners: {
-            load: [() => smoothFade('in', getElements.imageElem(), 300, [])],
+            load: [() => smoothFade('in', getElements.imageElem(), 500, [])],
           },
         }],
         [Div, {className: classes.imageGalleryActions, attributes: {[actionsDataAttr]: ''}}, [

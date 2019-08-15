@@ -1,4 +1,5 @@
-import {elems, formatMoney} from '../utils/Renderer';
+import {formatMoney} from '@shopify/theme-currency';
+import {elems} from '../utils/Renderer';
 
 const {Div, Img, Link} = elems;
 
@@ -36,11 +37,11 @@ function MiniCartLine(lineItemObj) {
         [Div, {className: classes.infoTitle, innerHTML: `${product_title} (${variant_title})`}],
       ]],
       [Div, {className: classes.infoUnit}, [
-        [Div, {className: classes.infoUnitPrice, innerHTML: `Per unit: ${formatMoney(final_price, 'GBP')}`}],
+        [Div, {className: classes.infoUnitPrice, innerHTML: `Per unit: ${formatMoney(final_price, theme.moneyFormat)}`}],
         [Div, {className: classes.infoUnitQuantity, innerHTML: `Qty: ${quantity}`}],
       ]],
     ]],
-    [Div, {className: classes.totalLinePrice, innerHTML: formatMoney(final_line_price, 'GBP')}],
+    [Div, {className: classes.totalLinePrice, innerHTML: formatMoney(final_line_price, theme.moneyFormat)}],
   ]]
   );
 }

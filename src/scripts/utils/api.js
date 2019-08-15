@@ -8,6 +8,15 @@ const config = {
   credentials: 'same-origin',
 };
 
+async function getProductData(productHandle) {
+  const res = await fetch(`/products/${productHandle}.json`, {
+    ...config,
+    method: 'GET',
+  });
+  const json = await res.json();
+  return json;
+}
+
 async function getCollectionData(collectionHandle) {
   const res = await fetch(`/collections/${collectionHandle}/products.json`, {
     ...config,
@@ -71,4 +80,4 @@ async function submitCartToCheckout() {
   }
 }
 
-export {addItemsToCart, updateCartLineQuantity, updateCart, getCartData, getCollectionData, submitCartToCheckout};
+export {addItemsToCart, updateCartLineQuantity, updateCart, getCartData, getProductData, getCollectionData, submitCartToCheckout};
