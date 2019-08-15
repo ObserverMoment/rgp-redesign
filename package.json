@@ -34,7 +34,6 @@
     "@shopify/theme-variants": "^1.0.0-alpha.8",
     "bezier-easing": "^2.1.0",
     "eventemitter3": "^4.0.0",
-    "flickity": "^2.2.1",
     "flickity-as-nav-for": "^2.0.1",
     "flickity-imagesloaded": "^2.0.0",
     "flickity-sync": "^2.0.0",

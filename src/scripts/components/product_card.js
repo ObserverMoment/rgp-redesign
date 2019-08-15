@@ -1,5 +1,6 @@
+import {formatMoney} from '@shopify/theme-currency';
 import {elems} from '../utils/Renderer';
-import {ImageGallery} from './image_gallery';
+import {ImageGallery} from './image_gallery_view';
 import {formImageSizeUrl} from '../utils/utils';
 
 const {Div, Img, Span} = elems;
@@ -12,7 +13,9 @@ const classes = {
   image: 'product-card__image',
   info: 'product-card__info',
   infoTitle: 'product-card__info__title',
-  infoPrice: 'product-card__info__price',
+  infoFooter: 'product-card__info__footer',
+  infoFooterPrice: 'product-card__info__footer__price',
+  infoFooterMore: 'product-card__info__footer__more',
   showGalleryActions: 'show-gallery-actions',
 };
 
@@ -27,31 +30,23 @@ function ProductCard(productObj, imageSize, enableGallery) {
   const colours = (options.length > 0) && (options[0].name === 'Colour') && options[0].values;
   const tags = productObj.tags;
 
-  const imageDisplay = enableGallery ? ImageGallery(imgUrls) : [Img, {attributes: {src: imgUrls[0]}}];
-  console.log('imageDisplay', imageDisplay);
-  console.log('imageDisplay.view()', imageDisplay.view());
+  const imageGallery = enableGallery ? ImageGallery(imgUrls) : [Img, {attributes: {src: imgUrls[0]}}];
 
-  console.log('ImageGallery(images)', ImageGallery(images));
-
-  console.log('imageDisplay.setIndex', imageDisplay.setIndex);
-
-  function showActions() {
-    console.log('imageDisplay.actionsElemRef', imageDisplay.actionsElemRef);
-    document.querySelector(`[${imageDisplay.actionsElemRef}]`).classList.add(classes.showGalleryActions);
+  function handleMouseEnter() {
+    document.querySelector(`[${imageGallery.actionsElemRef}]`).classList.add(classes.showGalleryActions);
   }
 
-  function hideActions() {
-    document.querySelector(`[${imageDisplay.actionsElemRef}]`).classList.remove(classes.showGalleryActions);
+  function handleMouseLeave() {
+    document.querySelector(`[${imageGallery.actionsElemRef}]`).classList.remove(classes.showGalleryActions);
   }
-
 
   return (
   [
     Div, {
       className: classes.card,
       listeners: {
-        mouseenter: [showActions, () => console.log('entering', imageDisplay.actionsElemRef)],
-        mouseleave: [hideActions, () => console.log('leaving', imageDisplay.actionsElemRef)],
+        mouseenter: [handleMouseEnter],
+        mouseleave: [handleMouseLeave],
       }}, [
         [Div, {className: classes.meta}, [
           [Div, {className: classes.metaInfo}, tags && tags.map((tag) => [
@@ -61,10 +56,13 @@ function ProductCard(productObj, imageSize, enableGallery) {
             Div, {className: `${classes.metaColours}__colour ${colour}`},
           ])],
         ]],
-      [Div, {className: classes.image}, [enableGallery ? imageDisplay.view() : imageDisplay]],
+      [Div, {className: classes.image}, [enableGallery ? imageGallery.view() : imageGallery]],
         [Div, {className: classes.info}, [
-        [Div, {className: classes.infoTitle, innerHTML: title}],
-        [Div, {className: classes.infoPrice, innerHTML: `£${price}`}],
+          [Div, {className: classes.infoTitle, innerHTML: title}],
+          [Div, {className: classes.infoFooter}, [
+            [Div, {className: classes.infoFooterPrice, innerHTML: formatMoney(price, theme.moneyFormat)}],
+            [Div, {className: classes.infoFooterMore, innerHTML: 'More info >'}],
+          ]],
         ]],
       ]]
   );

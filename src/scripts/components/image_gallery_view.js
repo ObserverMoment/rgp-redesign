@@ -1,4 +1,5 @@
 import {elems} from '../utils/Renderer';
+import {smoothFade} from '../utils/utils';
 
 const {Div, Img} = elems;
 
@@ -7,8 +8,10 @@ const classes = {
   imageGalleryViewport: 'image-gallery',
   imageGalleryActions: 'image-gallery__actions',
   imageGalleryActionsIcon: 'image-gallery__actions__icon',
+  imageGalleryLoading: 'image-gallery__loading',
 };
 
+// Each gallery will need its own id so the correct elements can be targeted.
 let galleryId = 0;
 
 function ImageGallery(imageUrls, initialIndex = 0) {
@@ -17,51 +20,58 @@ function ImageGallery(imageUrls, initialIndex = 0) {
   const actionsDataAttr = `data-gallery-actions-${galleryId}`;
   const leftScrollIconAttr = `data-gallery-actions-${galleryId}-left-icon`;
   const rightScrollIconAttr = `data-gallery-actions-${galleryId}-right-icon`;
-  console.log('dataAttr', imgDataAttr);
+
+  const getElements = {
+    imageElem: () => document.querySelector(`[${imgDataAttr}]`),
+    leftScrollIcon: () => document.querySelector(`[${leftScrollIconAttr}]`),
+    rightScrollIcon: () => document.querySelector(`[${rightScrollIconAttr}]`),
+  };
 
   let curIndex = initialIndex;
 
-  // Amount can be -1 or 1.
-  function scrollBy(delta) {
-    try {
-      if (delta !== 1 && delta !== -1) {
-        throw Error('You can (currently) only scroll one image at a time');
-      }
-      if (delta === -1) {
-        if (curIndex > 0) {
-          curIndex -= 1;
-        }
-      }
-      if (delta === 1) {
-        if (curIndex < imageUrls.length - 1) {
-          curIndex += 1;
-        }
-      }
-    } catch (err) {
-      console.log(err);
+  function updateMainImage(newIndex) {
+    if (newIndex < 0 || newIndex > imageUrls.length - 1) {
+      console.error('You can\'t display an image with an index that is outside the range of the imageurls array');
+      return;
     }
 
-    if (curIndex === 0) {
-      document.querySelector(`[${leftScrollIconAttr}]`).classList.add(classes.hideIcon);
-    } else {
-      document.querySelector(`[${leftScrollIconAttr}]`).classList.remove(classes.hideIcon);
-    }
+    curIndex = newIndex;
 
-    if (curIndex === imageUrls.length - 1) {
-      document.querySelector(`[${rightScrollIconAttr}]`).classList.add(classes.hideIcon);
-    } else {
-      document.querySelector(`[${rightScrollIconAttr}]`).classList.remove(classes.hideIcon);
-    }
+    const imageElem = getElements.imageElem();
 
-    return imageUrls[curIndex];
+    // Fade out...5th arg is an optional callback to work around async nature of requestAnimationFrame
+    smoothFade('out', imageElem, 150, [], () => {
+      const leftIcon = getElements.leftScrollIcon();
+      const rightIcon = getElements.rightScrollIcon();
+      if (newIndex === 0) {
+        leftIcon.classList.add(classes.hideIcon);
+      } else {
+        leftIcon.classList.remove(classes.hideIcon);
+      }
+
+      if (newIndex === imageUrls.length - 1) {
+        rightIcon.classList.add(classes.hideIcon);
+      } else {
+        rightIcon.classList.remove(classes.hideIcon);
+      }
+
+      // Set new src.
+      imageElem.setAttribute('src', imageUrls[newIndex]);
+    });
   }
 
-
   return {
+    galleryImageRef: imgDataAttr,
     actionsElemRef: actionsDataAttr,
+    updateMainImage,
     view: () => ([
       Div, {className: classes.imageGalleryViewport}, [
-        [Img, {attributes: {src: imageUrls[initialIndex], [imgDataAttr]: ''}}],
+        [Img, {
+          attributes: {src: imageUrls[initialIndex], [imgDataAttr]: ''},
+          listeners: {
+            load: [() => smoothFade('in', getElements.imageElem(), 300, [])],
+          },
+        }],
         [Div, {className: classes.imageGalleryActions, attributes: {[actionsDataAttr]: ''}}, [
           [Div, {
             className: `${classes.imageGalleryActionsIcon} ${curIndex === 0 && 'hide-icon'}`,
@@ -71,8 +81,7 @@ function ImageGallery(imageUrls, initialIndex = 0) {
               (event) => {
                 event.stopPropagation();
                 event.preventDefault();
-                document.querySelector(`[${imgDataAttr}]`).setAttribute('src', scrollBy(-1));
-                console.log('left', imgDataAttr);
+                updateMainImage(curIndex - 1);
               }]},
           }],
           [Div, {
@@ -83,8 +92,7 @@ function ImageGallery(imageUrls, initialIndex = 0) {
               (event) => {
                 event.stopPropagation();
                 event.preventDefault();
-                document.querySelector(`[${imgDataAttr}]`).setAttribute('src', scrollBy(1));
-                console.log('right', imgDataAttr);
+                updateMainImage(curIndex + 1);
               }]},
           }],
         ]],

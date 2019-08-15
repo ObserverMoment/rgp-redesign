@@ -1,5 +1,16 @@
 .image-gallery {
   position: relative;
+  &__loading {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    color: $color-text-grey;
+    font-size: 0.9em;
+  }
   &__actions {
     opacity: 0;
     z-index: 20;

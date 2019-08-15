@@ -101,21 +101,4 @@ function render([elementType, config, children], parent) {
   }
 }
 
-function formatMoney(input, currencyCode) {
-  try {
-    if (!currencyCode) { throw Error('Please supply a currency code'); }
-
-    const formatted = {
-      GBP: `£${parseFloat(input / 100).toFixed(2)}`,
-    }[currencyCode];
-
-    if (!formatted) { throw Error('Please supply a valid currency code'); }
-
-    return formatted;
-  } catch (err) {
-    console.log(err);
-    return null;
-  }
-}
-
-export {render, formatMoney, elems};
+export {render, elems};

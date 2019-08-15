@@ -56,8 +56,19 @@
     &__title {
       font-size: 0.9em;
     }
-    &__price {
-      font-size: 1.1em;
+    &__footer {
+      display: flex;
+      justify-content: space-between;
+      &__more {
+        opacity: 0;
+        transition: opacity 0.5s;
+      }
+      &__price {
+        font-size: 1.1em;
+      }
     }
+  }
+  &:hover &__info__footer__more {
+    opacity: 1;
   }
 }
