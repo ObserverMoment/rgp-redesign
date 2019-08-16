@@ -2,16 +2,16 @@
 import {formatMoney} from '@shopify/theme-currency';
 // import {register} from '@shopify/theme-sections';
 
-import EventEmitter from 'eventemitter3';
 import queryString from 'query-string';
 import {render, elems} from '../utils/Renderer';
 import {ImageGallery} from '../components/image_gallery_view';
 import {GalleryNavThumbs} from '../components/image_gallery_nav';
+import {AddProductForm} from '../components/add_product_form';
 
 import {addItemsToCart, getProductData} from '../utils/api';
 import {renderMiniCart} from '../components/mini_cart';
 
-const {Root, Div} = elems;
+const {Root, Div, Input, Label} = elems;
 
 const classes = {
   // hidden: 'hidden',
@@ -25,6 +25,7 @@ const classes = {
 
 const getElements = {
   imageGallery: () => document.querySelector('[data-product-image-gallery]'),
+  addFormWrapper: () => document.querySelector('[data-product-add-form]'),
   // addProductForm: () => document.querySelector('[data-product-form]'),
   // productQuantityInput: () => document.querySelector('[data-product-quantity-input]'),
   // miniCartContent: () => document.querySelector('[data-cart-mini-content]'),
@@ -68,47 +69,39 @@ function initGallery(imageUrlArray = []) {
   ]);
 }
 
-function initProductForm() {
-  const store = {
-    state: {test: true},
-    getState() {
-      console.log('this', this);
-      return this.state;
-    },
-    setState(newState) {
-      this.state = {...this.state, ...newState};
-      this.eventEmitter.emit('state-change', this.state);
-    },
-    eventEmitter: new EventEmitter(),
-  };
+function initProductForm(product) {
+  const formWrapper = getElements.addFormWrapper();
+  const addProductForm = AddProductForm(product, () => console.log('submitting'));
+  console.log('addProductForm.state', addProductForm.state);
 
-  store.eventEmitter.on('state-change', (newState) => {
-    console.log('i updated state to be ', newState);
-  });
-
-  console.log(store.getState());
-  store.setState({newThing: 'hi'});
-  store.setState({peace: [1, 2, 3, 4, 5]});
-  store.setState({love: {flingit: false}});
-  console.log(store.getState());
+  render([Root, {rootElem: formWrapper}, [addProductForm.view()]]);
 }
 
 async function initProduct() {
-  console.log(window);
-  console.log('queryString', queryString);
-  const query = queryString.parse(window.location.search);
-  console.log(query);
-
   const urlparts = window.location.pathname.split('/');
   const productHandle = urlparts[urlparts.length - 1].split('?')[0];
+  // const query = queryString.parse(window.location.search);
 
   const {product} = await getProductData(productHandle);
   console.log(product);
+  // const productState = Store(product, `product-${product.id}`);
+  // console.log(productState.getState());
+  // console.log('productState', productState);
+  //
+  // productState.setState({first: 1});
+  //
+  // stateEventEmitter.on(`product-${product.id}-${storeEvents.STATEUPDATED}`, (updatedState) => {
+  //   console.log('on', `product-${product.id}-${storeEvents.STATEUPDATED}`);
+  //   console.log(updatedState);
+  //   console.log(productState.getState());
+  // });
+  //
+  // productState.setState({second: 2});
 
   const imageUrls = product.images.map((image) => image.src);
   initGallery(imageUrls);
 
-  initProductForm();
+  initProductForm(product);
 }
 
 initProduct();

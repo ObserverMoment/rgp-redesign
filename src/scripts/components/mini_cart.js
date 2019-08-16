@@ -3,6 +3,7 @@ import {getCartData, submitCartToCheckout} from '../utils/api';
 import {render, elems} from '../utils/Renderer';
 import {MiniCartLine} from './mini_cart_line';
 import {ShoppingBasket} from '../utils/icons';
+import {Store, storeEvents, stateEventEmitter} from '../utils/Store';
 
 const getElements = {
   // headerMinicartQty is rendered in header.liquid.

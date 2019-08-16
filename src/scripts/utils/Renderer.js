@@ -5,10 +5,14 @@ const elems = {
   Span: 'span',
   H1: 'h1',
   H2: 'h2',
+  H3: 'h3',
   Img: 'img',
   Ul: 'ul',
   Li: 'li',
   Link: 'a',
+  Input: 'input',
+  Label: 'label',
+  Button: 'button',
 };
 
 /*
@@ -29,8 +33,8 @@ const tree = [
 
 function buildElement({elementType, config, parent}) {
   const {
-    className = null, innerHTML = null,
-    attributes = null, listeners = null,
+    className = null, innerHTML = null, attributes = null,
+    listeners = null, subscriptions = null,
   } = config;
   // Make the node.
   const node = document.createElement(elementType);
@@ -48,10 +52,18 @@ function buildElement({elementType, config, parent}) {
 
   if (listeners) {
     Object.entries(listeners).forEach(([eventType, fns]) => {
+      let functions = fns;
+      if (!Array.isArray(fns)) {
+        functions = [fns];
+      }
       node.addEventListener(eventType, (event) => {
-        fns.forEach((func) => func(event));
+        functions.forEach((func) => func(event));
       });
     });
+  }
+
+  if (subscriptions) {
+    console.log('subscriptions', subscriptions);
   }
 
   // Insert the content - this should usually just be text.
@@ -98,6 +110,7 @@ function render([elementType, config, children], parent) {
     }
   } catch (err) {
     console.log(err);
+    console.log('Error rendering:', [elementType, config, children], parent);
   }
 }
 
