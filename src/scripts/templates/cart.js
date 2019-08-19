@@ -1,10 +1,9 @@
 /*
   Module / script for /cart page.
 */
-
+import {formatMoney} from '@shopify/theme-currency';
 import {debounce} from 'throttle-debounce';
 import {updateCartLineQuantity, updateCart} from '../utils/api';
-import {formatMoney} from '../utils/Renderer';
 import {renderMiniCart} from '../components/mini_cart';
 
 
@@ -89,7 +88,6 @@ const classes = {
         line.saveBtn.classList.remove(classes.show);
         line.saveBtn.setAttribute('disabled', 'disabled');
       } else {
-        console.log('show save btn');
         line.saveBtn.removeAttribute('disabled');
         line.saveBtn.classList.add(classes.show);
       }
@@ -154,5 +152,5 @@ const classes = {
 // Based on current state - update subtotal display.
 function updateSubtotal() {
   const newSubtotal = Object.values(state).reduce((acum, {liveQuantity, unitPrice}) => acum + (liveQuantity * unitPrice), 0);
-  getElements.subtotalPrice().innerHTML = formatMoney(newSubtotal, 'GBP');
+  getElements.subtotalPrice().innerHTML = formatMoney(newSubtotal, theme.moneyFormat);
 }

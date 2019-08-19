@@ -9,7 +9,7 @@ const config = {
 };
 
 async function getProductData(productHandle) {
-  const res = await fetch(`/products/${productHandle}.json`, {
+  const res = await fetch(`/products/${productHandle}.js`, {
     ...config,
     method: 'GET',
   });
@@ -35,6 +35,14 @@ async function getCartData() {
   return json;
 }
 
+/*
+  {
+    quantity: 1,
+    id: 794864229, [variantId]
+    properties: {
+      'First name': 'Caroline'
+}
+*/
 async function addItemsToCart(addData) {
   const res = await fetch('/cart/add.js', {
     ...config,

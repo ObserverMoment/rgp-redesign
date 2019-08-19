@@ -1,5 +1,5 @@
-$radio-button-height: 28px;
-$radio-button-width: calc(#{$radio-button-height} * 1);
+$radio-button-height: 26px;
+$radio-button-width: 32px;
 
 .add-product {
   &__options {
@@ -13,9 +13,13 @@ $radio-button-width: calc(#{$radio-button-height} * 1);
         justify-content: center;
         align-items: center;
         &__value {
-          padding: 0 10px;
+          padding: 0 12px;
           position: relative;
           input[type="radio"] {
+            height: $radio-button-height;
+            width: $radio-button-width;
+            position: absolute;
+            top: 10px;
             display: none;
           }
           input[type="radio"] + label {
@@ -23,7 +27,6 @@ $radio-button-width: calc(#{$radio-button-height} * 1);
             justify-content: center;
             align-items: center;
             cursor: pointer;
-            line-height: 20px;
             display: inline-block;
             color: #666;
             margin: 10px;
@@ -38,8 +41,8 @@ $radio-button-width: calc(#{$radio-button-height} * 1);
               left: 10px;
               width: $radio-button-width;
               height: $radio-button-height;
-              border-radius: 100%;
-              border: 3px solid white;
+              border-radius: 3px;
+              border: 2px solid white;
               box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
             }
             &:after {
@@ -59,7 +62,6 @@ $radio-button-width: calc(#{$radio-button-height} * 1);
             border: 1px solid #708090;
             display: flex;
             justify-content: center;
-            align-items: center;
             content: '\2713';
             color: white;
             border-radius: 3px;;
@@ -129,7 +131,12 @@ $radio-button-width: calc(#{$radio-button-height} * 1);
       left: 74%;
       font-size: 0.6em;
     }
-    &:hover i {
+    &:disabled {
+      background: #949494;
+      cursor: default;
+      text-transform: none;
+    }
+    &:hover:not(:disabled) i {
       opacity: 1;
       transform: translate3d(0,0,0);
       left: 77%;

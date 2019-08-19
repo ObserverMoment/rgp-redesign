@@ -34,7 +34,7 @@ const tree = [
 function buildElement({elementType, config, parent}) {
   const {
     className = null, innerHTML = null, attributes = null,
-    listeners = null, subscriptions = null,
+    listeners = null, subscriptions = null, postMountCallbacks = null,
   } = config;
   // Make the node.
   const node = document.createElement(elementType);
@@ -62,8 +62,20 @@ function buildElement({elementType, config, parent}) {
     });
   }
 
+  // Subscriptions allows elements to be passed to event subscribers
+  // An array of functions.
   if (subscriptions) {
-    console.log('subscriptions', subscriptions);
+    subscriptions.forEach((sub) => {
+      sub(node);
+    });
+  }
+
+  // Use to programatically run some setup process that requires that the html element to exist.
+  // Only runs once.
+  if (postMountCallbacks) {
+    postMountCallbacks.forEach((callback) => {
+      callback(node);
+    });
   }
 
   // Insert the content - this should usually just be text.

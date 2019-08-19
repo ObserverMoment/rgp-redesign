@@ -7,24 +7,32 @@ const storeEvents = {
 
 let storeId = 0;
 
-const stateEventEmitter = new EventEmitter();
-
 function Store(initialState, name) {
   storeId++;
-  stateEventEmitter.emit(`${name}-${storeEvents.STATECREATED}`, initialState);
+  let state = {...initialState};
+  const id = storeId;
+  const storeName = name;
+  const stateEventEmitter = new EventEmitter();
+  stateEventEmitter.emit(`${storeName}-${storeEvents.STATECREATED}`, initialState);
+
   return {
-    id: storeId,
-    name,
-    state: {...initialState},
+    getId() {
+      return id;
+    },
+    getName() {
+      return storeName;
+    },
     getState() {
-      return this.state;
+      return {...state};
     },
     setState(newState, noMerge = false) {
-      this.state = noMerge ? {...newState} : {...this.state, ...newState};
-      this.eventEmitter.emit(`${this.name}-${storeEvents.STATEUPDATED}`, this.state);
+      state = noMerge ? {...newState} : {...state, ...newState};
+      stateEventEmitter.emit(`${storeName}-${storeEvents.STATEUPDATED}`, state);
     },
-    eventEmitter: stateEventEmitter,
+    onStateUpdate(subscriberFn) {
+      stateEventEmitter.on(`${storeName}-${storeEvents.STATEUPDATED}`, (newState) => subscriberFn(newState));
+    },
   };
 }
 
-export {Store, storeEvents, stateEventEmitter};
+export {Store, storeEvents};
