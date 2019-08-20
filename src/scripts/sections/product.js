@@ -5,7 +5,7 @@ import {GalleryNavThumbs} from '../components/image_gallery_nav';
 import {AddProductForm} from '../components/add_product_form';
 import {Store} from '../utils/Store';
 
-import {addItemsToCart, getProductData} from '../utils/api';
+import {addItemsToCart, getProductData, getProductJSON} from '../utils/api';
 
 const {Root} = elems;
 
@@ -23,25 +23,35 @@ async function initProductPage() {
   const urlparts = window.location.pathname.split('/');
   const productHandle = urlparts[urlparts.length - 1].split('?')[0];
   const query = queryString.parse(window.location.search);
-  const variantId = query && query.variant && parseInt(query.variant, 10);
+  const urlVariantId = query && query.variant && parseInt(query.variant, 10);
 
   const product = await getProductData(productHandle);
+  // Second call is needed to get array of image objects rather than just urls.
+  // The image.alt values are used for colour filtering in the gallery.
+  const imageObjs = (await getProductJSON(productHandle)).images;
+  // If multiple variants default to null so that add to cart button will be disabled.
+  // Will get overridden if there was a variant supplied in the query string.
+  // If only one variant then this is effectively no variants - as Shopify creates a default.
+  // Only variant IDs can be added to the cart - not product IDs.
+  const initialVariantId = product.variants.length > 1 ? null : product.variants[0].id;
 
   // Create the state.
   const productState = Store(product, `product-${product.id}`);
 
   // Add the variant and default selected options to empty array.
+  // Remove any default variants / options and just set empty arrays.
   productState.setState({
-    currentVariantId: variantId,
+    currentVariantId: urlVariantId || initialVariantId,
     currentQuantity: 1,
     variantRequired: product.variants.length > 1,
+    images: imageObjs,
   });
 
   // If variant in the querystring then add correct selected options to state.
-  if (variantId) {
+  if (urlVariantId) {
     // Find the correct variant and parse its title attribute to get all the selected options.
     // Format of variant.title is "option1Value / option2Value / option3Value" - there is a space either side of the slash.
-    const variantTitle = productState.getState().variants.find((variant) => variantId === variant.id).title;
+    const variantTitle = productState.getState().variants.find((variant) => urlVariantId === variant.id).title;
     const selectedValues = variantTitle.trim().split('/');
     // Check which options these values are from, and add an attribute on product state for each one - prefixed with 'selected'.
     const selectedOptions = selectedValues.reduce((acum, nextValue) => {
@@ -64,7 +74,7 @@ async function initProductPage() {
   // initGallery(productState);
 
   function onOptionSelect(optionName, optionValue) {
-    productState.setState({[optionName]: optionValue});
+    productState.setState({[optionName]: optionValue, error: null});
 
     const updatedState = productState.getState();
     const allSelected = updatedState.options.every((option) => updatedState[option.name]);
@@ -95,13 +105,17 @@ async function initProductPage() {
   }
 
   async function onSubmit() {
-    console.log('submitting form');
-    const {currentQuantity, currentVariantId} = productState.getState();
-    await addItemsToCart({id: currentVariantId, quantity: currentQuantity});
-    console.log('show confirm or errors');
+    const {currentQuantity: quantity, currentVariantId: id} = productState.getState();
+    const res = await addItemsToCart({id, quantity});
+    if (res.message === 'Cart Error') {
+      productState.setState({error: res.description});
+    } else {
+      productState.setState({error: null, addedToCart: true});
+    }
   }
 
   initProductForm(productState, onQuantityUpdate, onOptionSelect, onSubmit);
+  initGallery(productState);
 }
 
 initProductPage();
@@ -109,8 +123,10 @@ initProductPage();
 
 // Gallery.
 function initGallery(productState, imageUrlArray = []) {
-  const imageGallery = ImageGallery(imageUrlArray);
-  const galleryNavThumbs = GalleryNavThumbs(imageUrlArray, updateDisplayImage);
+  const images = productState.getState().images;
+
+  const imageGallery = ImageGallery(images);
+  const galleryNavThumbs = GalleryNavThumbs(images, updateDisplayImage);
 
   function updateDisplayImage(index) {
     // Check if index is in range.
@@ -128,7 +144,7 @@ function initGallery(productState, imageUrlArray = []) {
   ]);
 }
 
-// Add product form.
+// Add product to cart form.
 function initProductForm(productState, onQuantityUpdate, onOptionSelect, onSubmit) {
   const formWrapper = getElements.addFormWrapper();
   const addProductForm = AddProductForm(productState, onQuantityUpdate, onOptionSelect, onSubmit);

@@ -12,7 +12,8 @@ const getElements = {
 };
 
 let galleryNavThumbIndex = 0;
-function GalleryNavThumbs(imageUrlArray = [], updateImage) {
+
+function GalleryNavThumbs(images = [], updateImage) {
   galleryNavThumbIndex += 1;
   const navThumbsDataAttr = `gallery-nav-${galleryNavThumbIndex}`;
 
@@ -28,6 +29,8 @@ function GalleryNavThumbs(imageUrlArray = [], updateImage) {
       updateImage(index);
     }
   }
+
+  const imageUrlArray = images.map((img) => img.src);
 
   return {
     view: () => ([

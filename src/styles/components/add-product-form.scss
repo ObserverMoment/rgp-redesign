@@ -73,9 +73,10 @@ $radio-button-width: 32px;
   &__quantity {
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: baseline;
     i {
-      margin: 8px;
+      font-size: 0.9em;
+      margin: 0 8px;
       color: $color-body-text-1;
       opacity: 0.6;
       user-select: none;
@@ -85,9 +86,8 @@ $radio-button-width: 32px;
       &:hover { cursor: pointer; }
       user-select: none;
       text-align: center;
-      font-size: 1.2em;
-      width: 50px;
-      height: 35px;
+      width: 40px;
+      height: 30px;
       border: 2px solid rgba(226, 226, 226, 0.7);
       transition: border-color 0.3s;
       outline: none;
@@ -103,27 +103,35 @@ $radio-button-width: 32px;
     }
   }
   &__price {
-    font-size: 1.8em;
-    color: $color-main-gold;
+    font-size: 1.4em;
+    color: #787878;
     padding: 4px;
     font-weight: bold;
     font-family: $font-script-style;
   }
+  &__error {
+    display: none;
+    color: $variant-red;
+    padding: 0 5px 5px 5px;
+    &.show {
+      display: block;
+    }
+  }
   &__submit {
     position: relative;
-    background: #323d48;
+    background: #1e1e1e;
     box-shadow: 1px 1px 10px 1px rgba(0,0,0,0.1);
     padding: 12px 28px;
-    text-transform: uppercase;
     color: $color-text-light-1;
     border: none;
-    border-radius: 2px;
+    border-radius: 6px;
     margin: 10px;
-    font-size: 0.9em;
-    width: 200px;
+    width: calc(100% - 40px);
+    margin: 0 20px 8px 20px;
+    box-sizing: border-box;
     i {
       opacity: 0;
-      transition: all 0.5s;
+      transition: all 0.3s;
       margin-top: 5px;
       transform: translateX(-5px);
       position: absolute;
@@ -134,12 +142,45 @@ $radio-button-width: 32px;
     &:disabled {
       background: #949494;
       cursor: default;
-      text-transform: none;
     }
     &:hover:not(:disabled) i {
       opacity: 1;
       transform: translate3d(0,0,0);
-      left: 77%;
+      left: 75%;
+    }
+  }
+  &__success {
+    display: none;
+    width: 100%;
+    width: calc(100% - 40px);
+    margin: 0 20px 8px 20px;
+    background: #c3e2f5;
+    padding: 10px 4px 4px 4px;
+    border-radius: 6px;
+    &.show {
+      display: block;
+    }
+    &__msg {
+      text-align: center;
+      color: $color-main-green;
+    }
+    &__btns {
+      display: flex;
+      button, a {
+        width: 120px;
+        height: 40px;
+        margin: 6px;
+        padding: 6px 12px;
+        border-radius: 6px;
+        flex-grow: 1;
+        text-decoration: none;
+      }
+      &__review-cart {
+        @include review-cart-btn;
+      }
+      &__checkout {
+        @include checkout-btn;
+      }
     }
   }
 }

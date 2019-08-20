@@ -1,7 +1,8 @@
 import {formatMoney} from '@shopify/theme-currency';
+import {submitCartToCheckout} from '../utils/api';
 import {elems} from '../utils/Renderer';
 
-const {Div, Input, Label, H3, Button, Span} = elems;
+const {Div, Input, Label, H3, Button, Span, Link} = elems;
 
 const classes = {
   wrapper: 'add-product',
@@ -12,6 +13,13 @@ const classes = {
   displayQuantity: 'add-product__quantity__display',
   price: 'add-product__price',
   submit: 'add-product__submit',
+  error: 'add-product__error',
+  success: 'add-product__success',
+  successMsg: 'add-product__success__msg',
+  successBtns: 'add-product__success__btns',
+  reviewCart: 'add-product__success__btns__review-cart',
+  checkout: 'add-product__success__btns__checkout',
+  show: 'show',
 };
 
 let addProductFormId = 0;
@@ -22,7 +30,8 @@ function AddProductForm(productState, onQuantityUpdate, onOptionSelect, onSubmit
     inputElem: () => document.querySelector(`[data-add-product-form-${addProductFormId}]`),
   };
 
-  const {options, variants, currentVariantId} = productState.getState();
+  const initState = productState.getState();
+  const {options, variants, currentVariantId, error, variantRequired} = initState;
   const curVariant = variants.find((variant) => variant.id === currentVariantId);
 
   // This should first check to see if a variant is selected - otherwise default to this.
@@ -30,19 +39,12 @@ function AddProductForm(productState, onQuantityUpdate, onOptionSelect, onSubmit
     ? variants.find((variant) => currentVariantId === variant.id).price
     : variants[0].price;
 
-  function isDisabled() {
-    return curVariant && curVariant.available
-      ? {}
-      : {disabled: true};
-  }
-
   function isSelected(optionName, optionValue) {
     return productState.getState()[optionName] === optionValue
       ? {checked: true}
       : {};
   }
 
-  // Updater functions - via state subscription.
   function updateInputElem(newState, inputElem) {
     inputElem.value = newState.currentQuantity;
   }
@@ -61,19 +63,79 @@ function AddProductForm(productState, onQuantityUpdate, onOptionSelect, onSubmit
     }
   }
 
-  function updateSubmitButton(newState, inputElem) {
-    if (newState.variants.find((variant) => variant.id === newState.currentVariantId).available) {
-      inputElem.removeAttribute('disabled');
+  function getButtonText(state) {
+    if (state.variantRequired) {
+      if (!state.currentVariantId) {
+        return 'Select option(s)';
+      } else if (state.variants.find((variant) => variant.id === state.currentVariantId).available) {
+        return 'Add to cart';
+      } else {
+        return 'Sorry, out of stock';
+      }
+    } else if (state.variants[0].available) {
+      return 'Add to cart';
     } else {
-      inputElem.setAttribute('disabled', true);
+      return 'Sorry, out of stock';
     }
   }
 
+  function initSubmitButtonText() {
+    return getButtonText(initState);
+  }
+
   function updateSubmitButtonText(newState, buttonTextElem) {
-    if (newState.variants.find((variant) => variant.id === newState.currentVariantId).available) {
-      buttonTextElem.innerHTML = 'Add to cart';
+    buttonTextElem.innerHTML = getButtonText(newState);
+  }
+
+  function isDisabled(state) {
+    if (state.variantRequired) {
+      if (state.currentVariantId && state.variants.find((variant) => variant.id === state.currentVariantId).available) {
+        return false;
+      } else {
+        return true;
+      }
+    } else if (state.variants[0].available) {
+      return false;
     } else {
-      buttonTextElem.innerHTML = 'Sorry, out of stock';
+      return true;
+    }
+  }
+
+  function initSubmitButton() {
+    return isDisabled(initState)
+      ? {disabled: true}
+      : {};
+  }
+
+  function updateSubmitButton(newState, inputElem) {
+    if (isDisabled(newState)) {
+      inputElem.setAttribute('disabled', true);
+    } else {
+      inputElem.removeAttribute('disabled');
+    }
+  }
+
+  function updateErrorInfo(newState, errorDisplayElem) {
+    if (newState.error) {
+      const words = newState.error.split(' ');
+      const errorText = words[0] === 'All'
+        ? `You've already added all ${words[1]} available in '${newState.variants.find(
+          (variant) => newState.currentVariantId === variant.id,
+          ).title}'.`
+        : 'Sorry, we don\'t have that many in stock';
+      errorDisplayElem.classList.add(classes.show);
+      errorDisplayElem.innerHTML = errorText;
+    } else {
+      errorDisplayElem.classList.remove(classes.show);
+      errorDisplayElem.innerHTML = '';
+    }
+  }
+
+  function updateAddSuccessInfo(newState, successInfoElem) {
+    if (newState.addedToCart) {
+      successInfoElem.classList.add(classes.show);
+    } else {
+      successInfoElem.classList.remove(classes.show);
     }
   }
 
@@ -81,7 +143,7 @@ function AddProductForm(productState, onQuantityUpdate, onOptionSelect, onSubmit
     view: () => ([
       Div, {className: classes.wrapper}, [
         [Div, {className: classes.options}, [
-          ...options.map((option) => ([
+          ...options.filter((opt) => opt.name !== 'Title').map((option) => ([
             Div, {className: classes.option}, [
               [H3, {innerHTML: `Select ${option.name.toLowerCase()}`}],
               [Div, {className: `${classes.option}__${option.name}`}, [
@@ -136,21 +198,44 @@ function AddProductForm(productState, onQuantityUpdate, onOptionSelect, onSubmit
             (self) => productState.onStateUpdate((newState) => updatePriceElem(newState, self)),
           ],
         }],
+        [Div, {
+          className: classes.error,
+          innerHTML: error,
+          subscriptions: [
+            (self) => productState.onStateUpdate((newState) => updateErrorInfo(newState, self)),
+          ],
+        }],
         [Button, {
           className: classes.submit,
-          attributes: {name: 'add', ...isDisabled()},
+          attributes: {name: 'add', ...initSubmitButton()},
           listeners: {click: onSubmit},
           subscriptions: [
             (self) => productState.onStateUpdate((newState) => updateSubmitButton(newState, self)),
           ],
         }, [
           [Span, {
-            innerHTML: curVariant.available ? 'Add to cart' : 'Out of stock',
+            innerHTML: initSubmitButtonText(productState),
             subscriptions: [
               (self) => productState.onStateUpdate((newState) => updateSubmitButtonText(newState, self)),
             ],
           }],
           [Span, {innerHTML: '<i class="fas fa-plus"></i>'}],
+        ]],
+        [Div, {
+          className: classes.success,
+          subscriptions: [
+            (self) => productState.onStateUpdate((newState) => updateAddSuccessInfo(newState, self)),
+          ],
+        }, [
+          [Div, {className: classes.successMsg, innerHTML: '&#10003; Added to cart!'}],
+          [Div, {className: classes.successBtns}, [
+            [Link, {className: classes.reviewCart, innerHTML: 'View cart', attributes: {href: '/cart'}}],
+            [Button, {
+              className: classes.checkout,
+              innerHTML: 'Checkout',
+              listeners: {click: [submitCartToCheckout]},
+            }],
+          ]],
         ]],
       ],
     ]),

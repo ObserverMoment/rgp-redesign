@@ -14,7 +14,10 @@ const classes = {
 // Each gallery will need its own id so the correct elements can be targeted.
 let galleryId = 0;
 
-function ImageGallery(imageUrls, initialIndex = 0) {
+/*
+  @param {images: object[]}: {src, alt, height, width, position}
+*/
+function ImageGallery(images = [], initialIndex = 0) {
   galleryId++;
   const imgDataAttr = `data-gallery-image-${galleryId}`;
   const actionsDataAttr = `data-gallery-actions-${galleryId}`;
@@ -30,7 +33,7 @@ function ImageGallery(imageUrls, initialIndex = 0) {
   let curIndex = initialIndex;
 
   function updateMainImage(newIndex) {
-    if (newIndex < 0 || newIndex > imageUrls.length - 1) {
+    if (newIndex < 0 || newIndex > images.length - 1) {
       console.error('You can\'t display an image with an index that is outside the range of the imageurls array');
       return;
     }
@@ -49,14 +52,14 @@ function ImageGallery(imageUrls, initialIndex = 0) {
         leftIcon.classList.remove(classes.hideIcon);
       }
 
-      if (newIndex === imageUrls.length - 1) {
+      if (newIndex === images.length - 1) {
         rightIcon.classList.add(classes.hideIcon);
       } else {
         rightIcon.classList.remove(classes.hideIcon);
       }
 
       // Set new src.
-      imageElem.setAttribute('src', imageUrls[newIndex]);
+      imageElem.setAttribute('src', images[newIndex].src);
     });
   }
 
@@ -67,7 +70,7 @@ function ImageGallery(imageUrls, initialIndex = 0) {
     view: () => ([
       Div, {className: classes.imageGalleryViewport}, [
         [Img, {
-          attributes: {src: imageUrls[initialIndex], [imgDataAttr]: ''},
+          attributes: {src: images[initialIndex].src, [imgDataAttr]: ''},
           listeners: {
             load: [() => smoothFade('in', getElements.imageElem(), 500, [])],
           },
@@ -85,7 +88,7 @@ function ImageGallery(imageUrls, initialIndex = 0) {
               }]},
           }],
           [Div, {
-            className: `${classes.imageGalleryActionsIcon} ${curIndex === imageUrls.length - 1 && 'hide-icon'}`,
+            className: `${classes.imageGalleryActionsIcon} ${curIndex === images.length - 1 && 'hide-icon'}`,
             innerHTML: '<i class="fas fa-arrow-alt-circle-right"></i>',
             attributes: {[rightScrollIconAttr]: ''},
             listeners: {click: [

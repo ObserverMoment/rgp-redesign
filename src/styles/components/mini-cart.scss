@@ -61,24 +61,13 @@
       height: 50px;
       margin: 8px;
       padding: 6px 12px;
-      border-radius: 4px;
-      font-weight: bold;
-      font-size: 0.9em;
+      border-radius: 6px;
     }
     &__cart {
-      background: white;
-      color: #006b5b;
-      &:hover {
-        color: white;
-        background: #006b5b;
-      }
+      @include review-cart-btn;
     }
     &__checkout {
-      background: #323d48;
-      color: white;
-      &:hover {
-        background: #000000;
-      }
+      @include checkout-btn;
     }
   }
 }

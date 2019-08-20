@@ -8,8 +8,35 @@ const config = {
   credentials: 'same-origin',
 };
 
+/*
+  Important NOTE re. Shopify product endpoint weirdness.
+  For some reason the .json endpoint returns product image objects including alt, height and width.
+  The .js endpoint return just an array of url strings.
+  The .json endpoint does not return variant availability info - but .js does.
+  : This is why there are two different calls to the same endpoint.
+  : Both are required to make the product page work..(!)
+*/
+
 async function getProductData(productHandle) {
   const res = await fetch(`/products/${productHandle}.js`, {
+    ...config,
+    method: 'GET',
+  });
+  const product = await res.json();
+  return product;
+}
+
+async function getProductJSON(productHandle) {
+  const res = await fetch(`/products/${productHandle}.json`, {
+    ...config,
+    method: 'GET',
+  });
+  const {product} = await res.json();
+  return product;
+}
+
+async function getCollectionData(collectionHandle) {
+  const res = await fetch(`/collections/${collectionHandle}.json`, {
     ...config,
     method: 'GET',
   });
@@ -17,7 +44,7 @@ async function getProductData(productHandle) {
   return json;
 }
 
-async function getCollectionData(collectionHandle) {
+async function getCollectionProducts(collectionHandle) {
   const res = await fetch(`/collections/${collectionHandle}/products.json`, {
     ...config,
     method: 'GET',
@@ -88,4 +115,8 @@ async function submitCartToCheckout() {
   }
 }
 
-export {addItemsToCart, updateCartLineQuantity, updateCart, getCartData, getProductData, getCollectionData, submitCartToCheckout};
+export {
+  addItemsToCart, updateCartLineQuantity, updateCart, getCartData,
+  getProductData, getProductJSON, getCollectionData,
+  getCollectionProducts, submitCartToCheckout,
+};

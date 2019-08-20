@@ -1,5 +1,5 @@
 import {ProductCard} from '../components/product_card';
-import {getCollectionData} from '../utils/api';
+import {getCollectionProducts} from '../utils/api';
 import {render, elems} from '../utils/Renderer';
 
 const {Root, Link} = elems;
@@ -30,7 +30,7 @@ function renderProductsList(data) {
 }
 
 async function initCollection() {
-  const data = await getCollectionData(collectionHandle);
+  const data = await getCollectionProducts(collectionHandle);
   renderProductsList(data);
 }
 
