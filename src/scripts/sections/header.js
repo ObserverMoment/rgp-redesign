@@ -41,19 +41,14 @@ function updateHeaderStyle() {
   const headerContent = document.querySelector(selectors.headerContent);
   const urlpath = window.location.pathname;
   const scrollY = window.scrollY;
-  if (urlpath === '/') {
-    if (scrollY <= 60) {
-      headerContent.className = 'header-content no-bg';
-    } else if (scrollY > 60 && scrollY < 800) {
-      headerContent.className = 'header-content black-bg';
-    } else {
-      headerContent.className = 'header-content white-bg';
-    }
+
+  if (urlpath === '/' && scrollY <= 50) {
+    headerContent.className = 'header-content no-bg';
   } else {
-    headerContent.className = 'header-content';
+    headerContent.className = 'header-content white-bg';
   }
 
-  if (urlpath !== '/' && scrollY > 60) {
+  if (scrollY > 50) {
     headerContent.classList.add('scrolled');
   } else {
     headerContent.classList.remove('scrolled');

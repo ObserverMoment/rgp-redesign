@@ -1,4 +1,5 @@
 import {elems} from '../utils/Renderer';
+import {formImageSizeUrl} from '../utils/utils';
 
 const {Div, Img} = elems;
 
@@ -13,33 +14,38 @@ const getElements = {
 
 let galleryNavThumbIndex = 0;
 
-function GalleryNavThumbs(images = [], updateImage) {
+function GalleryNavThumbs(images = [], galleryState, imageDims = '200x200') {
   galleryNavThumbIndex += 1;
   const navThumbsDataAttr = `gallery-nav-${galleryNavThumbIndex}`;
 
-  function handleUpdateImage(clickedElem, index) {
+  function handleUpdateImage(newState) {
     // Clear all highlighting classes.
-    getElements.allThumbs().forEach((thumb) => {
-      thumb.classList.remove(classes.selectedThumbnail);
+    getElements.allThumbs().forEach((imageElem) => {
+      if (newState.curIndex === parseInt(imageElem.dataset.index, 10)) {
+        // Add highlight class to selected image.
+        imageElem.classList.add(classes.selectedThumbnail);
+      } else {
+        imageElem.classList.remove(classes.selectedThumbnail);
+      }
     });
-    // Add highlight class to selected image.
-    clickedElem.classList.add(classes.selectedThumbnail);
-
-    if (updateImage) {
-      updateImage(index);
-    }
   }
 
-  const imageUrlArray = images.map((img) => img.src);
+  galleryState.onAttributeUpdate(handleUpdateImage, 'curIndex');
+
+  const imageUrlArray = images.map((img) => formImageSizeUrl(img.src, imageDims));
+
+  const initialIndex = galleryState.getState().curIndex;
 
   return {
     view: () => ([
       Div, {className: classes.galleryNavThumbs}, imageUrlArray.map((imageUrl, index) => ([
         Img, {
-          attributes: {src: imageUrl, 'data-gallery-nav-thumb': '', [`${navThumbsDataAttr}-thumb-${index}`]: ''},
+          className: initialIndex === index && classes.selectedThumbnail,
+          attributes: {src: imageUrl, 'data-gallery-nav-thumb': '', [`${navThumbsDataAttr}-thumb-${index}`]: '', 'data-index': index},
           listeners: {
-            click: [(event) => handleUpdateImage(event.target, index)],
-          }},
+            click: [() => galleryState.setState({curIndex: index})],
+          },
+        },
       ])),
     ]),
   };

@@ -1,7 +1,7 @@
 import {formatMoney} from '@shopify/theme-currency';
 import {elems} from '../utils/Renderer';
 import {ImageGallery} from './image_gallery_view';
-import {formImageSizeUrl} from '../utils/utils';
+import {Store} from '../utils/Store';
 
 const {Div, Img, Span} = elems;
 
@@ -28,7 +28,9 @@ function ProductCard(productObj, imageSize, enableGallery) {
   const colours = (options.length > 0) && (options[0].name === 'Colour') && options[0].values;
   const tags = productObj.tags;
 
-  const imageGallery = enableGallery ? ImageGallery(images) : [Img, {attributes: {src: images[0].src}}];
+  const galleryState = Store({curIndex: 0}, 'product-card-gallery');
+
+  const imageGallery = enableGallery ? ImageGallery(images, galleryState, imageSize) : [Img, {attributes: {src: images[0].src}}];
 
   const isAvailable = variants.some((variant) => variant.available);
 

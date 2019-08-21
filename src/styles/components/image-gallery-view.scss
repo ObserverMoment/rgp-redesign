@@ -15,24 +15,22 @@
     opacity: 0;
     z-index: 20;
     position: absolute;
-    top: 60%;
+    top: 50%;
     display: flex;
-    width: 100%;
+    width: 98%;
     justify-content: space-between;
     transition: opacity 0.5s;
     &.show-gallery-actions {
       opacity: 1;
     }
     &__icon {
+      cursor: pointer;
       opacity: 1;
       transition: opacity 0.5s;
-      &.hide-icon { opacity: 0; }
+      &.hide-icon { opacity: 0.3; cursor: default; }
       > i {
         font-size: 30px;
-        color: #4982cc;
-        &:hover {
-          color: #0869e8;
-        }
+        color: #2f3133;
       }
     }
   }

@@ -1,5 +1,5 @@
 import {ProductCard} from './product_card';
-import {getCollectionData} from '../utils/api';
+import {getCollectionProducts} from '../utils/api';
 import {render, elems} from '../utils/Renderer';
 
 const {Root, Div, Link} = elems;
@@ -39,7 +39,7 @@ function renderProductsList(data) {
 }
 
 async function initCollection() {
-  const data = await getCollectionData('everything');
+  const data = await getCollectionProducts('everything');
   renderFilters();
   renderProductsList(data);
 }

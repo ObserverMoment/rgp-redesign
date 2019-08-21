@@ -31,8 +31,7 @@ function AddProductForm(productState, onQuantityUpdate, onOptionSelect, onSubmit
   };
 
   const initState = productState.getState();
-  const {options, variants, currentVariantId, error, variantRequired} = initState;
-  const curVariant = variants.find((variant) => variant.id === currentVariantId);
+  const {options, variants, currentVariantId, error} = initState;
 
   // This should first check to see if a variant is selected - otherwise default to this.
   const initialPrice = currentVariantId
@@ -118,10 +117,13 @@ function AddProductForm(productState, onQuantityUpdate, onOptionSelect, onSubmit
   function updateErrorInfo(newState, errorDisplayElem) {
     if (newState.error) {
       const words = newState.error.split(' ');
-      const errorText = words[0] === 'All'
-        ? `You've already added all ${words[1]} available in '${newState.variants.find(
+      const variantText = newState.variantRequired
+        ? ` in ${newState.variants.find(
           (variant) => newState.currentVariantId === variant.id,
-          ).title}'.`
+          ).title}.`
+        : '.';
+      const errorText = words[0] === 'All'
+        ? `You've already added all ${words[1]} available${variantText}`
         : 'Sorry, we don\'t have that many in stock';
       errorDisplayElem.classList.add(classes.show);
       errorDisplayElem.innerHTML = errorText;
@@ -154,7 +156,9 @@ function AddProductForm(productState, onQuantityUpdate, onOptionSelect, onSubmit
                         type: 'radio', id: `input-${option.name}-${value}`, value, name: option.name, ...isSelected(option.name, value),
                       },
                       subscriptions: [
-                        (self) => productState.onStateUpdate((newState) => updateCheckedAttr(newState, self, option.name, value)),
+                        (self) => productState.onAttributeUpdate(
+                          (newState) => updateCheckedAttr(newState, self, option.name, value), 'variantRequired',
+                        ),
                       ],
                     }],
                     [Label, {
@@ -181,7 +185,7 @@ function AddProductForm(productState, onQuantityUpdate, onOptionSelect, onSubmit
             attributes: {type: 'number', name: 'quantity', value: '1', min: '1', [`data-add-product-form-${addProductFormId}`]: ''},
             listeners: {change: [(event) => onQuantityUpdate(parseInt(event.target.value, 10))]},
             subscriptions: [
-              (self) => productState.onStateUpdate((newState) => updateInputElem(newState, self)),
+              (self) => productState.onAttributeUpdate((newState) => updateInputElem(newState, self), 'currentQuantity'),
             ],
           }],
           [Div, {
@@ -195,14 +199,16 @@ function AddProductForm(productState, onQuantityUpdate, onOptionSelect, onSubmit
           innerHTML: formatMoney(initialPrice, theme.moneyFormat),
           attributes: {[`data-add-product-form-price-${addProductFormId}`]: ''},
           subscriptions: [
-            (self) => productState.onStateUpdate((newState) => updatePriceElem(newState, self)),
+            (self) => productState.onAttributeUpdate(
+              (newState) => updatePriceElem(newState, self), ['currentVariantId', 'currentQuantity'],
+            ),
           ],
         }],
         [Div, {
           className: classes.error,
           innerHTML: error,
           subscriptions: [
-            (self) => productState.onStateUpdate((newState) => updateErrorInfo(newState, self)),
+            (self) => productState.onAttributeUpdate((newState) => updateErrorInfo(newState, self), 'error'),
           ],
         }],
         [Button, {
@@ -210,13 +216,17 @@ function AddProductForm(productState, onQuantityUpdate, onOptionSelect, onSubmit
           attributes: {name: 'add', ...initSubmitButton()},
           listeners: {click: onSubmit},
           subscriptions: [
-            (self) => productState.onStateUpdate((newState) => updateSubmitButton(newState, self)),
+            (self) => productState.onAttributeUpdate(
+              (newState) => updateSubmitButton(newState, self), ['variantRequired', 'currentVariantId'],
+            ),
           ],
         }, [
           [Span, {
             innerHTML: initSubmitButtonText(productState),
             subscriptions: [
-              (self) => productState.onStateUpdate((newState) => updateSubmitButtonText(newState, self)),
+              (self) => productState.onAttributeUpdate(
+                (newState) => updateSubmitButtonText(newState, self), ['variantRequired', 'currentVariantId'],
+              ),
             ],
           }],
           [Span, {innerHTML: '<i class="fas fa-plus"></i>'}],
@@ -224,7 +234,9 @@ function AddProductForm(productState, onQuantityUpdate, onOptionSelect, onSubmit
         [Div, {
           className: classes.success,
           subscriptions: [
-            (self) => productState.onStateUpdate((newState) => updateAddSuccessInfo(newState, self)),
+            (self) => productState.onAttributeUpdate(
+              (newState) => updateAddSuccessInfo(newState, self), 'addedToCart',
+            ),
           ],
         }, [
           [Div, {className: classes.successMsg, innerHTML: '&#10003; Added to cart!'}],

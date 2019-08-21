@@ -1,5 +1,5 @@
 import {elems} from '../utils/Renderer';
-import {smoothFade} from '../utils/utils';
+import {smoothFade, formImageSizeUrl} from '../utils/utils';
 
 const {Div, Img} = elems;
 
@@ -17,7 +17,9 @@ let galleryId = 0;
 /*
   @param {images: object[]}: {src, alt, height, width, position}
 */
-function ImageGallery(images = [], initialIndex = 0) {
+function ImageGallery(images = [], galleryState, imageSize) {
+  const sizedImages = images.map((img) => ({...img, src: formImageSizeUrl(img.src, imageSize)}));
+
   galleryId++;
   const imgDataAttr = `data-gallery-image-${galleryId}`;
   const actionsDataAttr = `data-gallery-actions-${galleryId}`;
@@ -30,20 +32,19 @@ function ImageGallery(images = [], initialIndex = 0) {
     rightScrollIcon: () => document.querySelector(`[${rightScrollIconAttr}]`),
   };
 
-  let curIndex = initialIndex;
+  let curIndex = galleryState.curIndex || 0;
 
-  function updateMainImage(newIndex) {
-    if (newIndex < 0 || newIndex > images.length - 1) {
+  function updateMainImage(newState, imageElem) {
+    const {curIndex: newIndex} = newState;
+    if (newIndex < 0 || newIndex > sizedImages.length - 1) {
       console.error('You can\'t display an image with an index that is outside the range of the imageurls array');
       return;
     }
 
     curIndex = newIndex;
 
-    const imageElem = getElements.imageElem();
-
     // Fade out...5th arg is an optional callback to work around async nature of requestAnimationFrame
-    smoothFade('out', imageElem, 250, [], () => {
+    smoothFade('out', imageElem, 150, [], () => {
       const leftIcon = getElements.leftScrollIcon();
       const rightIcon = getElements.rightScrollIcon();
       if (newIndex === 0) {
@@ -52,14 +53,14 @@ function ImageGallery(images = [], initialIndex = 0) {
         leftIcon.classList.remove(classes.hideIcon);
       }
 
-      if (newIndex === images.length - 1) {
+      if (newIndex === sizedImages.length - 1) {
         rightIcon.classList.add(classes.hideIcon);
       } else {
         rightIcon.classList.remove(classes.hideIcon);
       }
 
       // Set new src.
-      imageElem.setAttribute('src', images[newIndex].src);
+      imageElem.setAttribute('src', sizedImages[newIndex].src);
     });
   }
 
@@ -70,10 +71,13 @@ function ImageGallery(images = [], initialIndex = 0) {
     view: () => ([
       Div, {className: classes.imageGalleryViewport}, [
         [Img, {
-          attributes: {src: images[initialIndex].src, [imgDataAttr]: ''},
+          attributes: {src: sizedImages[curIndex].src, [imgDataAttr]: ''},
           listeners: {
-            load: [() => smoothFade('in', getElements.imageElem(), 500, [])],
+            load: [() => smoothFade('in', getElements.imageElem(), 200, [])],
           },
+          subscriptions: [
+            (self) => galleryState.onAttributeUpdate((newState) => updateMainImage(newState, self), 'curIndex'),
+          ],
         }],
         [Div, {className: classes.imageGalleryActions, attributes: {[actionsDataAttr]: ''}}, [
           [Div, {
@@ -84,18 +88,18 @@ function ImageGallery(images = [], initialIndex = 0) {
               (event) => {
                 event.stopPropagation();
                 event.preventDefault();
-                updateMainImage(curIndex - 1);
+                galleryState.setState({curIndex: Math.max(curIndex - 1, 0)});
               }]},
           }],
           [Div, {
-            className: `${classes.imageGalleryActionsIcon} ${curIndex === images.length - 1 && 'hide-icon'}`,
+            className: `${classes.imageGalleryActionsIcon} ${curIndex === sizedImages.length - 1 && 'hide-icon'}`,
             innerHTML: '<i class="fas fa-arrow-alt-circle-right"></i>',
             attributes: {[rightScrollIconAttr]: ''},
             listeners: {click: [
               (event) => {
                 event.stopPropagation();
                 event.preventDefault();
-                updateMainImage(curIndex + 1);
+                galleryState.setState({curIndex: Math.min(curIndex + 1, sizedImages.length - 1)});
               }]},
           }],
         ]],

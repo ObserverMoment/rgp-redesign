@@ -58,18 +58,16 @@
     color: $color-body-text-1;
     display: flex;
     justify-content: space-between;
-    margin: 4px;
     height: $header-height;
     z-index: 10;
     position: fixed;
+    top: 0;
     width: calc(100% - 8px);
     background: white;
-    box-shadow: 0 0 4px 1px rgba(0,0,0,0.1);
     transition: all 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
-    margin-top: -$header-height;
+    margin: 4px;
     &.scrolled {
       opacity: 0.96;
-      margin-top: calc(4px - #{$header-height});
     }
     &__left {
       display: flex;
@@ -154,7 +152,12 @@
           background: white;;
           border: 1px solid $color-body-text-1;
           padding: 6px;
-          &:hover { cursor: pointer; border-color: #0d0d0d; background: #006b5b; }
+          &:hover {
+            cursor: pointer;
+            border-color: #0d0d0d;
+            background: $color-main-green;
+          }
+          &:hover &__icon { color: #eaecea; }
           &__icon {
             display: flex;
             justify-content: center;
@@ -180,7 +183,7 @@
         &__sidebar {
           position: fixed;
           top: 0;
-          right: 0;
+          right: -600px;
           height: 100%;
           max-height: 100vh;
           overflow-y: scroll;
@@ -189,11 +192,11 @@
           padding: 20px 25px 10px 25px;
           border: 1px solid rgba(80, 112, 133, 0.4);
           box-shadow: 1px 1px 4px 1px rgba(55, 69, 79, 0.4);
-          transform: translateX(600px);
+          transform: translateX(0);
           background: $color-body;
           color: $color-body-text-1;
           &.active {
-            transform: translateX(0);
+            transform: translateX(-600px);
           }
           &__close {
             position: absolute;
@@ -213,25 +216,17 @@
   }
   // homepage page header styling.
   &-content {
-    &.no-bg, &.black-bg, &.white-bg {
-      color: white;
-      box-shadow: 0 0 4px 1px rgba(0,0,0,0.1);
+    &.no-bg {
       background: transparent;
-      margin-top: 0;
       a { color: white; }
       .rgp-logo {
         &-text { fill: white; }
       }
     }
-    &.black-bg {
-      background: black;
-      opacity: 0.95;
-    }
     &.white-bg {
-      margin: 4px;
+      box-shadow: 0 0 4px 1px rgba(0,0,0,0.1);
       background: white;
       opacity: 0.97;
-      width: calc(100% - 8px);
       a { color: $color-body-text-1; }
       .rgp-logo {
         &-text { fill: $color-body-text-1; }

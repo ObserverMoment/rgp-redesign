@@ -34,7 +34,7 @@ const tree = [
 function buildElement({elementType, config, parent}) {
   const {
     className = null, innerHTML = null, attributes = null,
-    listeners = null, subscriptions = null, postMountCallbacks = null,
+    listeners = null, subscriptions = null,
   } = config;
   // Make the node.
   const node = document.createElement(elementType);
@@ -67,14 +67,6 @@ function buildElement({elementType, config, parent}) {
   if (subscriptions) {
     subscriptions.forEach((sub) => {
       sub(node);
-    });
-  }
-
-  // Use to programatically run some setup process that requires that the html element to exist.
-  // Only runs once.
-  if (postMountCallbacks) {
-    postMountCallbacks.forEach((callback) => {
-      callback(node);
     });
   }
 

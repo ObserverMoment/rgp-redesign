@@ -4,10 +4,16 @@ import {ImageGallery} from '../components/image_gallery_view';
 import {GalleryNavThumbs} from '../components/image_gallery_nav';
 import {AddProductForm} from '../components/add_product_form';
 import {Store} from '../utils/Store';
+import {smoothFade} from '../utils/utils';
+import {renderMiniCart} from '../components/mini_cart';
 
 import {addItemsToCart, getProductData, getProductJSON} from '../utils/api';
 
 const {Root} = elems;
+
+const classes = {
+  showGalleryActions: 'show-gallery-actions',
+};
 
 const getElements = {
   imageGallery: () => document.querySelector('[data-product-image-gallery]'),
@@ -45,6 +51,8 @@ async function initProductPage() {
     currentQuantity: 1,
     variantRequired: product.variants.length > 1,
     images: imageObjs,
+    error: null,
+    addedToCart: null,
   });
 
   // If variant in the querystring then add correct selected options to state.
@@ -62,7 +70,7 @@ async function initProductPage() {
 
     productState.setState({...selectedOptions});
   } else {
-    // Loop through all the options and add an attribute on product state for each one - prefixed with 'selected'.
+    // Loop through all the options and add an attribute on product state for each one.
     const selectedOptions = product.options.reduce((acum, next) => {
       acum[next.name] = null;
       return acum;
@@ -70,8 +78,6 @@ async function initProductPage() {
 
     productState.setState({...selectedOptions});
   }
-
-  // initGallery(productState);
 
   function onOptionSelect(optionName, optionValue) {
     productState.setState({[optionName]: optionValue, error: null});
@@ -91,7 +97,7 @@ async function initProductPage() {
 
       const newVariantId = updatedState.variants.find((variant) => variant.title === variantTitle).id;
 
-      productState.setState({currentVariantId: newVariantId});
+      productState.setState({currentVariantId: newVariantId, error: null, addedToCart: null});
 
       const url = window.location.pathname.split('?')[0];
       const qs = queryString.stringify({variant: newVariantId});
@@ -106,38 +112,79 @@ async function initProductPage() {
 
   async function onSubmit() {
     const {currentQuantity: quantity, currentVariantId: id} = productState.getState();
+    // API call.
     const res = await addItemsToCart({id, quantity});
     if (res.message === 'Cart Error') {
       productState.setState({error: res.description});
     } else {
       productState.setState({error: null, addedToCart: true});
+      renderMiniCart();
     }
   }
 
   initProductForm(productState, onQuantityUpdate, onOptionSelect, onSubmit);
-  initGallery(productState);
-}
 
-initProductPage();
-
-
-// Gallery.
-function initGallery(productState, imageUrlArray = []) {
-  const images = productState.getState().images;
-
-  const imageGallery = ImageGallery(images);
-  const galleryNavThumbs = GalleryNavThumbs(images, updateDisplayImage);
-
-  function updateDisplayImage(index) {
-    // Check if index is in range.
-    if (index < 0 || index > imageUrlArray.length - 1) {
-      console.error('The index you are trying to set is not in range of the imageUrlArray');
-    }
-    imageGallery.updateMainImage(index);
+  // Gallery.
+  function constructGallery(state) {
+    const colourSelected = state.Colour;
+    const images = colourSelected
+      ? imageObjs.filter((img) => (!img.alt || img.alt === colourSelected))
+      : imageObjs;
+    initGallery(images);
   }
 
+  constructGallery(productState.getState());
+
+  // If colour is an option the user can select.
+  // Then re-render the gallery whenever user selects a different colour.
+  if (product.options.some((option) => option.name === 'Colour')) {
+    productState.onAttributeUpdate((newState) => {
+      const imgGalleryElem = getElements.imageGallery();
+      // Remove event listeners that will refer to the old instance of the image gallery.
+      smoothFade('out', imgGalleryElem, 100, [0.47, 0, 0.745, 0.715], () => {
+        while (imgGalleryElem.firstChild) {
+          imgGalleryElem.removeChild(imgGalleryElem.firstChild);
+        }
+        constructGallery(newState);
+        smoothFade('in', imgGalleryElem, 300, []);
+      });
+    }, 'Colour');
+  }
+}
+
+// Gallery.
+function initGallery(images) {
+
+  const galleryState = Store({curIndex: 0}, 'product-gallery');
+
+  const imageGallery = ImageGallery(images, galleryState, '1600x1600');
+  const galleryNavThumbs = GalleryNavThumbs(images, galleryState, '150x150');
+
+  const rootElem = getElements.imageGallery();
+
+  function handleMouseEnter() {
+    const actionsElem = document.querySelector(`[${imageGallery.actionsElemRef}]`);
+    if (actionsElem) {
+      document.querySelector(`[${imageGallery.actionsElemRef}]`).classList.add(classes.showGalleryActions);
+    } else {
+      rootElem.removeEventListener('mouseenter', handleMouseEnter);
+    }
+  }
+
+  function handleMouseLeave() {
+    const actionsElem = document.querySelector(`[${imageGallery.actionsElemRef}]`);
+    if (actionsElem) {
+      document.querySelector(`[${imageGallery.actionsElemRef}]`).classList.remove(classes.showGalleryActions);
+    } else {
+      rootElem.removeEventListener('mouseleave', handleMouseLeave);
+    }
+  }
+
+  rootElem.addEventListener('mouseenter', handleMouseEnter);
+  rootElem.addEventListener('mouseleave', handleMouseLeave);
+
   render([
-    Root, {rootElem: getElements.imageGallery()}, [
+    Root, {rootElem}, [
       galleryNavThumbs.view(),
       imageGallery.view(),
     ],
@@ -151,3 +198,5 @@ function initProductForm(productState, onQuantityUpdate, onOptionSelect, onSubmi
 
   render([Root, {rootElem: formWrapper}, [addProductForm.view()]]);
 }
+
+initProductPage();
