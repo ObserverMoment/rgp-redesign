@@ -99,13 +99,33 @@
         {% if shop.customer_accounts_enabled %}
           <div class="header-content__right__account">
             {% if customer %}
+            <div class="header-content__right__account__toggle" data-account-panel-toggle>
               {% if customer.first_name != blank %}
-                {% capture first_name %}<a href="/account">{{ customer.first_name }}</a>{% endcapture %}
-                {{ 'layout.customer.logged_in_as_html' | t: first_name: first_name }}
+                {{ customer.first_name }}
               {% else %}
-                <a href="/account">{{ 'layout.customer.account' | t }}</a>
+                My account
               {% endif %}
-              {{ 'layout.customer.log_out' | t | customer_logout_link }}
+            </div>
+            <div class="header-content__right__account__content" data-account-panel-content>
+              <div class="header-content__right__account__content__close" data-account-panel-close>
+                <i class="far fa-times-circle"></i>
+              </div>
+              <div class="header-content__right__account__content__elements">
+                <div class="header-content__right__account__content__elements__message">
+                  View your orders and personal information.
+                </div>
+                <div class="header-content__right__account__content__elements__flex-container">
+                  <div class="header-content__right__account__content__links">
+                    {{ 'layout.customer.log_out' | t | customer_logout_link }}
+                  </div>
+                  <div class="header-content__right__account__content__links">
+                    <a href="/account">My account</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+
             {% else %}
               <div class="header-content__right__account__toggle" data-account-panel-toggle>
                 My account

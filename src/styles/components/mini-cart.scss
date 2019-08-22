@@ -64,10 +64,11 @@
       border-radius: 6px;
     }
     &__cart {
-      @include review-cart-btn;
+      @include secondary-btn;
     }
     &__checkout {
       @include checkout-btn;
+      i { font-size: 0.9em; color: #e6e6e6; }
     }
   }
 }

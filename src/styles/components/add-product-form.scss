@@ -176,10 +176,11 @@ $radio-button-width: 32px;
         text-decoration: none;
       }
       &__review-cart {
-        @include review-cart-btn;
+        @include secondary-btn;
       }
       &__checkout {
         @include checkout-btn;
+        i { font-size: 0.9em; }
       }
     }
   }

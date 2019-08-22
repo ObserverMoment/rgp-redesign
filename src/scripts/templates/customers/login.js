@@ -6,6 +6,10 @@
  * @namespace password
  */
 
+import '../../components/account_forms';
+
+window.scrollTo(0, 0);
+
 const selectors = {
   recoverPasswordFormTriggers: '[data-recover-toggle]',
   recoverPasswordForm: '[data-recover-form]',

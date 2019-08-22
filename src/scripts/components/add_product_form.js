@@ -1,6 +1,7 @@
 import {formatMoney} from '@shopify/theme-currency';
 import {submitCartToCheckout} from '../utils/api';
 import {elems} from '../utils/Renderer';
+import {PadlockIcon} from '../utils/icons';
 
 const {Div, Input, Label, H3, Button, Span, Link} = elems;
 
@@ -244,9 +245,11 @@ function AddProductForm(productState, onQuantityUpdate, onOptionSelect, onSubmit
             [Link, {className: classes.reviewCart, innerHTML: 'View cart', attributes: {href: '/cart'}}],
             [Button, {
               className: classes.checkout,
-              innerHTML: 'Checkout',
               listeners: {click: [submitCartToCheckout]},
-            }],
+            }, [
+              [Span, {innerHTML: PadlockIcon}],
+              [Span, {innerHTML: 'Checkout'}],
+            ]],
           ]],
         ]],
       ],

@@ -78,13 +78,14 @@ function initEventListeners() {
     document.querySelector(selectors.miniCartClose),
   ];
 
-  accountPanelToggles.forEach((toggle) => {
+  // When user is logged in these elements will not exist - the filter avoids any errors caused by this.
+  accountPanelToggles.filter((toggle) => toggle).forEach((toggle) => {
     toggle.addEventListener('click', (event) => toggleShowContent(event, accountPanelContent));
   });
-  helpPanelToggles.forEach((toggle) => {
+  helpPanelToggles.filter((toggle) => toggle).forEach((toggle) => {
     toggle.addEventListener('click', (event) => toggleShowContent(event, helpPanelContent));
   });
-  miniCartToggles.forEach((toggle) => {
+  miniCartToggles.filter((toggle) => toggle).forEach((toggle) => {
     toggle.addEventListener('click', (event) => toggleShowContent(event, miniCartContent));
   });
 }

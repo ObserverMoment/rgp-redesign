@@ -156,7 +156,8 @@
 /**
  * Styling for review cart button.
  */
-@mixin review-cart-btn {
+@mixin secondary-btn {
+  border: 1px solid #d7d7d7;
   background: white;
   color: #006b5b;
   &:hover {
@@ -171,6 +172,10 @@
 @mixin checkout-btn {
   background: #1e1e1e;
   color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  span { padding: 0 5px; }
   &:hover {
     background: #000000;
   }

@@ -2,7 +2,7 @@ import {formatMoney} from '@shopify/theme-currency';
 import {getCartData, submitCartToCheckout} from '../utils/api';
 import {render, elems} from '../utils/Renderer';
 import {MiniCartLine} from './mini_cart_line';
-import {ShoppingBasket} from '../utils/icons';
+import {ShoppingBasketIcon, PadlockIcon} from '../utils/icons';
 import {Store} from '../utils/Store';
 
 const {Root, Div, H2, Span, Link, Button} = elems;
@@ -62,7 +62,7 @@ async function renderMiniCart() {
 
   render([
     Root, {rootElem: miniCartContainer}, [
-      [Div, {className: classes.icon, innerHTML: ShoppingBasket}],
+      [Div, {className: classes.icon, innerHTML: ShoppingBasketIcon}],
       [H2, {innerHTML: 'Your basket'}],
       ...data.items.map((lineItemObj) => MiniCartLine(lineItemObj)),
       [Div, {className: classes.shippingTotal}, [
@@ -79,12 +79,14 @@ async function renderMiniCart() {
         ]],
         [Button, {
           className: classes.toCheckoutBtn,
-          innerHTML: 'Checkout',
           listeners: {click: [submitCartToCheckout]},
           subscriptions: [
             (self) => miniCartState.onAttributeUpdate(() => self.removeEventListener('click', submitCartToCheckout), 'id'),
           ],
-        }],
+        }, [
+          [Span, {innerHTML: PadlockIcon}],
+          [Span, {innerHTML: 'Checkout'}],
+        ]],
       ]],
     ],
   ]);

@@ -1,4 +1,5 @@
 // Font awesome icons - requires CDN script in site header!
-const ShoppingBasket = '<i class="fas fa-shopping-basket"></i>';
+const ShoppingBasketIcon = '<i class="fas fa-shopping-basket"></i>';
+const PadlockIcon = '<i class="fas fa-lock"></i>';
 
-export {ShoppingBasket};
+export {ShoppingBasketIcon, PadlockIcon};
