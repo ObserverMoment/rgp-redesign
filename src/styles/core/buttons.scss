@@ -1,0 +1,85 @@
+a {
+  text-decoration: none;
+}
+
+/**
+ * Styling for buttons.
+ */
+@mixin btn {
+   padding: 10px 14px;
+   display: flex;
+   justify-content: center;
+   align-items: center;
+   border-radius: 4px;
+}
+.primary-btn {
+  @include btn;
+  background: $color-main-green;
+  color: white;
+  span { padding: 0 5px; }
+}
+
+.secondary-btn {
+  @include btn;
+  border: 1px solid $color-main-light-grey;
+  background: white;
+  color: #006b5b;
+  &:hover {
+    color: white;
+    background: #006b5b;
+  }
+}
+
+.cancel-btn {
+  @include btn;
+  border: 1px solid $color-main-grey;
+  background: white;
+  color: $color-main-grey;
+  &:hover {
+    color: white;
+    background: $color-main-grey;
+  }
+}
+
+.checkout-btn {
+  @include btn;
+  border: 1px solid $color-main-black;
+  background: $color-main-black;
+  color: white;
+}
+
+.delete-btn {
+  @include btn;
+  border: 1px solid $color-main-red;
+  background: white;
+  color: $color-main-red;
+  &:hover {
+    color: white;
+    background: $color-main-red;
+  }
+}
+
+/**
+ * Styling for text links.
+ */
+@mixin link {
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.4s;
+}
+
+.text-link {
+  @include link;
+  color: $color-main-green;
+  &:hover {
+    border-color: $color-main-green;
+  }
+}
+
+.text-link-alt {
+  @include link;
+  color: $color-main-gold;
+  &:hover {
+    border-color: $color-main-gold;
+  }
+}

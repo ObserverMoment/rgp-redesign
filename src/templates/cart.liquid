@@ -1,13 +1,97 @@
 <div class="cart-page">
   <div class="cart-page__back-link">
-    <i class="fas fa-chevron-left"></i>
-    <a href="javascript:history.back()">Previous</a>
+    <a href="javascript:history.back()">
+      <i class="fas fa-chevron-left"></i>
+      <span>Previous</span>
+    </a>
+  </div>
+
+  <div class="cart-page__update-error" data-update-error>
+    {% comment %}
+      Rendered via /cart.js.
+    {% endcomment %}
   </div>
 
   <h1>Your order</h1>
 
   {% if cart.item_count > 0 %}
-    <div class="cart-page__lines">
+  <table class="responsive-table">
+    <tbody class="cart-page__lines">
+      {% comment %}
+
+      Cart Item Template
+      =====================
+      The data-label attributes on <td> elements are mobile-friendly
+      helpers used for responsive-table labels
+      {% endcomment %}
+      {% for item in cart.items %}
+        <tr
+          class="responsive-table-row cart-page__lines__line"
+          data-line-key="{{ item.key }}"
+          data-line-variant-id="{{ item.variant_id}}"
+          data-line-unit-price="{{ item.final_price }}"
+          data-line-row
+        >
+
+          <td data-label="{{ 'customer.order.product' | t }}" class="cart-page__lines__line__thumb">
+            {% if item.image != blank %}
+              <a href="{{ item.url | within: collections.all }}">
+                {{ item | img_url: '80x80' | img_tag: item.title }}
+              </a>
+            {% endif %}
+          </td>
+
+          <td class="cart-page__lines__line__info">
+            <a href="{{ item.url }}">{{ item.product.title }}</a>
+            {% unless item.product.has_only_default_variant %}
+              <p>{{ item.variant.title }}</p>
+            {% endunless %}
+          </td>
+
+          <td data-label="{{ 'cart.label.quantity' | t }}" class="cart-page__lines__line__quantity">
+            <input
+              type="number"
+              class="cart-page__lines__line__quantity__input"
+              value="{{ item.quantity }}"
+              min="0"
+              aria-label="{{ 'cart.general.item_quantity' | t }}"
+              data-line-key="{{ item.key }}"
+              data-quantity-input
+            >
+            <button
+              type="button"
+              class="cart-page__lines__line__quantity__save primary-btn"
+              data-line-key="{{ item.key }}"
+              data-quantity-save-btn
+            >
+              Save
+            </button>
+            <div class="cart-page__lines__line__quantity__saved-icon" data-line-key="{{ item.key }}" data-quantity-saved-icon>
+              <i class="far fa-check-circle"></i>
+            </div>
+          </td>
+
+          <td class="cart-page__lines__line__delete">
+            <i class="fas fa-minus-circle" data-line-key="{{ item.key }}" data-line-delete-btn></i>
+          </td>
+
+          <td
+            data-label="{{ 'cart.label.total' | t }}"
+            class="cart-page__lines__line__total"
+            data-line-key="{{ item.key }}"
+            data-line-total-price
+          >
+            {{ item.line_price | money }}
+          </td>
+        </tr>
+
+      {% endfor %}
+    </tbody>
+  </table>
+
+
+
+      {% comment %}
       {% for item in cart.items %}
         <div
           class="cart-page__lines__line"
@@ -22,6 +106,7 @@
               </a>
             {% endif %}
           </div>
+
           <div class="cart-page__lines__line__info">
             <a href="{{ item.url }}">{{ item.product.title }}</a>
             {% unless item.product.has_only_default_variant %}
@@ -60,7 +145,7 @@
           </div>
         </div>
       {% endfor %}
-    </div>
+      {% endcomment %}
 
     <div class="cart-page__lower">
       {% if settings.cart_notes_enable %}
@@ -100,8 +185,12 @@
             {{ cart.total_price | money }}
           </div>
         </div>
-        <form action="/cart" method="post" novalidate>
-          <input type="submit" name="checkout" class="button" value="{{ 'cart.general.checkout' | t }}">
+        <form action="/cart" method="post" novalidate class="cart-page__checkout-form">
+          <button type="submit" name="checkout" class="cart-page__checkout-form__btn">
+            <span><i class="fas fa-lock"></i></span>
+            <span>{{ 'cart.general.checkout' | t }}</span>
+          </button>
+
         </form>
       </div>
     </div>
@@ -126,7 +215,7 @@
     </div>
   {% endif %}
 
-  <div class="">
+  <div class="cart-page__trustbox">
     {% include 'trustbox-list-widget' %}
   </div>
 </div>

@@ -27,7 +27,11 @@ $color-tag-item-bg: var(--color-tag-item-bg);
 $color-product-info-bg: var(--color-product-info-bg);
 $color-main-green: #006b5b;
 $color-main-gold: #DAA528;
+$color-main-grey: #737373;
+$color-main-light-grey: #d7d7d7;
+$color-main-red: #ff6d6d;
 $color-main-black: #151515;
+$color-main-blue: #08839e;
 $color-info-box-item-bg: $color-main-green; // Hook into schema no longer being used! var(--color-info-box-item-bg);
 
 // Helper colors for form error states
@@ -88,4 +92,4 @@ $breakpoints: (
 
 // Layout.
 $header-height: 70px;
-$footer-height: 150px;
+$footer-height: 200px;

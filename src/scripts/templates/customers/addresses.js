@@ -15,8 +15,72 @@ const selectors = {
   addressToggle: '[data-address-toggle]',
   addressForm: '[data-address-form]',
   addressDeleteForm: '[data-address-delete-form]',
+  addAddressBtn: '[data-add-address-btn]',
+  confirmAddBtn: '[data-confirm-add-btn]',
+  cancelAddBtn: '[data-cancel-add-btn]',
+  addressTitle: '[data-address-title]',
+  addressList: '[data-address-list]',
+  addressListItem: '[data-address]',
+  editAddressBtn: '[data-edit-address-btn]',
+  deleteAddressBtn: '[data-delete-address-btn]',
+  cancelEditBtn: '[data-cancel-edit-btn]',
 };
 const hideClass = 'hide';
+
+(function initAddNewAddressListeners() {
+  const addBtn = document.querySelector(selectors.addAddressBtn);
+  const addressList = document.querySelector(selectors.addressList);
+  const addressListItems = Array.from(document.querySelectorAll(selectors.addressListItem)).filter((node) => node);
+  const cancelAddBtn = document.querySelector(selectors.cancelAddBtn);
+  const confirmAddBtn = document.querySelector(selectors.confirmAddBtn);
+  const addressForm = document.querySelector(selectors.addressForm);
+  const addressTitle = document.querySelector(selectors.addressTitle);
+  const editAddressBtns = Array.from(document.querySelectorAll(selectors.editAddressBtn)).filter((node) => node);
+  const deleteAddressBtns = Array.from(document.querySelectorAll(selectors.deleteAddressBtn)).filter((node) => node);
+  const cancelEditBtns = Array.from(document.querySelectorAll(selectors.cancelEditBtn)).filter((node) => node);
+
+  addBtn.addEventListener('click', () => {
+    addressList.classList.add(hideClass);
+    addBtn.classList.add(hideClass);
+  });
+
+  cancelAddBtn.addEventListener('click', () => {
+    addressList.classList.remove(hideClass);
+    addBtn.classList.remove(hideClass);
+  });
+
+  confirmAddBtn.addEventListener('click', () => {
+    addressForm.classList.add(hideClass);
+    addBtn.classList.remove(hideClass);
+    addressList.classList.remove(hideClass);
+  });
+
+  editAddressBtns.forEach((btn) => {
+    btn.addEventListener('click', (event) => {
+      addressListItems.forEach((address) => {
+        if (address.dataset.addressId !== event.target.dataset.addressId) {
+          address.classList.add(hideClass);
+        }
+      });
+      // Hide the buttons.
+      event.target.classList.add(hideClass);
+      deleteAddressBtns.find((delBtn) => event.target.dataset.addressId === delBtn.dataset.addressId).classList.add(hideClass);
+      // Hide the title.
+      addressTitle.classList.add(hideClass);
+    });
+  });
+
+  cancelEditBtns.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      addressListItems.forEach((add) => add.classList.remove(hideClass));
+      deleteAddressBtns.forEach((del) => del.classList.remove(hideClass));
+      addressTitle.classList.remove(hideClass);
+    });
+  });
+
+  // Defaults to hidden on every page load.
+  addressForm.classList.add(hideClass);
+})();
 
 function initializeAddressForm(container) {
   const addressFields = container.querySelector(selectors.addressFields);

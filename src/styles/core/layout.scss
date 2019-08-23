@@ -18,6 +18,11 @@ html {
 }
 
 main {
-  margin-top: $header-height;
-  min-height: calc(100vh - #{$header-height} - #{$footer-height});
+  padding-top: calc(#{$header-height} + 20px);
+  min-height: calc(100vh - #{$footer-height});
+}
+
+.page-not-found {
+  text-align: center;
+  padding: 100px;
 }

@@ -1,0 +1,35 @@
+.account-orders {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  margin-bottom: 30px;
+  h1 { margin: 20px 0 0 0; }
+  &__back {
+    @include text-link;
+    position: absolute;
+    top: 30px;
+    left: 30px;
+    i { font-size: 0.9em; }
+  }
+  &__date {
+    color: $color-main-grey;
+  }
+  &__table {
+    flex-grow: 1;
+    margin: 10px;
+    padding: 20px;
+    text-align: left;
+    border: 1px solid $color-main-black;
+    border-radius:  6px;
+    a {
+      @include text-link-alt;
+    }
+    td, th { padding: 6px 8px; }
+  }
+  &__address {
+    padding: 10px;
+    border-bottom: 1px solid #d1d1d1;
+  }
+}

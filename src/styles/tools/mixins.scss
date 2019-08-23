@@ -147,17 +147,33 @@
   background: $color-product-info-bg;
   text-align: center;
   color: $color-body-text-2;
-  box-shadow: 0 1px 4px 1px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 1px 3px 1px rgba(0, 0, 0, 0.1);
   border: 1px solid #f9f9f9;
   border-radius: 6px;
   box-sizing: border-box;
 }
 
 /**
- * Styling for review cart button.
+ * Styling for buttons.
  */
+@mixin btn {
+   padding: 10px 14px;
+   display: flex;
+   justify-content: center;
+   align-items: center;
+   border-radius: 4px;
+}
+
+@mixin primary-btn {
+  @include btn;
+  background: $color-main-green;
+  color: white;
+  span { padding: 0 5px; }
+}
+
 @mixin secondary-btn {
-  border: 1px solid #d7d7d7;
+  @include btn;
+  border: 1px solid $color-main-light-grey;
   background: white;
   color: #006b5b;
   &:hover {
@@ -166,17 +182,119 @@
   }
 }
 
-/**
- * Styling for review cart button.
- */
-@mixin checkout-btn {
-  background: #1e1e1e;
-  color: white;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  span { padding: 0 5px; }
+@mixin cancel-btn {
+  @include btn;
+  border: 1px solid $color-main-grey;
+  background: white;
+  color: $color-main-grey;
   &:hover {
-    background: #000000;
+    color: white;
+    background: $color-main-grey;
   }
 }
+
+@mixin delete-btn {
+  @include btn;
+  border: 1px solid $color-main-red;
+  background: white;
+  color: $color-main-red;
+  &:hover {
+    color: white;
+    background: $color-main-red;
+  }
+}
+
+@mixin checkout-btn {
+  @include btn;
+  background: $color-main-black;
+  color: white;
+  span { padding: 0 5px; }
+  &:hover {
+    background: black;
+  }
+}
+
+/**
+ * Styling for text links.
+ */
+@mixin link {
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.4s;
+}
+
+@mixin text-link {
+  @include link;
+  color: $color-main-green;
+  &:hover {
+    border-color: $color-main-green;
+  }
+}
+
+@mixin text-link-alt {
+  @include link;
+  color: $color-main-gold;
+  &:hover {
+    border-color: $color-main-gold;
+  }
+}
+
+
+/**
+ * Sitewide form styling.
+ * @param $has-icons: Adds styling to position icons on the left hand side of inputs.
+ */
+ @mixin standard-form($has-icons: false) {
+   display: flex;
+   flex-direction: column;
+   align-items: center;
+   .errors {
+     color: $login-form-red;
+     ul { list-style: none; margin: 10px; padding: 5px; }
+   }
+   label {
+     color: $login-form-primary;
+     position: absolute;
+     opacity: 0;
+     transition: opacity 0.6s;
+     font-size: 0.9em;
+     left: 4px;
+     &.show-input-label {
+       opacity: 1;
+     }
+   }
+   i {
+     position: absolute;
+     color: $login-form-primary;
+     position: absolute;
+     bottom: 15%;
+     left: 5px;
+   }
+   input {
+     height: 50px;
+     padding: 10px;
+     @if $has-icons == true {
+       padding-left: 35px;
+     }
+     border: none;
+     border-bottom: 1px solid grey;
+     transition: border-color 0.4s;
+     &::placeholder {
+       font-size: 0.9em;
+       transition: color 0.4s;
+     }
+     &:focus {
+       border-color: $login-form-primary;
+       &::placeholder {
+         color: $login-form-primary;
+       }
+     }
+   }
+   input[type='submit'] {
+     @include primary-btn;
+   }
+   select {
+     padding: 20px;
+     margin: 20px;
+   }
+ }

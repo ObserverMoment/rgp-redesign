@@ -3,7 +3,7 @@
 */
 import {formatMoney} from '@shopify/theme-currency';
 import {debounce} from 'throttle-debounce';
-import {updateCartLineQuantity, updateCart} from '../utils/api';
+import {updateCartLineQuantity, updateCart, addItemsToCart} from '../utils/api';
 import {renderMiniCart} from '../components/mini_cart';
 
 
@@ -34,6 +34,7 @@ const getElements = {
   quantityInputs: () => document.querySelectorAll('[data-quantity-input]'),
   quantitySaveBtns: () => document.querySelectorAll('[data-quantity-save-btn]'),
   confirmSavedIcons: () => document.querySelectorAll('[data-quantity-saved-icon]'),
+  updateErrorElem: () => document.querySelector('[data-update-error]'),
   lineItemDeleteBtns: () => document.querySelectorAll('[data-line-delete-btn]'),
   subtotalPrice: () => document.querySelector('[data-subtotal-price]'),
   orderNoteTextarea: () => document.querySelector('[data-order-note-textarea]'),
@@ -58,6 +59,8 @@ const classes = {
     const lineKey = input.dataset.lineKey;
     const lineRow = lineRows.find((row) => row.dataset.lineKey === lineKey);
     const unitPrice = lineRow.dataset.lineUnitPrice;
+    const variantId = lineRow.dataset.lineVariantId;
+    // Save data for each line into a state object, accessible via shopify cart line key.
     state[lineKey] = {
       lineRow,
       input,
@@ -68,6 +71,7 @@ const classes = {
       initialQuantity: input.value,
       liveQuantity: input.value,
       unitPrice,
+      variantId,
     };
   });
 })();
@@ -99,26 +103,56 @@ const classes = {
     saveBtn.addEventListener('click', async (event) => {
       const lineKey = event.target.dataset.lineKey;
       const line = state[lineKey];
-      const quantity = line.liveQuantity;
-      await updateCartLineQuantity({quantity, id: lineKey});
-      // If quantity === 0 then you need to remove the whole lineRow element.
-      if (quantity === '0') {
-        line.lineRow.classList.add(classes.fadeOut);
-        setTimeout(() => {
-          line.lineRow.parentNode.removeChild(line.lineRow);
-        }, 1000);
+      const initialQuantity = line.initialQuantity;
+      const newQuantity = line.liveQuantity;
+      const quantityChange = newQuantity - initialQuantity;
+
+      // Check that you have enough stock to cover the new value.
+      if (quantityChange <= 0) {
+        // If quantity is decreased then go ahead and make the update.
+        await updateCartLineQuantity({quantity: newQuantity, id: lineKey});
+        onUpdateSuccess();
       } else {
-        line.initialQuantity = quantity;
+        // Else add the difference to the cart via addToCart api call - which will actually return errors if not successful.
+        const res = await addItemsToCart({
+          id: line.variantId,
+          quantity: quantityChange,
+        });
+        if (res.message === 'Cart Error') {
+          const errorTxt = res.description.split(' ')[0] === 'All'
+            ? res.description
+            : 'Sorry, we don\'t have that many in stock';
+          onUpdateFail(errorTxt);
+        } else {
+          onUpdateSuccess();
+        }
+      }
+
+      function onUpdateSuccess() {
+        // If quantity === 0 then you need to remove the whole lineRow element.
+        if (newQuantity === '0') {
+          line.lineRow.classList.add(classes.fadeOut);
+          setTimeout(() => {
+            line.lineRow.parentNode.removeChild(line.lineRow);
+          }, 1000);
+        }
+        line.initialQuantity = newQuantity;
         line.saveBtn.classList.remove(classes.show);
         line.confirmSaveIcon.classList.add(classes.show);
         // Update line total.
-        const newTotal = quantity * line.unitPrice;
-        line.lineTotal.innerHTML = formatMoney(newTotal, 'GBP');
+        const newTotal = newQuantity * line.unitPrice;
+        line.lineTotal.innerHTML = formatMoney(newTotal, theme.moneyFormat);
         updateSubtotal();
         renderMiniCart();
         setTimeout(() => {
           line.confirmSaveIcon.classList.remove(classes.show);
         }, 2000);
+      }
+
+      function onUpdateFail(errorMsg) {
+        const errorDisplay = getElements.updateErrorElem();
+        errorDisplay.innerHTML = errorMsg;
+        errorDisplay.classList.add(classes.show);
       }
     });
   });
@@ -145,7 +179,7 @@ const classes = {
     confirmNoteSaved.classList.add(classes.show);
     setTimeout(() => {
       confirmNoteSaved.classList.remove(classes.show);
-    }, 1500);
+    }, 2000);
   }));
 })();
 

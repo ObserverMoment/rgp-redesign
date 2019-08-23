@@ -1,0 +1,6 @@
+.shopify-challenge__container {
+  ul { list-style: none; padding: 0; }
+  input[type='submit'] {
+    @include primary-btn;
+  }
+}

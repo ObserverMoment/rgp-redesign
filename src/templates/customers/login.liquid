@@ -1,4 +1,4 @@
-<div class="form-success hide" data-reset-success>
+<div class="login-form__recover-email-success hide" data-reset-success>
   {{ 'customer.recover_password.success' | t }}
 </div>
 
@@ -101,9 +101,9 @@
 </div>
 
 {% if shop.checkout.guest_login %}
-  <h2>{{ 'customer.login.guest_title' | t }}</h2>
-
-  {% form 'guest_login' %}
-    <input type="submit" class="button" value="{{ 'customer.login.guest_continue' | t }}">
-  {% endform %}
+  <div class="login-form__guest-checkout">
+    {% form 'guest_login' %}
+      <input type="submit" class="button" value="{{ 'customer.login.guest_title' | t }}">
+    {% endform %}
+  </div>
 {% endif %}

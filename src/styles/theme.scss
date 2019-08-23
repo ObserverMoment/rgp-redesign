@@ -20,6 +20,7 @@
 @import './core/responsive-tables';
 @import './core/rte';
 @import './core/typography';
+@import './core/buttons';
 
 // Components
 @import './components/buttons';
@@ -49,3 +50,7 @@
 @import './templates/product';
 @import './templates/cart';
 @import './templates/customers/account-forms';
+@import './templates/customers/account';
+@import './templates/customers/account-orders';
+@import './templates/customers/addresses';
+@import './templates/challenge';
