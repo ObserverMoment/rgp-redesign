@@ -298,3 +298,28 @@
      margin: 20px;
    }
  }
+
+/**
+  * Responsive grid for displaying products cards or similar.
+ */
+ @mixin products-grid {
+   display: flex;
+   flex-wrap: wrap;
+   justify-content: space-around;
+   padding: 1px;
+   @include media-query($medium-up) {
+     padding: 10px;
+   }
+   &__product-link {
+     text-decoration: none;
+     color: $color-body-text-1;
+     padding: 12px 2px;
+     width: 100%;
+     @include media-query($medium) {
+       width: calc(100% / 2 - 5px);
+     }
+     @include media-query($large-up) {
+       width: calc(100% / 3 - 5px);
+     }
+   }
+ }

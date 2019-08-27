@@ -3,7 +3,7 @@
 }
 
 .home-hero {
-  margin-top: -$header-height;
+  margin-top: calc(#{-$header-height} - #{$main-padding-top});
   &__image {
     height: 100vh;
     min-height: 768px;

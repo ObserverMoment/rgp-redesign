@@ -4,7 +4,7 @@
  * @namespace header
  */
 import {renderMiniCart} from '../components/mini_cart';
-import {scrollPosEmitter, events} from '../utils/global_events';
+import {globalEmitter, events} from '../utils/global_events';
 
 const {SCROLLING} = events;
 
@@ -59,7 +59,7 @@ function initEventListeners() {
   // Initialise header style onload.
   updateHeaderStyle();
   // Subscribe updateHeaderStyle to the scroll event.
-  scrollPosEmitter.on(SCROLLING, updateHeaderStyle);
+  globalEmitter.on(SCROLLING, updateHeaderStyle);
 
   const accountPanelContent = document.querySelector(selectors.accountPanelContent);
   const helpPanelContent = document.querySelector(selectors.helpPanelContent);

@@ -141,12 +141,12 @@ async function initProductPage() {
     productState.onAttributeUpdate((newState) => {
       const imgGalleryElem = getElements.imageGallery();
       // Remove event listeners that will refer to the old instance of the image gallery.
-      smoothFade('out', imgGalleryElem, 100, [0.47, 0, 0.745, 0.715], () => {
+      smoothFade([1, 0], imgGalleryElem, 100, [0.47, 0, 0.745, 0.715], () => {
         while (imgGalleryElem.firstChild) {
           imgGalleryElem.removeChild(imgGalleryElem.firstChild);
         }
         constructGallery(newState);
-        smoothFade('in', imgGalleryElem, 300, []);
+        smoothFade([0, 1], imgGalleryElem, 300, []);
       });
     }, 'Colour');
   }
@@ -155,7 +155,7 @@ async function initProductPage() {
 // Gallery.
 function initGallery(images) {
 
-  const galleryState = Store({curIndex: 0}, 'product-gallery');
+  const galleryState = Store({curIndex: 0, imageWidths: [], curXTranslate: 0}, 'product-gallery');
 
   const imageGallery = ImageGallery(images, galleryState, '1600x1600');
   const galleryNavThumbs = GalleryNavThumbs(images, galleryState, '150x150');

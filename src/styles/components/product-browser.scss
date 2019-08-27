@@ -11,15 +11,6 @@
     }
   }
   &__products {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-around;
-    padding: 10px;
-    &__product-link {
-      width: calc(100% / 3 - 10px);
-      text-decoration: none;
-      color: $color-body-text-1;
-      padding: 12px 2px;
-    }
+    @include products-grid;
   }
 }

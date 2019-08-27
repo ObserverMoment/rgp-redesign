@@ -32,9 +32,13 @@ const tree = [
 
 
 function buildElement({elementType, config, parent}) {
+  if (!parent) {
+    throw Error('A parent is required to make a node - make sure you have passed a parent element via {parent} attribute');
+  }
+
   const {
     className = null, innerHTML = null, attributes = null,
-    listeners = null, subscriptions = null,
+    listeners = null, subscriptions = null, postMountCallbacks = null,
   } = config;
   // Make the node.
   const node = document.createElement(elementType);
@@ -62,7 +66,7 @@ function buildElement({elementType, config, parent}) {
     });
   }
 
-  // Subscriptions allows elements to be passed to event subscribers
+  // Subscriptions allows elements to be passed to event subscribers.
   // An array of functions.
   if (subscriptions) {
     subscriptions.forEach((sub) => {
@@ -75,11 +79,15 @@ function buildElement({elementType, config, parent}) {
     node.innerHTML = innerHTML;
   }
 
-  // Append to parent.
-  if (!parent) {
-    throw Error('A parent is required to make a node - make sure you have passed a parent element via {parent} attribute');
-  }
   parent.appendChild(node);
+
+  // Setup or initialisation functions that require the node be mounted to the dom.
+  // Generally just run these functions once.
+  if (postMountCallbacks) {
+    postMountCallbacks.forEach((callback) => {
+      callback(node);
+    });
+  }
 
   return node;
 }
