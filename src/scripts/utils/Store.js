@@ -31,15 +31,18 @@ function Store(initialState, name) {
       if (noMerge) {
         // Notify all listeners of the state that is about to be overwritten.
         Object.keys(state).forEach((key) => stateEventEmitter.emit(`${storeName}-${storeEvents.STATEUPDATED}-${key}`, state));
+        state = {...newState};
+      } else {
+        state = {...state, ...newState};
+        // Emit individual attribute change events, but only when the key has actually changed.
+        // Watch out for shallow comparison issues with nested objects!
+        Object.keys(newState).forEach((key) => {
+          if (newState[key] !== oldStateMemo[key]) {
+            stateEventEmitter.emit(`${storeName}-${storeEvents.STATEUPDATED}-${key}`, state);
+          }
+        });
       }
-      state = noMerge ? {...newState} : {...state, ...newState};
-      // Emit individual attribute change events, but only when the key has actually changed.
-      // Watch out for shallow comparison issues with nested objects!
-      Object.keys(newState).forEach((key) => {
-        if (newState[key] !== oldStateMemo[key]) {
-          stateEventEmitter.emit(`${storeName}-${storeEvents.STATEUPDATED}-${key}`, state);
-        }
-      });
+
       // Then the general state change event.
       stateEventEmitter.emit(`${storeName}-${storeEvents.STATEUPDATED}`, state);
     },
@@ -49,6 +52,7 @@ function Store(initialState, name) {
     },
     // Subscribe to changes to a specific key or array of keys in state (similar to react Hooks deps array.)
     onAttributeUpdate(subscriberFn, keys) {
+      if (!keys) { throw Error('Keys arg is required to subscribe to an attribute change'); }
       const depsArray = Array.isArray(keys) ? keys : [keys];
       depsArray.forEach((key) => {
         // Check that the key is actually in the state object and a valid dependency.

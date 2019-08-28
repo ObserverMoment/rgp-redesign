@@ -157,8 +157,8 @@ function initGallery(images) {
 
   const galleryState = Store({curIndex: 0, imageWidths: [], curXTranslate: 0}, 'product-gallery');
 
-  const imageGallery = ImageGallery(images, galleryState, '1600x1600');
-  const galleryNavThumbs = GalleryNavThumbs(images, galleryState, '150x150');
+  const imageGallery = ImageGallery(images, galleryState);
+  const galleryNavThumbs = GalleryNavThumbs(images, galleryState);
 
   const rootElem = getElements.imageGallery();
 

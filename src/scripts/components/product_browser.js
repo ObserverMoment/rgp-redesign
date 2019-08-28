@@ -33,7 +33,7 @@ function renderProductsList(data) {
         [
           Link,
           {className: classes.productLink, attributes: {href: `${urlRoot}/${product.handle}`}},
-          [ProductCard(product, '500x500', true)],
+          [ProductCard(product, true)],
         ]),
   ]);
 }

@@ -4,9 +4,7 @@
  * @namespace header
  */
 import {renderMiniCart} from '../components/mini_cart';
-import {globalEmitter, events} from '../utils/global_events';
-
-const {SCROLLING} = events;
+import {globalState} from '../utils/global_events';
 
 const classes = {
   active: 'active',
@@ -37,10 +35,10 @@ function toggleShowContent(event, elem) {
   }
 }
 
-function updateHeaderStyle() {
+function updateHeaderStyle(newScrollState) {
   const headerContent = document.querySelector(selectors.headerContent);
   const urlpath = window.location.pathname;
-  const scrollY = window.scrollY;
+  const scrollY = newScrollState.scrollY;
 
   if (urlpath === '/' && scrollY <= 50) {
     headerContent.className = 'header-content no-bg';
@@ -57,9 +55,9 @@ function updateHeaderStyle() {
 
 function initEventListeners() {
   // Initialise header style onload.
-  updateHeaderStyle();
+  updateHeaderStyle(globalState.getState());
   // Subscribe updateHeaderStyle to the scroll event.
-  globalEmitter.on(SCROLLING, updateHeaderStyle);
+  globalState.onAttributeUpdate((newState) => updateHeaderStyle(newState), 'scrollY');
 
   const accountPanelContent = document.querySelector(selectors.accountPanelContent);
   const helpPanelContent = document.querySelector(selectors.helpPanelContent);

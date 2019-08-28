@@ -24,7 +24,7 @@ function renderProductsList(data) {
         [
           Link,
           {className: classes.productLink, attributes: {href: `${urlRoot}/${product.handle}`}},
-          [ProductCard(product, '1000x1000', true)],
+          [ProductCard(product, true)],
         ]),
   ]);
 }

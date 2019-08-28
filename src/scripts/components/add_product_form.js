@@ -9,11 +9,12 @@ const classes = {
   wrapper: 'add-product',
   options: 'add-product__options',
   option: 'add-product__options__option',
-  quantity: 'add-product__quantity',
-  updateQuantity: 'add-product__quantity__update',
-  displayQuantity: 'add-product__quantity__display',
-  price: 'add-product__price',
   submit: 'add-product__submit',
+  quantity: 'add-product__submit__quantity',
+  updateQuantity: 'add-product__submit__quantity__update',
+  displayQuantity: 'add-product__submit__quantity__display',
+  price: 'add-product__submit__price',
+  submitBtn: 'add-product__submit-btn',
   error: 'add-product__error',
   success: 'add-product__success',
   successMsg: 'add-product__success__msg',
@@ -175,45 +176,47 @@ function AddProductForm(productState, onQuantityUpdate, onOptionSelect, onSubmit
             ],
           ])),
         ]],
-        [Div, {className: classes.quantity}, [
+        [Div, {className: classes.submit}, [
+          [Div, {className: classes.quantity}, [
+            [Div, {
+              className: classes.updateQuantity,
+              innerHTML: '<i class="far fa-minus-square"></i>',
+              listeners: {click: [() => onQuantityUpdate(Math.max(1, parseInt(getElements.inputElem().value, 10) - 1))]},
+            }],
+            [Input, {
+              className: classes.displayQuantity,
+              attributes: {type: 'number', name: 'quantity', value: '1', min: '1', [`data-add-product-form-${addProductFormId}`]: ''},
+              listeners: {change: [(event) => onQuantityUpdate(parseInt(event.target.value, 10))]},
+              subscriptions: [
+                (self) => productState.onAttributeUpdate((newState) => updateInputElem(newState, self), 'currentQuantity'),
+              ],
+            }],
+            [Div, {
+              className: classes.updateQuantity,
+              innerHTML: '<i class="far fa-plus-square"></i>',
+              listeners: {click: [() => onQuantityUpdate(Math.max(1, parseInt(getElements.inputElem().value, 10) + 1))]},
+            }],
+          ]],
           [Div, {
-            className: classes.updateQuantity,
-            innerHTML: '<i class="far fa-minus-square"></i>',
-            listeners: {click: [() => onQuantityUpdate(Math.max(1, parseInt(getElements.inputElem().value, 10) - 1))]},
-          }],
-          [Input, {
-            className: classes.displayQuantity,
-            attributes: {type: 'number', name: 'quantity', value: '1', min: '1', [`data-add-product-form-${addProductFormId}`]: ''},
-            listeners: {change: [(event) => onQuantityUpdate(parseInt(event.target.value, 10))]},
+            className: classes.price,
+            innerHTML: formatMoney(initialPrice, theme.moneyFormat),
+            attributes: {[`data-add-product-form-price-${addProductFormId}`]: ''},
             subscriptions: [
-              (self) => productState.onAttributeUpdate((newState) => updateInputElem(newState, self), 'currentQuantity'),
+              (self) => productState.onAttributeUpdate(
+                (newState) => updatePriceElem(newState, self), ['currentVariantId', 'currentQuantity'],
+              ),
             ],
           }],
           [Div, {
-            className: classes.updateQuantity,
-            innerHTML: '<i class="far fa-plus-square"></i>',
-            listeners: {click: [() => onQuantityUpdate(Math.max(1, parseInt(getElements.inputElem().value, 10) + 1))]},
+            className: classes.error,
+            innerHTML: error,
+            subscriptions: [
+              (self) => productState.onAttributeUpdate((newState) => updateErrorInfo(newState, self), 'error'),
+            ],
           }],
         ]],
-        [Div, {
-          className: classes.price,
-          innerHTML: formatMoney(initialPrice, theme.moneyFormat),
-          attributes: {[`data-add-product-form-price-${addProductFormId}`]: ''},
-          subscriptions: [
-            (self) => productState.onAttributeUpdate(
-              (newState) => updatePriceElem(newState, self), ['currentVariantId', 'currentQuantity'],
-            ),
-          ],
-        }],
-        [Div, {
-          className: classes.error,
-          innerHTML: error,
-          subscriptions: [
-            (self) => productState.onAttributeUpdate((newState) => updateErrorInfo(newState, self), 'error'),
-          ],
-        }],
         [Button, {
-          className: classes.submit,
+          className: classes.submitBtn,
           attributes: {name: 'add', ...initSubmitButton()},
           listeners: {click: onSubmit},
           subscriptions: [

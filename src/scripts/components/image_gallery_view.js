@@ -1,15 +1,16 @@
 import {elems} from '../utils/Renderer';
-import {smoothFade, smoothTranslate, formImageSizeUrl} from '../utils/utils';
-import {globalEmitter, events} from '../utils/global_events';
+import {smoothFade, smoothTranslate} from '../utils/utils';
+import {globalState} from '../utils/global_events';
+import {ResponsiveImage} from './responsive_image';
 
-const {Div, Img} = elems;
-const {RESIZING} = events;
+const {Div} = elems;
 
 const classes = {
   hideIcon: 'hide-icon',
   showImage: 'show-image',
   imageGalleryViewport: 'image-gallery',
   imagesContainer: 'image-gallery__images-container',
+  singleImage: 'image-gallery__images-container__single-image',
   imageGalleryActions: 'image-gallery__actions',
   imageGalleryActionsIcon: 'image-gallery__actions__icon',
 };
@@ -22,9 +23,7 @@ const imageScrollTime = 300;
 /*
   @param {images: object[]}: {src, alt, height, width, position}
 */
-function ImageGallery(images = [], galleryState, imageSize) {
-  const sizedImages = images.map((img) => ({...img, src: formImageSizeUrl(img.src, imageSize)}));
-
+function ImageGallery(images = [], galleryState) {
   galleryId++;
   galleryState.setState({galleryId});
 
@@ -49,27 +48,9 @@ function ImageGallery(images = [], galleryState, imageSize) {
 
   function updateImageIndex(newState, imagesContainerElem) {
     const {curIndex: newIndex, curXTranslate, imageWidths} = newState;
-    if (newIndex < 0 || newIndex > sizedImages.length - 1) {
+    if (newIndex < 0 || newIndex > images.length - 1) {
       console.error('You can\'t display an image with an index that is outside the range of the imageurls array');
       return;
-    }
-    // Show / hide the prev/next arrows.
-    const leftIcon = getElements.leftScrollIcon();
-    if (leftIcon) {
-      if (newIndex === 0) {
-        leftIcon.classList.add(classes.hideIcon);
-      } else {
-        leftIcon.classList.remove(classes.hideIcon);
-      }
-    }
-
-    const rightIcon = getElements.rightScrollIcon();
-    if (rightIcon) {
-      if (newIndex === sizedImages.length - 1) {
-        rightIcon.classList.add(classes.hideIcon);
-      } else {
-        rightIcon.classList.remove(classes.hideIcon);
-      }
     }
 
     // Need to total up all the image widths between the two new indexes - based on imageWidths state array.
@@ -122,6 +103,48 @@ function ImageGallery(images = [], galleryState, imageSize) {
     galleryState.setState({curXTranslate: translateAmt});
   }
 
+  function updateActionsElement(newState) {
+    // Show / hide the prev/next arrows.
+    const leftIcon = getElements.leftScrollIcon();
+    if (leftIcon) {
+      if (newState.curIndex === 0) {
+        leftIcon.classList.add(classes.hideIcon);
+      } else {
+        leftIcon.classList.remove(classes.hideIcon);
+      }
+    }
+
+    const rightIcon = getElements.rightScrollIcon();
+    if (rightIcon) {
+      if (newState.curIndex === images.length - 1) {
+        rightIcon.classList.add(classes.hideIcon);
+      } else {
+        rightIcon.classList.remove(classes.hideIcon);
+      }
+    }
+  }
+
+  function renderResponsiveImage(imageObj, index) {
+    const responsiveImage = ResponsiveImage(
+      imageObj,
+      viewportDataAttr,
+      [(self) => updateGalleryImageDims(self, index)],
+      [(self) => globalState.onAttributeUpdate(() => updateGalleryImageDims(self, index), ['innerWidth', 'innerHeight'])],
+    );
+    return ([
+      Div, {
+        className: classes.singleImage,
+        attributes: {'data-index': index},
+        subscriptions: [
+          (self) => galleryState.onAttributeUpdate((newState) => checkVisibility(newState, self), 'curIndex'),
+        ],
+        postMountCallbacks: [
+          (self) => checkVisibility(initialState, self),
+        ],
+      }, [responsiveImage.view()],
+    ]);
+  }
+
   return {
     galleryImageRef: viewportDataAttr,
     actionsElemRef: actionsDataAttr,
@@ -137,20 +160,17 @@ function ImageGallery(images = [], galleryState, imageSize) {
             (self) => galleryState.onAttributeUpdate((newState) => updateImageIndex(newState, self), 'curIndex'),
             (self) => galleryState.onAttributeUpdate((newState) => handleScreenResize(newState, self), 'imageWidths'),
           ],
-        }, sizedImages.map((imageObj, index) => ([
-          Img, {
-            attributes: {src: imageObj.src, [`${imageElemsDataAttr}-image-${index}`]: '', 'data-index': index},
-            subscriptions: [
-              (self) => globalEmitter.on(RESIZING, () => updateGalleryImageDims(self, index)),
-              (self) => galleryState.onAttributeUpdate((newState) => checkVisibility(newState, self), 'curIndex'),
-            ],
-            postMountCallbacks: [
-              (self) => updateGalleryImageDims(self, index),
-              (self) => checkVisibility(initialState, self),
-            ],
-          },
-        ]))],
-        [Div, {className: classes.imageGalleryActions, attributes: {[actionsDataAttr]: ''}}, [
+        }, images.map((imageObj, index) => (
+            renderResponsiveImage(imageObj, index)
+          )),
+        ],
+        [Div, {
+          className: classes.imageGalleryActions,
+          attributes: {[actionsDataAttr]: ''},
+          subscriptions: [
+            () => galleryState.onAttributeUpdate((newState) => updateActionsElement(newState), 'curIndex'),
+          ],
+        }, [
           [Div, {
             className: `${classes.imageGalleryActionsIcon} ${curIndex === 0 && 'hide-icon'}`,
             attributes: {[leftScrollIconAttr]: ''},
@@ -163,14 +183,14 @@ function ImageGallery(images = [], galleryState, imageSize) {
               }]},
           }],
           [Div, {
-            className: `${classes.imageGalleryActionsIcon} ${curIndex === sizedImages.length - 1 && 'hide-icon'}`,
+            className: `${classes.imageGalleryActionsIcon} ${curIndex === images.length - 1 && 'hide-icon'}`,
             innerHTML: '<i class="fas fa-arrow-alt-circle-right"></i>',
             attributes: {[rightScrollIconAttr]: ''},
             listeners: {click: [
               (event) => {
                 event.stopPropagation();
                 event.preventDefault();
-                galleryState.setState({curIndex: Math.min(curIndex + 1, sizedImages.length - 1)});
+                galleryState.setState({curIndex: Math.min(curIndex + 1, images.length - 1)});
               }]},
           }],
         ]],
@@ -180,55 +200,3 @@ function ImageGallery(images = [], galleryState, imageSize) {
 }
 
 export {ImageGallery};
-
-//   return {
-//     galleryImageRef: imgDataAttr,
-//     actionsElemRef: actionsDataAttr,
-//     updateImageIndex,
-//     view: () => ([
-//       Div, {className: classes.imageGalleryViewport}, [
-//         [Img, {
-//           attributes: {src: sizedImages[curIndex].src, [imgDataAttr]: ''},
-//           listeners: {
-//             load: [() => smoothFade('in', getElements.imageElem(), 200, [])],
-//           },
-//           subscriptions: [
-//             (self) => galleryState.onAttributeUpdate((newState) => updateImageIndex(newState, self), 'curIndex'),
-//             (self) => globalEmitter.on(RESIZING, () => updateRenderedImageDims(self)),
-//           ],
-//           postMountCallbacks: [
-//             (self) => {
-//               console.log(self);
-//               console.log('self.getBoundingClientRect().width', self.getBoundingClientRect().width);
-//               galleryState.setState({imageWidth: self.getBoundingClientRect().width});
-//             },
-//           ],
-//         }],
-//         [Div, {className: classes.imageGalleryActions, attributes: {[actionsDataAttr]: ''}}, [
-//           [Div, {
-//             className: `${classes.imageGalleryActionsIcon} ${curIndex === 0 && 'hide-icon'}`,
-//             attributes: {[leftScrollIconAttr]: ''},
-//             innerHTML: '<i class="fas fa-arrow-alt-circle-left"></i>',
-//             listeners: {click: [
-//               (event) => {
-//                 event.stopPropagation();
-//                 event.preventDefault();
-//                 galleryState.setState({curIndex: Math.max(curIndex - 1, 0)});
-//               }]},
-//           }],
-//           [Div, {
-//             className: `${classes.imageGalleryActionsIcon} ${curIndex === sizedImages.length - 1 && 'hide-icon'}`,
-//             innerHTML: '<i class="fas fa-arrow-alt-circle-right"></i>',
-//             attributes: {[rightScrollIconAttr]: ''},
-//             listeners: {click: [
-//               (event) => {
-//                 event.stopPropagation();
-//                 event.preventDefault();
-//                 galleryState.setState({curIndex: Math.min(curIndex + 1, sizedImages.length - 1)});
-//               }]},
-//           }],
-//         ]],
-//       ],
-//     ]),
-//   };
-// }

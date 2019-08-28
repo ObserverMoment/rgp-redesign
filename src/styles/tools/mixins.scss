@@ -28,6 +28,12 @@
   }
 }
 
+@mixin media-min-size($screen-type) {
+  @media only screen and (min-width: $screen-type) {
+    @content;
+  }
+}
+
 /**
 * Keyframe creators - creates a 'namespaced' keyframes object with the settings configured from args.
 */
@@ -147,9 +153,9 @@
   background: $color-product-info-bg;
   text-align: center;
   color: $color-body-text-2;
-  box-shadow: 0 1px 3px 1px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 1px 2px 1px rgba(0, 0, 0, 0.1);
   border: 1px solid #f9f9f9;
-  border-radius: 6px;
+  border-radius: 4px;
   box-sizing: border-box;
 }
 
@@ -306,19 +312,16 @@
    display: flex;
    flex-wrap: wrap;
    justify-content: space-around;
-   padding: 1px;
-   @include media-query($medium-up) {
-     padding: 10px;
-   }
+   padding: 10px;
    &__product-link {
      text-decoration: none;
      color: $color-body-text-1;
      padding: 12px 2px;
      width: 100%;
-     @include media-query($medium) {
+     @include media-min-size($screen-tablet) {
        width: calc(100% / 2 - 5px);
      }
-     @include media-query($large-up) {
+     @include media-min-size($screen-medium) {
        width: calc(100% / 3 - 5px);
      }
    }

@@ -4,31 +4,47 @@
 .product {
   &__heading {
     font-size: 1.3em;
-    padding: 15px 0 0 30px;
     margin: 0;
     text-align: center;
+    padding: 5px 10px;
+    @include media-min-size($screen-tablet) {
+      padding: 15px 0 0 30px;
+    }
   }
   &__content {
-    padding: 10px 40px;
+    padding: 10px;
     animation: product-page-fadein 0.4s ease-in-out, product-page-slide 0.5s ease-in-out;
+    @include media-min-size($screen-tablet) {
+      padding: 10px 20px;
+    }
     &__upper {
       display: flex;
-      flex-wrap: wrap;
+      flex-direction: column;
+      @include media-min-size($screen-tablet) {
+        flex-direction: row;
+      }
       &__gallery {
-        min-width: 400px;
-        max-height: 700px;
-        flex-basis: 70%;
+        flex-basis: 100%;
         @include card;
         display: flex;
         flex-wrap: nowrap;
         justify-content: space-around;
         align-items: center;
+        @include media-min-size($screen-tablet) {
+          flex-basis: 70%;
+        }
         .image-gallery-nav {
-          padding: 10px;
-          flex-basis: 15%;
-          max-height: 92%;
-          overflow-y: auto;
-          overflow-x: hidden;
+          display: none;
+          @include media-min-size($screen-medium) {
+            display: block;
+            padding: 10px;
+            flex-basis: 15%;
+            max-height: 600px;
+            overflow-y: auto;
+            overflow-x: hidden;
+            margin-right: 15px;
+            border-right: 1px solid $color-main-light-grey;
+          }
           img {
             padding: 4px;
             border-radius: 3px;
@@ -39,21 +55,33 @@
           }
         }
         .image-gallery {
-          padding: 20px;
-          flex-basis: 80%;
+          flex-basis: 100%;
+          @include media-min-size($screen-medium) {
+            flex-basis: 85%;
+          }
         }
       }
       &__info {
-        flex-basis: 30%;
-        max-width: 600px;
-        min-width: 400px;
+        flex-basis: 100%;
         display: flex;
         flex-direction: column;
+        @include media-min-size($screen-tablet) {
+          flex-basis: 30%;
+        }
         > div {
           flex-grow: 1;
         }
         &__add-form {
           @include card;
+          position: fixed;
+          bottom: 0;
+          width: 100%;
+          left: 0;
+          z-index: 20;
+          @include media-min-size($screen-medium) {
+            position: relative;
+            z-index: 1;
+          }
         }
         &__delivery-info, &__custom-info {
           position: relative;
@@ -100,20 +128,27 @@
           display: flex;
           justify-content: space-around;
           align-items: center;
-          i { font-size: 1.9em; color: $color-main-black; }
+          i { font-size: 1.9em; color: $color-main-black; padding: 0 3px; }
         }
       }
     }
     &__lower {
       display: flex;
+      flex-direction: column;
       flex-wrap: wrap;
       justify-content: space-between;
       margin: 10px 0;
+      @include media-min-size($screen-medium) {
+        flex-direction: row;
+      }
       &__bullet-points {
         @include card;
         padding: 20px;
-        flex-basis: 49.5%;
+        flex-basis: 100%;
         font-size: 1.1em;
+        @include media-min-size($screen-medium) {
+          flex-basis: 49.5%;
+        }
         ul {
           list-style-type: none;
           margin: 0;
@@ -131,7 +166,10 @@
       &__description {
         @include card;
         padding: 20px;
-        flex-basis: 49.5%;
+        flex-basis: 100%;
+        @include media-min-size($screen-medium) {
+          flex-basis: 49.5%;
+        }
       }
     }
   }

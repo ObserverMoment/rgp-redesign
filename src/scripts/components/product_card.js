@@ -21,7 +21,7 @@ const classes = {
 
 // Returns a single array of the form required by Renderer.render().
 // [Type, {config}, [children]]
-function ProductCard(productObj, imageSize, enableGallery) {
+function ProductCard(productObj, enableGallery) {
   const {title, images, options, variants} = productObj;
   const price = variants[0] && variants[0].price;
 
@@ -30,7 +30,7 @@ function ProductCard(productObj, imageSize, enableGallery) {
 
   const galleryState = Store({curIndex: 0, imageWidths: [], curXTranslate: 0}, 'product-card-gallery');
 
-  const imageGallery = enableGallery ? ImageGallery(images, galleryState, imageSize) : [Img, {attributes: {src: images[0].src}}];
+  const imageGallery = enableGallery ? ImageGallery(images, galleryState) : [Img, {attributes: {src: images[0].src}}];
 
   const isAvailable = variants.some((variant) => variant.available);
 

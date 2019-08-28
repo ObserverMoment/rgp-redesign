@@ -62,12 +62,23 @@ $font-script-style: var(--font-script-style);
 $transition-duration: 250ms;
 $transition-timing: ease-in-out;
 
-// Grid
+// Grid (Defaults provided by Shopify slate starter)
 $grid-medium: 46.85em;
 $grid-large: 61.85em;
 $grid-widescreen: 87.5em;
 $grid-max-width: 73.75em;
 $grid-gutter: 30px;
+
+// Device specific widths. Always use min-width for these.
+// Design should only break upwards to 'less' mobile when size is greater than. 'Mobile first with buffer'
+// https://ricostacruz.com/til/css-media-query-breakpoints
+$screen-mobile: 23.438em; // 375px
+$screen-tablet: 41.688em; // 677px.
+$screen-landscape: 52em;
+$screen-medium: 64em; // 1024px
+$screen-large: 85.375em; // 1366px
+$screen-wide: 105em; // 1680px
+
 
 // Breakpoints used with the media-query mixin
 $small: 'small';
