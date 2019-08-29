@@ -3,14 +3,19 @@
 */
 import {throttle} from 'throttle-debounce';
 import {Store} from './Store';
+import {createLazyloader} from './initLazyload';
 
-const globalState = Store({
-  innerHeight: window.innerHeight,
-  innerWidth: window.innerWidth,
-  scrollY: window.scrollY,
-}, 'global-state');
+const globalEvents = {
+  DOMUPDATED: 'dom-updated',
+};
 
-(function setupGlobalEmitter() {
+function initGlobalState() {
+  const globalState = Store({
+    innerHeight: window.innerHeight,
+    innerWidth: window.innerWidth,
+    scrollY: window.scrollY,
+  }, 'global-state');
+
   window.addEventListener('load', () => {
     globalState.setState({
       innerHeight: window.innerHeight,
@@ -31,6 +36,17 @@ const globalState = Store({
       innerWidth: event.target.innerWidth,
     });
   }));
-})();
 
-export {globalState};
+  return globalState;
+}
+
+const globalState = initGlobalState();
+// Make an instance of the lazyloader.
+// const lazyloader = createLazyloader();
+// Subscribe it to the dom-updated global state event.
+// This event is emitted by the Renderer.js once it has finished processing.
+// globalState.subscribe(globalEvents.DOMUPDATED, () => {
+//   lazyloader.update();
+// });
+
+export {globalState, globalEvents};

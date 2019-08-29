@@ -5,11 +5,10 @@
 .home-hero {
   margin-top: calc(#{-$header-height} - #{$main-padding-top});
   &__image {
-    height: 100vh;
-    min-height: 768px;
     overflow: hidden;
     img {
       height: 100vh;
+      min-height: 768px;
       width: auto;
     }
   }
@@ -120,6 +119,9 @@
         @include card;
         display: flex;
         justify-content: center;
+        @include media-min-size($screen-tablet) {
+          display: none;
+        }
       }
       &__browse {
         text-align: center;

@@ -85,15 +85,16 @@ function ImageGallery(images = [], galleryState) {
   }
 
   function checkVisibility(newState, img) {
+    // NOTE: Is this needed now that you are using lazyload??
     // Opacity defaults to 1 but will return an empty string if it has not yet been set in JS.
-    const curOpacity = img.style.opacity ? parseFloat(img.style.opacity) : 1;
-    if (parseInt(img.dataset.index, 0) === newState.curIndex) {
-      if (curOpacity < 1) {
-        smoothFade([curOpacity, 1], img, imageFadeTime, []);
-      }
-    } else if (curOpacity > 0) {
-      smoothFade([curOpacity, 0], img, imageFadeTime, []);
-    }
+    // const curOpacity = img.style.opacity ? parseFloat(img.style.opacity) : 1;
+    // if (parseInt(img.dataset.index, 0) === newState.curIndex) {
+    //   if (curOpacity < 1) {
+    //     smoothFade([curOpacity, 1], img, imageFadeTime / 8, []);
+    //   }
+    // } else if (curOpacity > 0) {
+    //   smoothFade([curOpacity, 0], img, imageFadeTime, []);
+    // }
   }
 
   function handleScreenResize(newState, imagesContainerElem) {
@@ -150,7 +151,7 @@ function ImageGallery(images = [], galleryState) {
     actionsElemRef: actionsDataAttr,
     view: () => ([
       Div, {
-        className: classes.imageGalleryViewport,
+        className: `${classes.imageGalleryViewport} lazyContainer`,
         attributes: {[viewportDataAttr]: ''},
       }, [
         [Div, {

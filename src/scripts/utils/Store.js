@@ -46,6 +46,13 @@ function Store(initialState, name) {
       // Then the general state change event.
       stateEventEmitter.emit(`${storeName}-${storeEvents.STATEUPDATED}`, state);
     },
+    // Allows for creation of, and subscription to, any custom events on the individual store.
+    notify(eventName) {
+      stateEventEmitter.emit(`${storeName}-${eventName}`, state);
+    },
+    subscribe(eventName, subscriberFn) {
+      stateEventEmitter.on(`${storeName}-${eventName}`, (newState) => subscriberFn(newState));
+    },
     // Subscribe to any updates to any attributes on the state.
     onStateUpdate(subscriberFn) {
       stateEventEmitter.on(`${storeName}-${storeEvents.STATEUPDATED}`, (newState) => subscriberFn(newState));
@@ -62,6 +69,12 @@ function Store(initialState, name) {
           throw Error(`Store.onAttributeUpdate - the key '${key}' does not exist on the state object you are trying to subscribe to.`);
         }
       });
+    },
+    viewSubscriptions() {
+      return {
+        eventsHistory: stateEventEmitter._events,
+        subscriberCount: stateEventEmitter._eventsCount,
+      };
     },
   };
 }

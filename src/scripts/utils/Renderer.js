@@ -1,3 +1,5 @@
+import {globalState, globalEvents} from './global_events';
+
 // Define element type constants - all will be passed to createElement, except Root which must already be an element in the DOM.
 const elems = {
   Root: 'root',
@@ -124,6 +126,8 @@ function render([elementType, config, children], parent) {
     console.log(err);
     console.log('Error rendering:', [elementType, config, children], parent);
   }
+  // Let everyone know that the dom has been updated. See lazyloader setup in global_events.js for example.
+  globalState.notify(globalEvents.DOMUPDATED);
 }
 
 export {render, elems};

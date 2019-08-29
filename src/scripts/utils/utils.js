@@ -122,9 +122,10 @@ function smoothFade([startOpacity = 1, endOpacity = 1], element, duration, [p1x 
 /*
   @param {originalSrc: string} - 'http...etc'
   @param {requiredDimensions: string} - '{width}x{height}'
+  * Requests a progressive JPG from shopify CDN in the specified dimensions.
 */
 function formImageSizeUrl(originalSrc, requiredDimensions) {
-  return originalSrc.replace('.jpg', `_${requiredDimensions}.jpg`);
+  return originalSrc.replace('.jpg', `_${requiredDimensions}.progressive.jpg`);
 }
 
 export {smoothScrollY, smoothFade, formImageSizeUrl, smoothTranslate};

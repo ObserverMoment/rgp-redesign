@@ -48,8 +48,8 @@
               </h3>
               {% capture image_url %}{% if collection.image %}{{ collection.image | img_url: 'medium' }}{% endif %}{% endcapture %}
               <img
-                class="home-hero__content__left__collections__collection__image"
-                src="{{ image_url }}" alt=""
+                class="home-hero__content__left__collections__collection__image lazy"
+                data-src="{{ image_url }}" alt=""
               >
             </div>
           </a>

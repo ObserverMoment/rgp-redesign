@@ -40,8 +40,8 @@ function GalleryNavThumbs(images = [], galleryState, imageDims = '200x200') {
     view: () => ([
       Div, {className: classes.galleryNavThumbs}, imageUrlArray.map((imageUrl, index) => ([
         Img, {
-          className: initialIndex === index && classes.selectedThumbnail,
-          attributes: {src: imageUrl, 'data-gallery-nav-thumb': '', [`${navThumbsDataAttr}-thumb-${index}`]: '', 'data-index': index},
+          className: `${initialIndex === index && classes.selectedThumbnail} lazy`,
+          attributes: {'data-src': imageUrl, 'data-gallery-nav-thumb': '', [`${navThumbsDataAttr}-thumb-${index}`]: '', 'data-index': index},
           listeners: {
             click: [() => galleryState.setState({curIndex: index})],
           },

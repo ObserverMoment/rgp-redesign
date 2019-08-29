@@ -1,10 +1,13 @@
 .image-gallery {
   position: relative;
-  overflow: hidden;
+  overflow: scroll;
   height: 100%;
   width: 100%;
+  touch-action: pan-x;
+  @include media-min-size($screen-medium) {
+    overflow: hidden;
+  }
   &__images-container {
-    touch-action: auto;
     display: flex;
     height: 100%;
     align-items: center;
