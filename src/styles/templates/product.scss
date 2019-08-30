@@ -20,7 +20,7 @@
     &__upper {
       display: flex;
       flex-direction: column;
-      @include media-min-size($screen-tablet) {
+      @include media-min-size($screen-medium) {
         flex-direction: row;
       }
       &__gallery {
@@ -30,7 +30,8 @@
         flex-wrap: nowrap;
         justify-content: space-around;
         align-items: center;
-        @include media-min-size($screen-tablet) {
+        height: 600px;
+        @include media-min-size($screen-medium) {
           flex-basis: 70%;
         }
         .image-gallery-nav {

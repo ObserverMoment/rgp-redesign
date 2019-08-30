@@ -38,9 +38,10 @@ function GalleryNavThumbs(images = [], galleryState, imageDims = '200x200') {
 
   return {
     view: () => ([
-      Div, {className: classes.galleryNavThumbs}, imageUrlArray.map((imageUrl, index) => ([
+      Div, {className: `${classes.galleryNavThumbs} lazyContainer`},
+      imageUrlArray.map((imageUrl, index) => ([
         Img, {
-          className: `${initialIndex === index && classes.selectedThumbnail} lazy`,
+          className: `${initialIndex === index ? classes.selectedThumbnail : null} lazy`,
           attributes: {'data-src': imageUrl, 'data-gallery-nav-thumb': '', [`${navThumbsDataAttr}-thumb-${index}`]: '', 'data-index': index},
           listeners: {
             click: [() => galleryState.setState({curIndex: index})],

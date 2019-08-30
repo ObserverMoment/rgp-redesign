@@ -1,3 +1,4 @@
+import Hammer from 'hammerjs';
 import {elems} from '../utils/Renderer';
 import {smoothFade, smoothTranslate} from '../utils/utils';
 import {globalState} from '../utils/global_events';
@@ -16,23 +17,23 @@ const classes = {
 };
 
 // Each gallery will need its own id so the correct elements can be targeted.
-let galleryId = 0;
-const imageFadeTime = 400;
-const imageScrollTime = 300;
+let _galleryId = 0;
+const _imageFadeTime = 100;
+const _imageScrollTime = 300;
 
 /*
   @param {images: object[]}: {src, alt, height, width, position}
 */
 function ImageGallery(images = [], galleryState) {
-  galleryId++;
-  galleryState.setState({galleryId});
+  _galleryId++;
+  galleryState.setState({_galleryId});
 
-  const viewportDataAttr = `data-gallery-${galleryId}-viewport`;
-  const imagesContainerDataAttr = `data-gallery-${galleryId}-images-container`;
-  const imageElemsDataAttr = `data-gallery-${galleryId}-images`;
-  const actionsDataAttr = `data-gallery-${galleryId}-actions`;
-  const leftScrollIconAttr = `data-gallery-${galleryId}-actions-left-icon`;
-  const rightScrollIconAttr = `data-gallery-${galleryId}-actions-right-icon`;
+  const viewportDataAttr = `data-gallery-${_galleryId}-viewport`;
+  const imagesContainerDataAttr = `data-gallery-${_galleryId}-images-container`;
+  const imageElemsDataAttr = `data-gallery-${_galleryId}-images`;
+  const actionsDataAttr = `data-gallery-${_galleryId}-actions`;
+  const leftScrollIconAttr = `data-gallery-${_galleryId}-actions-left-icon`;
+  const rightScrollIconAttr = `data-gallery-${_galleryId}-actions-right-icon`;
 
   const getElements = {
     viewportElem: () => document.querySelector(`[${viewportDataAttr}]`),
@@ -44,7 +45,11 @@ function ImageGallery(images = [], galleryState) {
 
   const initialState = galleryState.getState();
 
-  let curIndex = initialState.curIndex || 0;
+  let _curIndex = initialState.curIndex || 0;
+
+  function animateScroll(newXpos, imagesContainerElem) {
+    imagesContainerElem.style.transform = `translateX(${newXpos}px`;
+  }
 
   function updateImageIndex(newState, imagesContainerElem) {
     const {curIndex: newIndex, curXTranslate, imageWidths} = newState;
@@ -55,22 +60,23 @@ function ImageGallery(images = [], galleryState) {
 
     // Need to total up all the image widths between the two new indexes - based on imageWidths state array.
     const translateAmt = -(imageWidths.slice(0, newIndex).reduce((acum, next) => acum + next, 0));
-    const indexDiff = newIndex - curIndex;
-
-    function animateScroll(newXpos) {
-      imagesContainerElem.style.transform = `translateX(${newXpos}px`;
-    }
+    const indexDiff = newIndex - _curIndex;
 
     // If swiping, animate using a transform only. If going direct to an index, fade out, transform instantly, then fade in.
     if (Math.abs(indexDiff) === 1) {
-      smoothTranslate(animateScroll, {xPos: [curXTranslate, translateAmt]}, [], imageScrollTime);
+      smoothTranslate(
+        (newPos) => animateScroll(newPos, imagesContainerElem),
+        {xPos: [curXTranslate, translateAmt]},
+        [],
+        _imageScrollTime,
+      );
     } else {
       setTimeout(() => {
         imagesContainerElem.style.transform = `translateX(${translateAmt}px`;
-      }, imageFadeTime);
+      }, _imageFadeTime);
     }
     galleryState.setState({curXTranslate: translateAmt});
-    curIndex = newIndex;
+    _curIndex = newIndex;
   }
 
   function updateGalleryImageDims(imageElem, index) {
@@ -85,15 +91,14 @@ function ImageGallery(images = [], galleryState) {
   }
 
   function checkVisibility(newState, img) {
-    // NOTE: Is this needed now that you are using lazyload??
     // Opacity defaults to 1 but will return an empty string if it has not yet been set in JS.
     // const curOpacity = img.style.opacity ? parseFloat(img.style.opacity) : 1;
     // if (parseInt(img.dataset.index, 0) === newState.curIndex) {
     //   if (curOpacity < 1) {
-    //     smoothFade([curOpacity, 1], img, imageFadeTime / 8, []);
+    //     smoothFade([curOpacity, 1], img, _imageFadeTime, []);
     //   }
     // } else if (curOpacity > 0) {
-    //   smoothFade([curOpacity, 0], img, imageFadeTime, []);
+    //   smoothFade([curOpacity, 0], img, _imageFadeTime * 10, []);
     // }
   }
 
@@ -146,6 +151,23 @@ function ImageGallery(images = [], galleryState) {
     ]);
   }
 
+  function setupSwipeInteraction(imagesContainer) {
+    const hammer = new Hammer(imagesContainer);
+    hammer.add(new Hammer.Pan({direction: Hammer.DIRECTION_HORIZONTAL, threshold: 0}));
+
+    // https://github.com/hammerjs/hammer.js/issues/1100
+    hammer.on('panend', (event) => {
+      if (event.type === 'panend' && event.velocityX < -0.3 && event.distance > 10 && _curIndex < images.length - 1) {
+          // Swipe left
+        galleryState.setState({curIndex: _curIndex + 1});
+      }
+      if (event.type === 'panend' && event.velocityX > 0.3 && event.distance > 10 && _curIndex > 0) {
+          // Swipe right
+        galleryState.setState({curIndex: _curIndex - 1});
+      }
+    });
+  }
+
   return {
     galleryImageRef: viewportDataAttr,
     actionsElemRef: actionsDataAttr,
@@ -161,6 +183,9 @@ function ImageGallery(images = [], galleryState) {
             (self) => galleryState.onAttributeUpdate((newState) => updateImageIndex(newState, self), 'curIndex'),
             (self) => galleryState.onAttributeUpdate((newState) => handleScreenResize(newState, self), 'imageWidths'),
           ],
+          postMountCallbacks: [
+            (self) => setupSwipeInteraction(self),
+          ],
         }, images.map((imageObj, index) => (
             renderResponsiveImage(imageObj, index)
           )),
@@ -173,25 +198,25 @@ function ImageGallery(images = [], galleryState) {
           ],
         }, [
           [Div, {
-            className: `${classes.imageGalleryActionsIcon} ${curIndex === 0 && 'hide-icon'}`,
+            className: `${classes.imageGalleryActionsIcon} ${_curIndex === 0 && 'hide-icon'}`,
             attributes: {[leftScrollIconAttr]: ''},
             innerHTML: '<i class="fas fa-arrow-alt-circle-left"></i>',
             listeners: {click: [
               (event) => {
                 event.stopPropagation();
                 event.preventDefault();
-                galleryState.setState({curIndex: Math.max(curIndex - 1, 0)});
+                galleryState.setState({curIndex: Math.max(_curIndex - 1, 0)});
               }]},
           }],
           [Div, {
-            className: `${classes.imageGalleryActionsIcon} ${curIndex === images.length - 1 && 'hide-icon'}`,
+            className: `${classes.imageGalleryActionsIcon} ${_curIndex === images.length - 1 && 'hide-icon'}`,
             innerHTML: '<i class="fas fa-arrow-alt-circle-right"></i>',
             attributes: {[rightScrollIconAttr]: ''},
             listeners: {click: [
               (event) => {
                 event.stopPropagation();
                 event.preventDefault();
-                galleryState.setState({curIndex: Math.min(curIndex + 1, images.length - 1)});
+                galleryState.setState({curIndex: Math.min(_curIndex + 1, images.length - 1)});
               }]},
           }],
         ]],
