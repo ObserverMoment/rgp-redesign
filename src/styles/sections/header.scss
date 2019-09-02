@@ -1,29 +1,29 @@
 @mixin header-info-dropdown {
+  @include card;
+  margin: 0;
   position: fixed;
-  top: 4px;
-  right: 10px;
+  top: 0;
+  right: 0;
   height: 0;
   background: white;
   color: black;
   transition:
-    height 0.6s cubic-bezier(0.19, 1, 0.22, 1),
-    padding 0.4s cubic-bezier(0.19, 1, 0.22, 1),
-    border-width 0.6s cubic-bezier(0.19, 1, 0.22, 1);
+    height 0.6s $header-ease,
+    padding 0.4s $header-ease,
+    border-width 0.6s $header-ease;
   border-radius: 2px;
   overflow: hidden;
   padding: 0 25px;
-  border: 0px solid rgba(80, 112, 133, 0.4);
-  box-shadow: 0px 0px 0px 0px rgba(0, 0, 0, 0);
   z-index: 3;
   display: flex;
   flex-direction: column;
   justify-content: space-around;
   align-items: center;
+  border-width: 0;
   &.active {
     height: 180px;
     padding: 25px;
     border-width: 1px;
-    box-shadow: 0px 1px 1px 0px rgba(0, 0, 0, 0.3);
   }
   &__elements {
     opacity: 0;
@@ -49,11 +49,13 @@
     color: #444444;
     cursor: pointer;
     transition: 0.2s color;
-    &:hover {
+      @include hover {
       color: black;
     }
   }
 }
+
+$header-ease: cubic-bezier(0.19, 1, 0.22, 1);
 
 
 // Styles begin.
@@ -68,7 +70,7 @@
     top: 0;
     width: calc(100% - 8px);
     background: white;
-    transition: all 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
+    transition: all 0.5s $header-ease;
     margin: 4px;
     &.scrolled {
       opacity: 0.96;
@@ -80,27 +82,97 @@
       align-items: center;
       &__logo-image {
         position: absolute;
-        top: 15px;
-        left: 20px;
-        width: 220px;
+        width: 200px;
+        left: 50%;
+        margin-left: -100px;
+        top: 20px;
+        @include media-min-size($screen-medium) {
+          left: 15px;
+          top: 16px;
+          width: 220px;
+          margin-left: 0;
+        }
         .rgp-logo {
           &-text { fill: $color-body-text-1; }
           &-highlight { fill: #DAA528; }
         }
       }
-      &__main-nav {
-        margin-left: 210px;
+      &__toggle-menu-btn {
+        display: block;
+        position: absolute;
+        opacity: 0;
+        transform: scale(0) rotate(90deg);;
+        transition: all 0.4s $header-ease;
+        cursor: pointer;
+        font-size: 1.8em;
+        left: 20px;
+        top: 10px;
+        &.active {
+          opacity: 1;
+          transform: scale(1) rotate(0);
+        }
+        @include media-min-size($screen-medium) {
+          display: none;
+        }
+      }
+      &__mobile-nav-content {
+        @include card;
+        position: absolute;
+        top: $header-height;
+        left: -100vw;
+        width: calc(100vw - 9px);
+        @include media-min-size($screen-tablet) {
+          width: calc(100vw - 22px);
+        }
+        transform: translateX(0);
+        transition: all 0.4s $header-ease;
+        background: white;
+        z-index: 5;
+        opacity: 1;
         ul {
           list-style-type: none;
           display: flex;
+          flex-direction: column;
+          padding: 0;
           li {
-            margin-left: 20px;
+            margin: 6px;
             a {
               text-decoration: none;
               border-bottom: 1px solid transparent;
               transition: border-color 0.5s;
               color: $color-body-text-1;
-              &:hover { border-bottom: 1px solid #c2c2c2; }
+              @include hover { border-bottom: 1px solid #c2c2c2; }
+            }
+            span {
+              cursor: pointer;
+              border-bottom: 1px solid transparent;
+              transition: border-color 0.5s;
+              color: $color-body-text-1;
+                @include hover { border-bottom: 1px solid #c2c2c2; }
+            }
+          }
+        }
+        &.active {
+          transform: translateX(100vw)
+        }
+      }
+      &__main-nav {
+        display: none;
+        @include media-min-size($screen-medium) {
+          margin-left: 210px;
+          display: block;
+          ul {
+            list-style-type: none;
+            display: flex;
+            li {
+              margin-left: 20px;
+              a {
+                text-decoration: none;
+                border-bottom: 1px solid transparent;
+                transition: border-color 0.5s;
+                color: $color-body-text-1;
+                  @include hover { border-bottom: 1px solid #c2c2c2; }
+              }
             }
           }
         }
@@ -113,26 +185,37 @@
       > div { margin-right: 20px; }
       &__help {
         &__toggle {
-          cursor: pointer;
-          transition: border-color 0.5s;
-          border-bottom: 1px solid transparent;
-          &:hover { border-color: #c2c2c2; transition: border-color 0.5s; }
+          display: none;
+          @include media-min-size($screen-tablet) {
+            display: block;
+            cursor: pointer;
+            transition: border-color 0.5s;
+            border-bottom: 1px solid transparent;
+              @include hover { border-color: #c2c2c2; transition: border-color 0.5s; }
+          }
         }
         &__content {
           @include header-info-dropdown;
-          width: calc(100vw - 35px);
+          width: calc(100vw - 15px);
         }
       }
       &__account {
         &__toggle {
-          cursor: pointer;
-          transition: border-color 0.5s;
-          border-bottom: 1px solid transparent;
-          &:hover { border-color: #c2c2c2; transition: border-color 0.5s; }
+          display: none;
+          @include media-min-size($screen-tablet) {
+            display: block;
+            cursor: pointer;
+            transition: border-color 0.5s;
+            border-bottom: 1px solid transparent;
+            @include hover { border-color: #c2c2c2; transition: border-color 0.5s; }
+          }
         }
         &__content {
           @include header-info-dropdown;
-          width: 500px;
+          width: 100vw;
+          @include media-min-size($screen-tablet) {
+            width: 500px;
+          }
           &__links {
             display: flex;
             justify-content: center;
@@ -160,12 +243,12 @@
           background: white;;
           border: 1px solid $color-body-text-1;
           padding: 6px;
-          &:hover {
+            @include hover {
             cursor: pointer;
             border-color: #0d0d0d;
             background: $color-main-green;
           }
-          &:hover &__icon { color: #eaecea; }
+            @include hover &__icon { color: #eaecea; }
           &__icon {
             display: flex;
             justify-content: center;
@@ -191,11 +274,11 @@
         &__sidebar {
           position: fixed;
           top: 0;
-          right: -600px;
+          right: -500px;
           height: 100%;
           max-height: 100vh;
           overflow-y: scroll;
-          transition: transform 0.6s cubic-bezier(0.19, 1, 0.22, 1);
+          transition: transform 0.6s $header-ease;
           border-radius: 2px;
           padding: 20px 25px 10px 25px;
           border: 1px solid rgba(80, 112, 133, 0.4);
@@ -203,8 +286,23 @@
           transform: translateX(0);
           background: $color-body;
           color: $color-body-text-1;
+          width: 100vw;
+          @include media-min-size($screen-mobile) {
+            right: -100vw;
+            max-width: 600px;
+          }
+          @include media-min-size($screen-tablet) {
+            right: -600px;
+            max-width: 600px;
+          }
           &.active {
-            transform: translateX(-600px);
+            transform: translateX(-500px);
+            @include media-min-size($screen-mobile) {
+              transform: translateX(-100vw);
+            }
+            @include media-min-size($screen-tablet) {
+              transform: translateX(-600px);
+            }
           }
           &__close {
             position: absolute;
@@ -214,7 +312,7 @@
             color: #444444;
             cursor: pointer;
             transition: 0.2s color;
-            &:hover {
+              @include hover {
               color: black;
             }
           }

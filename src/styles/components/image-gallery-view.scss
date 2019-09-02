@@ -3,12 +3,12 @@
   overflow: hidden;
   height: 100%;
   width: 100%;
+  display: flex;
+  align-items: center;
   &__images-container {
     display: flex;
-    height: 100%;
     align-items: center;
     position: absolute;
-    touch-action: none;
     &__single-image {
       width: 100%;
       pointer-events: none;
@@ -16,7 +16,7 @@
   }
   &__actions {
     opacity: 0;
-    z-index: 20;
+    z-index: 3;
     position: absolute;
     top: 50%;
     display: flex;
@@ -27,7 +27,7 @@
       opacity: 1;
     }
     @media (hover: none) {
-      opacity: 1;
+      display: none;
     }
     &__icon {
       cursor: pointer;

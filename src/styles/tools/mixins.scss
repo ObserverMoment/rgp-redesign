@@ -34,6 +34,14 @@
   }
 }
 
+@mixin hover {
+  @media (hover: hover) {
+    &:hover {
+      @content
+    }
+  }
+}
+
 /**
 * Keyframe creators - creates a 'namespaced' keyframes object with the settings configured from args.
 */
@@ -312,7 +320,10 @@
    display: flex;
    flex-wrap: wrap;
    justify-content: space-around;
-   padding: 10px;
+   padding: 0;
+   @include media-min-size($screen-tablet) {
+     padding: 10px;
+   }
    &__product-link {
      text-decoration: none;
      color: $color-body-text-1;

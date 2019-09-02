@@ -30,7 +30,7 @@
         flex-wrap: nowrap;
         justify-content: space-around;
         align-items: center;
-        height: 600px;
+        max-height: 768px;
         @include media-min-size($screen-medium) {
           flex-basis: 70%;
         }

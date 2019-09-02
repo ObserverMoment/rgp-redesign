@@ -5,7 +5,7 @@
   justify-content: center;
   align-items: center;
   padding: 10px 20px 5px 20px;
-  height: $footer-height;
+  height: 100%;
   a { text-decoration: none; color: inherit; }
   &__link-list {
     list-style: none;
@@ -20,13 +20,18 @@
     }
   }
   &__copyright {
-
+    font-size: 0.8em;
+    text-align: center;
   }
   &__postscript {
     margin: 15px 0 5px 0;
     display: flex;
     justify-content: space-around;
     align-items: center;
+    flex-direction: column;
+    @include media-min-size($screen-tablet) {
+      flex-direction: row;
+    }
     &__payment-icons {
       margin: 0 10px;
       > i { font-size: 1.6em; margin: 0 10px; color: $color-main-black; }

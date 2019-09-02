@@ -64,12 +64,14 @@ function ProductCard(productObj, enableGallery) {
             Div, {className: `${classes.metaColours}__colour ${colour}`},
           ])],
         ]],
-        [Div, {className: classes.image}, [enableGallery ? imageGallery.view() : imageGallery]],
+        [Div, {className: classes.image}, [
+          enableGallery ? imageGallery.view() : imageGallery,
+          [Div, {className: classes.infoFooterMore, innerHTML: 'Swipe >'}],
+        ]],
         [Div, {className: classes.info}, [
           [Div, {className: classes.infoTitle, innerHTML: title}],
           [Div, {className: classes.infoFooter}, [
             [Div, {className: classes.infoFooterPrice, innerHTML: renderPriceText()}],
-            [Div, {className: classes.infoFooterMore, innerHTML: 'More info >'}],
           ]],
         ]],
       ]]

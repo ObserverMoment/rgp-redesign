@@ -36,34 +36,21 @@
             {% include 'rgp-logo' %}
           </a>
         </div>
-        <nav role="navigation" class="header-content__left__main-nav">
+        <div class="header-content__left__toggle-menu-btn active" data-open-menu>
+          <i class="fas fa-bars"></i>
+        </div>
+        <div class="header-content__left__toggle-menu-btn" data-close-menu>
+          <i class="far fa-times-circle"></i>
+        </div>
+        <nav role="navigation" class="header-content__left__mobile-nav-content" data-mobile-nav-content>
+          {% include 'header-nav-list' %}
           <ul>
-            {% for link in linklists[section.settings.menu].links %}
-              {% if link.links != blank %}
-                <li>
-                  <a href="{{ link.url }}">
-                    {{ link.title }}
-                    {% include 'icon-arrow-down' %}
-                  </a>
-                  <ul>
-                    {% for childlink in link.links %}
-                      <li>
-                        <a href="{{ childlink.url }}">
-                          {{ childlink.title }}
-                        </a>
-                      </li>
-                    {% endfor %}
-                  </ul>
-                </li>
-              {% else %}
-                <li>
-                  <a href="{{ link.url }}">
-                    {{ link.title }}
-                  </a>
-                </li>
-              {% endif %}
-            {% endfor %}
+            <li data-help-panel-toggle><span>Info</span></li>
+            <li data-account-panel-toggle><span>Account</span></li>
           </ul>
+        </nav>
+        <nav role="navigation" class="header-content__left__main-nav">
+          {% include 'header-nav-list' %}
         </nav>
       </div>
 
