@@ -6,9 +6,10 @@
   display: flex;
   align-items: center;
   &__images-container {
+    position: absolute;
     display: flex;
     align-items: center;
-    position: absolute;
+    transition: transform 100ms;
     &__single-image {
       width: 100%;
       pointer-events: none;
@@ -41,6 +42,34 @@
           font-size: 0.9em;
         }
       }
+    }
+  }
+  &__nav-dots-container {
+    position: absolute;
+    bottom: 3%;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    &__dot {
+      border-radius: 50%;
+      background: $color-main-light-grey;
+      width: 0.6em;
+      height: 0.6em;
+      margin: 0 3px;
+      transition: background-color 0.4s;
+      &.active {
+        background: $color-main-gold;
+      }
+    }
+  }
+  &__swipe-instruction {
+    position: absolute;
+    bottom: 0;
+    right: 10px;
+    opacity: 0.5;
+    font-size: 0.8em;
+    @media (hover: hover) {
+      display: none;
     }
   }
 }

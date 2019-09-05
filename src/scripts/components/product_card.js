@@ -15,7 +15,6 @@ const classes = {
   infoTitle: 'product-card__info__title',
   infoFooter: 'product-card__info__footer',
   infoFooterPrice: 'product-card__info__footer__price',
-  infoFooterMore: 'product-card__info__footer__more',
   showGalleryActions: 'show-gallery-actions',
 };
 
@@ -66,7 +65,6 @@ function ProductCard(productObj, enableGallery) {
         ]],
         [Div, {className: classes.image}, [
           enableGallery ? imageGallery.view() : imageGallery,
-          [Div, {className: classes.infoFooterMore, innerHTML: 'Swipe >'}],
         ]],
         [Div, {className: classes.info}, [
           [Div, {className: classes.infoTitle, innerHTML: title}],

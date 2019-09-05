@@ -22,6 +22,15 @@ function initGlobalState() {
       innerWidth: window.innerWidth,
       scrollY: window.scrollY,
     });
+    // Setup global lazy loading.
+    createLazyloader({
+      elements_selector: '.lazyContainer',
+      callback_enter: (element) => {
+        // Uncomment for logging.
+        // logEvent('ENTERED', element);
+        createLazyloader({thresholds: '50px 500px'}, element);
+      },
+    });
   });
 
   window.addEventListener('scroll', throttle(300, () => {
@@ -41,12 +50,5 @@ function initGlobalState() {
 }
 
 const globalState = initGlobalState();
-// Make an instance of the lazyloader.
-// const lazyloader = createLazyloader();
-// Subscribe it to the dom-updated global state event.
-// This event is emitted by the Renderer.js once it has finished processing.
-// globalState.subscribe(globalEvents.DOMUPDATED, () => {
-//   lazyloader.update();
-// });
 
 export {globalState, globalEvents};

@@ -4,6 +4,7 @@ import BezierEasing from 'bezier-easing';
   @param {positions: array} - Start and end Y co-ords.
   @param {bezier: array} - as per CSS transition schema.
   @param {duration: number} - in ms.
+  @return - the id of the animationFrame instance.
 */
 function smoothScrollY([startY, endY], [p1x = 0.47, p1y = 0, p2x = 0.745, p2y = 0.715], duration) {
   const easing = BezierEasing(p1x, p1y, p2x, p2y);
@@ -25,7 +26,7 @@ function smoothScrollY([startY, endY], [p1x = 0.47, p1y = 0, p2x = 0.745, p2y = 
     }
   }
 
-  requestAnimationFrame(scroll);
+  return requestAnimationFrame(scroll);
 }
 
 /*
@@ -34,6 +35,7 @@ function smoothScrollY([startY, endY], [p1x = 0.47, p1y = 0, p2x = 0.745, p2y = 
   * @param {positions: object} - {xPos: [start, end], yPos: [start, end]}.
   * @param {bezier: array} - as per CSS transition schema.
   * @param {duration: number} - in ms.
+  * @return - the id of the animationFrame instance.
 */
 function smoothTranslate(animator, {xPos = [0, 0], yPos = [0, 0]}, [p1x = 0.47, p1y = 0, p2x = 0.745, p2y = 0.715], duration) {
   const easing = BezierEasing(p1x, p1y, p2x, p2y);
@@ -72,7 +74,6 @@ function smoothTranslate(animator, {xPos = [0, 0], yPos = [0, 0]}, [p1x = 0.47, 
     }
     const timeElapsed = currentTimestamp - startTime;
     const progress = timeElapsed / duration;
-    // progress must be between 0 and 1
     const eased = easing(progress);
 
     curXPos = xStart + (eased * xDistance);
@@ -91,7 +92,7 @@ function smoothTranslate(animator, {xPos = [0, 0], yPos = [0, 0]}, [p1x = 0.47, 
     }
   }
 
-  requestAnimationFrame(translate);
+  return requestAnimationFrame(translate);
 }
 
 function smoothFade([startOpacity = 1, endOpacity = 1], element, duration, [p1x = 0.47, p1y = 0, p2x = 0.745, p2y = 0.715], next) {
@@ -116,7 +117,7 @@ function smoothFade([startOpacity = 1, endOpacity = 1], element, duration, [p1x 
 
   }
 
-  requestAnimationFrame(fade);
+  return requestAnimationFrame(fade);
 }
 
 /*
@@ -128,4 +129,26 @@ function formImageSizeUrl(originalSrc, requiredDimensions) {
   return originalSrc.replace('.jpg', `_${requiredDimensions}.progressive.jpg`);
 }
 
-export {smoothScrollY, smoothFade, formImageSizeUrl, smoothTranslate};
+// Returns iterable array of numbers - like python's 'range function'
+function range(start = 0, end = null, step = 1) {
+  const _arr = [];
+  const _start = end === null ? 0 : start;
+  const _end = end === null ? start : end;
+  const _step = step;
+  let _cur = _start;
+
+  if (_start <= _end) {
+    while (_cur < _end) {
+      _arr.push(_cur);
+      _cur += _step;
+    }
+  } else {
+    while (_cur > _end) {
+      _arr.push(_cur);
+      _cur += _step;
+    }
+  }
+  return _arr;
+}
+
+export {smoothScrollY, smoothFade, formImageSizeUrl, smoothTranslate, range};

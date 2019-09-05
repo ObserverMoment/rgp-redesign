@@ -6,7 +6,7 @@
   margin: 5px;
   padding: 10px;
   border-radius: 2px;
-  box-shadow: 0 0px 4px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
   background-color: #ffffff;
   display: flex;
   flex-direction: column;
@@ -21,7 +21,7 @@
   &__meta {
     display: flex;
     justify-content: space-between;
-    padding: 2px 2px 8px 2px;
+    padding: 2px 2px 8px;
     &__info {
       > span {
         padding: 2px 4px;
@@ -50,13 +50,13 @@
     }
   }
   &__image {
+    position: relative;
     display: flex;
     align-items: center;
     height: 100%;
-    position: relative;
   }
   &__info {
-    padding: 10px 10px 0 10px;
+    padding: 10px 10px 0;
     height: 98px;
     display: flex;
     flex-direction: column;
@@ -67,16 +67,6 @@
     &__footer {
       display: flex;
       justify-content: space-between;
-      &__more {
-        position: absolute;
-        bottom: 0;
-        right: 10px;
-        opacity: 0.5;
-        font-size: 0.8em;
-        @media (hover: hover) {
-          display: none;
-        }
-      }
       &__price {
         font-size: 1.1em;
       }

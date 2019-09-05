@@ -34,10 +34,10 @@
   }
 }
 
-@mixin hover {
+@mixin hover($optional-selector: '') {
   @media (hover: hover) {
-    &:hover {
-      @content
+    &:hover #{$optional-selector} {
+      @content;
     }
   }
 }
@@ -45,7 +45,7 @@
 /**
 * Keyframe creators - creates a 'namespaced' keyframes object with the settings configured from args.
 */
-@mixin createFadeKeyFrames ($instanceName, $startOpacity, $endOpacity) {
+@mixin createFadeKeyFrames($instanceName, $startOpacity, $endOpacity) {
   @keyframes #{$instanceName} {
     0% {
       opacity: $startOpacity;
@@ -56,7 +56,7 @@
   }
 }
 
-@mixin createSlideKeyFrames (
+@mixin createSlideKeyFrames(
   $instanceName,
   $slideStartX: 0,
   $slideStartY: 0,
@@ -156,7 +156,7 @@
 /**
  * Styling for a card.
  */
-@mixin card {
+@mixin card() {
   padding: 10px 20px;
   background: $color-product-info-bg;
   text-align: center;
@@ -168,93 +168,6 @@
 }
 
 /**
- * Styling for buttons.
- */
-@mixin btn {
-   padding: 10px 14px;
-   display: flex;
-   justify-content: center;
-   align-items: center;
-   border-radius: 4px;
-}
-
-@mixin primary-btn {
-  @include btn;
-  background: $color-main-green;
-  color: white;
-  span { padding: 0 5px; }
-}
-
-@mixin secondary-btn {
-  @include btn;
-  border: 1px solid $color-main-light-grey;
-  background: white;
-  color: #006b5b;
-  &:hover {
-    color: white;
-    background: #006b5b;
-  }
-}
-
-@mixin cancel-btn {
-  @include btn;
-  border: 1px solid $color-main-grey;
-  background: white;
-  color: $color-main-grey;
-  &:hover {
-    color: white;
-    background: $color-main-grey;
-  }
-}
-
-@mixin delete-btn {
-  @include btn;
-  border: 1px solid $color-main-red;
-  background: white;
-  color: $color-main-red;
-  &:hover {
-    color: white;
-    background: $color-main-red;
-  }
-}
-
-@mixin checkout-btn {
-  @include btn;
-  background: $color-main-black;
-  color: white;
-  span { padding: 0 5px; }
-  &:hover {
-    background: black;
-  }
-}
-
-/**
- * Styling for text links.
- */
-@mixin link {
-  text-decoration: none;
-  border-bottom: 1px solid transparent;
-  transition: border-color 0.4s;
-}
-
-@mixin text-link {
-  @include link;
-  color: $color-main-green;
-  &:hover {
-    border-color: $color-main-green;
-  }
-}
-
-@mixin text-link-alt {
-  @include link;
-  color: $color-main-gold;
-  &:hover {
-    border-color: $color-main-gold;
-  }
-}
-
-
-/**
  * Sitewide form styling.
  * @param $has-icons: Adds styling to position icons on the left hand side of inputs.
  */
@@ -264,7 +177,11 @@
    align-items: center;
    .errors {
      color: $login-form-red;
-     ul { list-style: none; margin: 10px; padding: 5px; }
+     ul {
+       list-style: none;
+       margin: 10px;
+       padding: 5px;
+     }
    }
    label {
      color: $login-form-primary;
@@ -280,7 +197,6 @@
    i {
      position: absolute;
      color: $login-form-primary;
-     position: absolute;
      bottom: 15%;
      left: 5px;
    }
@@ -316,7 +232,7 @@
 /**
   * Responsive grid for displaying products cards or similar.
  */
- @mixin products-grid {
+ @mixin products-grid() {
    display: flex;
    flex-wrap: wrap;
    justify-content: space-around;

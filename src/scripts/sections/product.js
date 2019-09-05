@@ -155,10 +155,10 @@ async function initProductPage() {
 // Gallery.
 function initGallery(images) {
 
-  const galleryState = Store({curIndex: 0, imageWidths: [], curXTranslate: 0}, 'product-gallery');
+  const galleryState = Store({imageWidths: []}, 'product-gallery');
 
-  const imageGallery = ImageGallery(images, galleryState);
-  const galleryNavThumbs = GalleryNavThumbs(images, galleryState);
+  const imageGallery = ImageGallery(images, galleryState, 0);
+  const galleryNavThumbs = GalleryNavThumbs(images, galleryState, '200x200', 0);
 
   const rootElem = getElements.imageGallery();
 

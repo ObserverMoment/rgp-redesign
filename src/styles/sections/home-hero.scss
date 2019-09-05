@@ -13,25 +13,27 @@
     }
   }
   &__content {
-    display: flex;
-    flex-wrap: wrap;
     position: absolute;
     top: $header-height;
-    width: 100%;
-    padding: 10px;
+    display: flex;
+    flex-wrap: wrap;
     justify-content: space-between;
+    width: 100%;
     height: calc(100vh - #{$header-height});
+    padding: 10px;
     @include media-min-size($screen-medium) {
       padding: 20px;
     }
     &__left {
       display: flex;
       flex-direction: column;
-      justify-content: space-between;
+      justify-content: space-around;
+      align-items: center;
       width: 100%;;
       height: 80vh;
       padding-right: 5px;
       @include media-min-size($screen-tablet) {
+        justify-content: space-between;
         width: 50%;
       }
       @include media-min-size($screen-medium) {
@@ -41,26 +43,34 @@
         width: 65%;
       }
       &__text {
-        color: white;
         display: none;
+        max-width: 450px;
+        padding: 10px;
+        border-radius: 2px;
+        color: $color-main-white;
+        background: rgba($color-main-blue, 0.8);
+        box-shadow: 0 1px 2px 1px rgba($color-main-blue, 0.4);
+        text-align: center;
         @include media-min-size($screen-tablet) {
-          display: block;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+        }
+        @include media-min-size($screen-medium) {
+          max-width: 650px;
+          padding: 10px 20px;
         }
         &__title {
 
         }
         &__subtitle {
-          font-size: 1.2em;
-          display: flex;
-          align-items: center;
-          width: 100%;
           padding: 3px;
-          > i { margin-left: 10px; font-size: 0.8em; }
+          font-size: 1.2em;
           > a {
             text-decoration: none;
             color: $color-main-green;
             font-weight: bold;
-            &:hover { text-decoration: underline; }
+            @include hover { text-decoration: underline; }
           }
           p { margin: 0; }
         }
@@ -68,37 +78,37 @@
       &__collections {
         display: flex;
         flex-wrap: wrap;
-        width: 100%;
-        justify-content: space-around;
+        justify-content: space-between;
         align-items: center;
+        width: 100%;
         @include media-min-size($screen-tablet) {
           justify-content: space-between;
         }
         > a {
+          position: relative;
           width: 44%;
           height: 120px;
-          position: relative;
+          margin: 12px 6px;
+          border: 1px solid rgba($color-main-grey, 0.2);
+          border-radius: 3px;
           opacity: 0.99;
           color: $color-body-text-1;
           font-size: 1.3em;
-          border-radius: 3px;
           box-shadow: 0 0 5px rgba(255,255,255,0.05);
-          margin: 12px 6px;
           background: #ececec;
-          border: 1px solid rgba($color-main-grey, 0.2);
           @include media-min-size($screen-tablet) {
-            width: 42%;
+            width: 40%;
             height: 130px;
           }
           @include media-min-size($screen-medium) {
-            width: 48%;
+            width: 45%;
             height: 150px;
           }
         }
         &__collection {
           width: 100%;
           height: 100%;
-          &:hover {
+          @include hover {
             color: white;
             &::before {
               transform: scaleX(1);
@@ -116,8 +126,11 @@
           }
           &__title {
             position: absolute;
-            top: 0px;
-            left: 20px;
+            top: 0;
+            left: 10px;
+            @include media-min-size($screen-medium) {
+              left: 30px;
+            }
           }
           &__image {
             width: 100%;
@@ -126,35 +139,35 @@
         }
       }
       &__mobile-trustbox {
-        width: 94%;
-        margin: 0 auto;
-        height: 130px;
-        @include card;
         display: flex;
         justify-content: center;
+        width: 94%;
+        height: 130px;
+        margin: 0 auto;
+        @include card;
         @include media-min-size($screen-tablet) {
           display: none;
         }
       }
       &__browse {
+        display: flex;
+        justify-content: center;
+        width: 100%;
         text-align: center;
         color: $color-body-text-1;
-        display: flex;
-        width: 100%;
-        justify-content: center;
         &__text {
+          display: flex;
+          flex-direction: column;
+          width: 200px;
           padding: 15px;
           border-radius: 4px;
           background: white;
-          width: 200px;
-          display: flex;
-          flex-direction: column;
           cursor: pointer;
           > i {
             transition: all 0.8s cubic-bezier(0.165, 0.84, 0.44, 1);
             transform: translateY(-2px);
           }
-          &:hover {
+          @include hover {
             > i {
               transform: translateY(2px);
               color: $color-main-green;

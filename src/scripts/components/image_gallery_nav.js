@@ -14,7 +14,7 @@ const getElements = {
 
 let galleryNavThumbIndex = 0;
 
-function GalleryNavThumbs(images = [], galleryState, imageDims = '200x200') {
+function GalleryNavThumbs(images = [], galleryState, imageDims = '200x200', initialIndex = 0) {
   galleryNavThumbIndex += 1;
   const navThumbsDataAttr = `gallery-nav-${galleryNavThumbIndex}`;
 
@@ -33,8 +33,6 @@ function GalleryNavThumbs(images = [], galleryState, imageDims = '200x200') {
   galleryState.onAttributeUpdate(handleUpdateImage, 'curIndex');
 
   const imageUrlArray = images.map((img) => formImageSizeUrl(img.src, imageDims));
-
-  const initialIndex = galleryState.getState().curIndex;
 
   return {
     view: () => ([

@@ -59,16 +59,20 @@ function Store(initialState, name) {
     },
     // Subscribe to changes to a specific key or array of keys in state (similar to react Hooks deps array.)
     onAttributeUpdate(subscriberFn, keys) {
-      if (!keys) { throw Error('Keys arg is required to subscribe to an attribute change'); }
-      const depsArray = Array.isArray(keys) ? keys : [keys];
-      depsArray.forEach((key) => {
-        // Check that the key is actually in the state object and a valid dependency.
-        if (Object.keys(state).includes(key)) {
-          stateEventEmitter.on(`${storeName}-${storeEvents.STATEUPDATED}-${key}`, (newState) => subscriberFn(newState));
-        } else {
-          throw Error(`Store.onAttributeUpdate - the key '${key}' does not exist on the state object you are trying to subscribe to.`);
-        }
-      });
+      try {
+        if (!keys) { throw Error('Keys arg is required to subscribe to an attribute change'); }
+        const depsArray = Array.isArray(keys) ? keys : [keys];
+        depsArray.forEach((key) => {
+          // Check that the key is actually in the state object and a valid dependency.
+          if (Object.keys(state).includes(key)) {
+            stateEventEmitter.on(`${storeName}-${storeEvents.STATEUPDATED}-${key}`, (newState) => subscriberFn(newState));
+          } else {
+            throw Error(`Store.onAttributeUpdate - the key '${key}' does not exist on the state object you are trying to subscribe to.`);
+          }
+        });
+      } catch (err) {
+        console.error(err);
+      }
     },
     viewSubscriptions() {
       return {

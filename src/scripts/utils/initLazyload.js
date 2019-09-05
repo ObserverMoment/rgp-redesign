@@ -13,6 +13,7 @@ import {globalState, globalEvents} from './global_events';
 
 const defaultOptions = {
   elements_selector: 'img',
+  threshold: 400,
   // Uncomment for logging.
   // callback_enter: (element) => {
   //   logEvent('ENTERED', element);
@@ -37,13 +38,4 @@ function createLazyloader(customOptions = {}, scrollableElement = null) {
   globalState.subscribe(globalEvents.DOMUPDATED, () => lazyloader.update());
 }
 
-window.addEventListener('load', () => {
-  createLazyloader({
-    elements_selector: '.lazyContainer',
-    callback_enter: (element) => {
-      // Uncomment for logging.
-      // logEvent('ENTERED', element);
-      createLazyloader({thresholds: '50px 500px'}, element);
-    },
-  });
-});
+export {createLazyloader};

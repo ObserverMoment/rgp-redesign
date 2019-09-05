@@ -22,6 +22,10 @@ main {
   min-height: calc(100vh - #{$footer-height});
 }
 
+a {
+  text-decoration: none;
+}
+
 .page-not-found {
   text-align: center;
   padding: 100px;

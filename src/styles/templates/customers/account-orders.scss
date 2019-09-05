@@ -1,11 +1,11 @@
 .account-orders {
+  position: relative;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  position: relative;
   margin-bottom: 30px;
-  h1 { margin: 20px 0 0 0; }
+  h1 { margin: 20px 0 0; }
   &__back {
     @include text-link;
     position: absolute;
@@ -20,9 +20,9 @@
     flex-grow: 1;
     margin: 10px;
     padding: 20px;
-    text-align: left;
     border: 1px solid $color-main-black;
     border-radius:  6px;
+    text-align: left;
     a {
       @include text-link-alt;
     }

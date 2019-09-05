@@ -1,25 +1,25 @@
 @mixin header-info-dropdown {
   @include card;
-  margin: 0;
   position: fixed;
+  z-index: 5;
   top: 0;
   right: 0;
+  display: flex;
+  overflow: hidden;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
   height: 0;
+  margin: 0;
+  padding: 0 25px;
+  border-width: 0;
+  border-radius: 2px;
   background: white;
   color: black;
   transition:
     height 0.6s $header-ease,
     padding 0.4s $header-ease,
     border-width 0.6s $header-ease;
-  border-radius: 2px;
-  overflow: hidden;
-  padding: 0 25px;
-  z-index: 3;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-around;
-  align-items: center;
-  border-width: 0;
   &.active {
     height: 180px;
     padding: 25px;
@@ -61,34 +61,34 @@ $header-ease: cubic-bezier(0.19, 1, 0.22, 1);
 // Styles begin.
 .header {
   &-content {
-    color: $color-body-text-1;
+    position: fixed;
+    z-index: 10;
+    top: 0;
     display: flex;
     justify-content: space-between;
-    height: $header-height;
-    z-index: 10;
-    position: fixed;
-    top: 0;
     width: calc(100% - 8px);
+    height: $header-height;
+    margin: 4px;
+    color: $color-body-text-1;
     background: white;
     transition: all 0.5s $header-ease;
-    margin: 4px;
     &.scrolled {
       opacity: 0.96;
     }
     &__left {
-      display: flex;
       z-index: 5;
       box-sizing: border-box;
+      display: flex;
       align-items: center;
       &__logo-image {
         position: absolute;
-        width: 200px;
-        left: 50%;
-        margin-left: -100px;
         top: 20px;
+        left: 50%;
+        width: 200px;
+        margin-left: -100px;
         @include media-min-size($screen-medium) {
-          left: 15px;
           top: 16px;
+          left: 15px;
           width: 220px;
           margin-left: 0;
         }
@@ -98,15 +98,15 @@ $header-ease: cubic-bezier(0.19, 1, 0.22, 1);
         }
       }
       &__toggle-menu-btn {
-        display: block;
         position: absolute;
+        top: 10px;
+        left: 20px;
+        display: block;
         opacity: 0;
         transform: scale(0) rotate(90deg);;
         transition: all 0.4s $header-ease;
         cursor: pointer;
         font-size: 1.8em;
-        left: 20px;
-        top: 10px;
         &.active {
           opacity: 1;
           transform: scale(1) rotate(0);
@@ -118,37 +118,23 @@ $header-ease: cubic-bezier(0.19, 1, 0.22, 1);
       &__mobile-nav-content {
         @include card;
         position: absolute;
+        z-index: 5;
         top: $header-height;
         left: -100vw;
         width: calc(100vw - 9px);
-        @include media-min-size($screen-tablet) {
-          width: calc(100vw - 22px);
-        }
         transform: translateX(0);
-        transition: all 0.4s $header-ease;
+        transition: all 0.6s $header-ease;
         background: white;
-        z-index: 5;
         opacity: 1;
         ul {
-          list-style-type: none;
           display: flex;
           flex-direction: column;
           padding: 0;
+          list-style-type: none;
           li {
             margin: 6px;
             a {
-              text-decoration: none;
-              border-bottom: 1px solid transparent;
-              transition: border-color 0.5s;
-              color: $color-body-text-1;
-              @include hover { border-bottom: 1px solid #c2c2c2; }
-            }
-            span {
-              cursor: pointer;
-              border-bottom: 1px solid transparent;
-              transition: border-color 0.5s;
-              color: $color-body-text-1;
-                @include hover { border-bottom: 1px solid #c2c2c2; }
+              @include text-link;
             }
           }
         }
@@ -159,19 +145,15 @@ $header-ease: cubic-bezier(0.19, 1, 0.22, 1);
       &__main-nav {
         display: none;
         @include media-min-size($screen-medium) {
-          margin-left: 210px;
           display: block;
+          margin-left: 210px;
           ul {
-            list-style-type: none;
             display: flex;
+            list-style-type: none;
             li {
               margin-left: 20px;
               a {
-                text-decoration: none;
-                border-bottom: 1px solid transparent;
-                transition: border-color 0.5s;
-                color: $color-body-text-1;
-                  @include hover { border-bottom: 1px solid #c2c2c2; }
+                @include link;
               }
             }
           }
@@ -179,8 +161,8 @@ $header-ease: cubic-bezier(0.19, 1, 0.22, 1);
       }
     }
     &__right {
-      display: flex;
       z-index: 5;
+      display: flex;
       align-items: center;
       > div { margin-right: 20px; }
       &__help {
@@ -188,9 +170,9 @@ $header-ease: cubic-bezier(0.19, 1, 0.22, 1);
           display: none;
           @include media-min-size($screen-tablet) {
             display: block;
+            border-bottom: 1px solid transparent;
             cursor: pointer;
             transition: border-color 0.5s;
-            border-bottom: 1px solid transparent;
               @include hover { border-color: #c2c2c2; transition: border-color 0.5s; }
           }
         }
@@ -204,9 +186,9 @@ $header-ease: cubic-bezier(0.19, 1, 0.22, 1);
           display: none;
           @include media-min-size($screen-tablet) {
             display: block;
+            border-bottom: 1px solid transparent;
             cursor: pointer;
             transition: border-color 0.5s;
-            border-bottom: 1px solid transparent;
             @include hover { border-color: #c2c2c2; transition: border-color 0.5s; }
           }
         }
@@ -220,14 +202,14 @@ $header-ease: cubic-bezier(0.19, 1, 0.22, 1);
             display: flex;
             justify-content: center;
             align-items: center;
-            border-radius: 6px;
             margin: 10px;
+            border-radius: 6px;
             > a {
               @include secondary-btn;
-              padding: 6px 12px;
               display: flex;
               justify-content: center;
               align-items: center;
+              padding: 6px 12px;
               border-radius: 4px;
             }
           }
@@ -238,55 +220,57 @@ $header-ease: cubic-bezier(0.19, 1, 0.22, 1);
           display: flex;
           justify-content: flex-end;
           align-items: center;
-          transition: 0.3s all;
+          padding: 6px;;
+          border: 1px solid $color-main-light-grey;
           border-radius: 2px;
-          background: white;;
-          border: 1px solid $color-body-text-1;
-          padding: 6px;
-            @include hover {
+          transition: 0.3s all;
+          background: white;
+          @include hover {
+            border-color: transparent;
             cursor: pointer;
-            border-color: #0d0d0d;
-            background: $color-main-green;
+            background: $color-main-gold;
           }
-            @include hover &__icon { color: #eaecea; }
+          @include hover('&__icon') {
+            color: $color-main-light-grey;
+          }
           &__icon {
             display: flex;
             justify-content: center;
             align-items: center;
-            color: #323d48;
+            color: $color-main-black;
             > i { font-size: 1.2em; }
           }
           &__quantity {
-            color: $color-text-light-1;
-            background: #043c7e;
-            border-radius: 50%;
+            position: absolute;
+            top: 8px;
+            right: 10px;
             display: flex;
             justify-content: center;
             align-items: center;
             width: 24px;
             height: 24px;
+            border-radius: 50%;
+            color: $color-text-light-1;
+            background: #043c7e;
             font-size: 0.9em;
-            position: absolute;
-            top: 8px;
-            right: 10px;
           }
         }
         &__sidebar {
           position: fixed;
           top: 0;
           right: -500px;
+          width: 100vw;
           height: 100%;
           max-height: 100vh;
+          padding: 20px 25px 10px;
+          border: 1px solid rgba(80, 112, 133, 0.4);
+          border-radius: 2px;
           overflow-y: scroll;
           transition: transform 0.6s $header-ease;
-          border-radius: 2px;
-          padding: 20px 25px 10px 25px;
-          border: 1px solid rgba(80, 112, 133, 0.4);
           box-shadow: 1px 1px 4px 1px rgba(55, 69, 79, 0.4);
           transform: translateX(0);
           background: $color-body;
           color: $color-body-text-1;
-          width: 100vw;
           @include media-min-size($screen-mobile) {
             right: -100vw;
             max-width: 600px;
@@ -320,6 +304,7 @@ $header-ease: cubic-bezier(0.19, 1, 0.22, 1);
       }
     }
   }
+
   // homepage page header styling.
   &-content {
     &.no-bg {

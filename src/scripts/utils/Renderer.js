@@ -107,7 +107,7 @@ function render([elementType, config, children], parent) {
         throw Error('The top level of your tree must be a DOM element');
       }
       if (!children || !Array.isArray(children) || children.length < 1) {
-        throw Error('You must provide and array of children for the root element');
+        throw Error('You must provide an array of children for the root element');
       }
       children.forEach(([_type, _config, _children]) => render([_type, _config, _children], config.rootElem));
     } else {

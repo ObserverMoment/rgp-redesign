@@ -1,6 +1,6 @@
 import Hammer from 'hammerjs';
 import {elems} from '../utils/Renderer';
-import {smoothFade, smoothTranslate} from '../utils/utils';
+import {smoothFade, smoothTranslate, range} from '../utils/utils';
 import {globalState} from '../utils/global_events';
 import {ResponsiveImage} from './responsive_image';
 
@@ -9,25 +9,36 @@ const {Div} = elems;
 const classes = {
   hideIcon: 'hide-icon',
   showImage: 'show-image',
+  active: 'active',
   imageGalleryViewport: 'image-gallery',
   imagesContainer: 'image-gallery__images-container',
   singleImage: 'image-gallery__images-container__single-image',
   imageGalleryActions: 'image-gallery__actions',
   imageGalleryActionsIcon: 'image-gallery__actions__icon',
+  navDotsContainer: 'image-gallery__nav-dots-container',
+  navDot: 'image-gallery__nav-dots-container__dot',
+  swipeInstruction: 'image-gallery__swipe-instruction',
 };
 
 // Each gallery will need its own id so the correct elements can be targeted.
 let _galleryId = 0;
-const _imageFadeTime = 100;
-const _imageScrollTime = 300;
+const _imageFadeTime = 400;
+const _imageScrollTime = 500;
 
 /*
   @param {images: object[]}: {src, alt, height, width, position}
 */
-function ImageGallery(images = [], galleryState) {
+function ImageGallery(images = [], galleryState, initialIndex = 0) {
   _galleryId++;
   // Initialise state with inits / defaults.
-  galleryState.setState({galleryId: _galleryId, activeTranslateX: 0, swipeBreakpoint: 100});
+  galleryState.setState({
+    galleryId: _galleryId,
+    activeTranslateX: 0,
+    indexTranslateX: 0,
+    imageWidths: [],
+    curIndex: initialIndex,
+    prevIndex: initialIndex,
+  });
 
   const numImages = images.length;
 
@@ -48,39 +59,41 @@ function ImageGallery(images = [], galleryState) {
     rightScrollIcon: () => document.querySelector(`[${rightScrollIconAttr}]`),
   };
 
-  const initialState = galleryState.getState();
-
-  let _curIndex = initialState.curIndex || 0;
-
-  function animateScroll(newXpos, imagesContainerElem) {
-    imagesContainerElem.style.transform = `translateX(${newXpos}px`;
+  function updateTranslateX(newState, imagesContainerElem) {
+    const {indexTranslateX, activeTranslateX} = newState;
+    imagesContainerElem.style.transform = `translateX(${parseInt(indexTranslateX, 10) + parseInt(activeTranslateX, 10)}px`;
   }
 
   function updateImageIndex(newState, imagesContainerElem) {
-    const {curIndex: newIndex, curXTranslate, activeTranslateX, imageWidths} = newState;
+    const {
+      curIndex: newIndex, prevIndex, indexTranslateX, activeTranslateX, imageWidths,
+    } = newState;
     if (newIndex < 0 || newIndex > numImages - 1) {
       console.error('You can\'t display an image with an index that is outside the range of the imageurls array');
       return;
     }
+
     // Need to total up all the image widths between the two new indexes - based on imageWidths state array.
-    const translateAmt = -(imageWidths.slice(0, newIndex).reduce((acum, next) => acum + next, 0));
-    const indexDiff = newIndex - _curIndex;
+    const newTranslateAmt = parseInt(-(imageWidths.slice(0, newIndex).reduce((acum, next) => acum + next, 0)), 10);
+    const indexDiff = newIndex - prevIndex;
+    // How much of the full image width distance is left to b scrolld after the swipe.
+    const scrollPercent = (imageWidths[newIndex] - Math.abs(activeTranslateX)) / imageWidths[newIndex];
 
     // If swiping, animate using a transform only. If going direct to an index, fade out, transform instantly, then fade in.
     if (Math.abs(indexDiff) === 1) {
       smoothTranslate(
-        (newPos) => animateScroll(newPos, imagesContainerElem),
-        {xPos: [curXTranslate + activeTranslateX, translateAmt]},
-        [],
-        _imageScrollTime,
+        (newPos) => galleryState.setState({indexTranslateX: parseInt(newPos, 10), activeTranslateX: 0}),
+        {xPos: [indexTranslateX + activeTranslateX, newTranslateAmt]},
+        [0.14, 0.58, 0.79, 0.69],
+        _imageScrollTime * scrollPercent,
       );
     } else {
-      setTimeout(() => {
-        imagesContainerElem.style.transform = `translateX(${translateAmt}px`;
-      }, _imageFadeTime);
+      // Fade out fast, instant translate, then slow fade back in.
+      imagesContainerElem.style.opacity = 0;
+      imagesContainerElem.style.transform = `translateX(${newTranslateAmt}px`;
+      smoothFade([0, 1], imagesContainerElem, _imageFadeTime, []);
+      galleryState.setState({indexTranslateX: newTranslateAmt, activeTranslateX: 0});
     }
-    galleryState.setState({curXTranslate: translateAmt, activeTranslateX: 0});
-    _curIndex = newIndex;
   }
 
   function updateGalleryImageDims(imageElem, index) {
@@ -99,9 +112,9 @@ function ImageGallery(images = [], galleryState) {
 
   function handleScreenResize(newState, imagesContainerElem) {
     const {curIndex: newIndex, imageWidths} = newState;
-    const translateAmt = -(imageWidths.slice(0, newIndex).reduce((acum, next) => acum + next, 0));
-    imagesContainerElem.style.transform = `translateX(${translateAmt}px`;
-    galleryState.setState({curXTranslate: translateAmt});
+    const newTranslateAmt = -(imageWidths.slice(0, newIndex).reduce((acum, next) => acum + next, 0));
+    imagesContainerElem.style.transform = `translateX(${newTranslateAmt}px`;
+    galleryState.setState({indexTranslateX: newTranslateAmt});
   }
 
   function updateActionsElement(newState) {
@@ -141,61 +154,72 @@ function ImageGallery(images = [], galleryState) {
     ]);
   }
 
-  function setSwipeBreakpoint(viewportElement) {
-    const swipeBreakpoint = viewportElement.getBoundingClientRect().width * 0.2;
-    galleryState.setState({swipeBreakpoint});
-  }
-
   function setupSwipeInteraction(imagesContainer) {
     const hammer = new Hammer(imagesContainer);
     hammer.add(new Hammer.Pan({direction: Hammer.DIRECTION_HORIZONTAL, threshold: 0}));
     // Is it a swipe? Allow fast swipes / flicks. What speed does the panend at? Above what velocity end is a flick?
     // Is it a slow pan (like Google)? If so then how far has the pan moved. Above what distance is a swipe?
     // https://github.com/hammerjs/hammer.js/issues/1100
-    const slowSwipeBreakpoint = galleryState.getState().swipeBreakpoint;
     const fastSwipeMinVel = 0.3;
     const fastSwipeMinDist = 10;
 
     hammer.on('panend', (event) => {
-      if (event.velocityX < -fastSwipeMinVel && event.distance > fastSwipeMinDist && _curIndex < numImages - 1) {
+      const {activeTranslateX, curIndex, imageWidths} = galleryState.getState();
+      const slowSwipeBreakpoint = imageWidths[curIndex] / 3.5;
+      if (event.velocityX < -fastSwipeMinVel && event.distance > fastSwipeMinDist && curIndex < numImages - 1) {
         // Fast swipe left
-        galleryState.setState({curIndex: _curIndex + 1});
-      } else if (event.velocityX > fastSwipeMinVel && event.distance > fastSwipeMinDist && _curIndex > 0) {
+        galleryState.setState({curIndex: curIndex + 1, prevIndex: curIndex});
+      } else if (event.velocityX > fastSwipeMinVel && event.distance > fastSwipeMinDist && curIndex > 0) {
         // Fast swipe right
-        galleryState.setState({curIndex: _curIndex - 1});
-      } else if (event.deltaX < -slowSwipeBreakpoint && _curIndex < numImages - 1) {
+        galleryState.setState({curIndex: curIndex - 1, prevIndex: curIndex});
+      } else if (event.deltaX < -slowSwipeBreakpoint && curIndex < numImages - 1) {
         // Slow swipe left
-        galleryState.setState({curIndex: _curIndex + 1});
-      } else if (event.deltaX > slowSwipeBreakpoint && _curIndex > 0) {
+        galleryState.setState({curIndex: curIndex + 1, prevIndex: curIndex});
+      } else if (event.deltaX > slowSwipeBreakpoint && curIndex > 0) {
         // Slow swipe right
-        galleryState.setState({curIndex: _curIndex - 1});
+        galleryState.setState({curIndex: curIndex - 1, prevIndex: curIndex});
       } else {
         // Animate back to the previous index.
-        const {activeTranslateX, curXTranslate: origTranslateX} = galleryState.getState();
+        const scrollPercent = (imageWidths[curIndex] - Math.abs(activeTranslateX)) / imageWidths[curIndex];
         smoothTranslate(
-          (newPos) => animateScroll(newPos, imagesContainer),
-          {xPos: [origTranslateX + activeTranslateX, origTranslateX]},
+          (newPos) => galleryState.setState({activeTranslateX: parseInt(newPos, 10)}),
+          {xPos: [activeTranslateX, 0]},
           [],
-          _imageScrollTime,
+          _imageScrollTime * scrollPercent,
         );
-        galleryState.setState({activeTranslateX: 0});
       }
     });
 
     hammer.on('pan', (event) => {
       // Pan the actual element if there a more images to swipe to.
-      const {curXTranslate: currentTranslate} = galleryState.getState();
-      let deltaX;
-      if (_curIndex === 0 && event.deltaX >= 0) {
-        deltaX = 0;
-      } else if (_curIndex === numImages.length && event.delta < 0) {
-        deltaX = 0;
-      } else {
-        deltaX = event.deltaX;
-      }
-      galleryState.setState({activeTranslateX: deltaX});
-      imagesContainer.style.transform = `translateX(${currentTranslate + deltaX}px)`;
+      const deltaX = getDeltaX(event);
+      galleryState.setState({activeTranslateX: parseInt(deltaX, 10)});
     });
+
+    function getDeltaX(event) {
+      const {imageWidths, curIndex} = galleryState.getState();
+      let deltaX;
+      if (curIndex === 0 && event.deltaX >= 0) {
+        deltaX = 0;
+      } else if (curIndex === numImages - 1 && event.deltaX < 0) {
+        deltaX = 0;
+      } else if (Math.abs(event.deltaX) < imageWidths[curIndex]) {
+        deltaX = event.deltaX;
+      } else if (event.deltaX < 0) {
+        deltaX = -imageWidths[curIndex];
+      } else {
+        deltaX = imageWidths[curIndex];
+      }
+      return deltaX;
+    }
+  }
+
+  function updateNavDot(navDotElem, newState) {
+    if (parseInt(navDotElem.dataset.index, 10) === newState.curIndex) {
+      navDotElem.classList.add(classes.active);
+    } else {
+      navDotElem.classList.remove(classes.active);
+    }
   }
 
   return {
@@ -205,16 +229,17 @@ function ImageGallery(images = [], galleryState) {
       Div, {
         className: `${classes.imageGalleryViewport} lazyContainer`,
         attributes: {[viewportDataAttr]: ''},
-        postMountCallbacks: [
-          (self) => setSwipeBreakpoint(self),
-        ],
       }, [
         [Div, {
           className: classes.imagesContainer,
           attributes: {[imagesContainerDataAttr]: ''},
           subscriptions: [
-            (self) => galleryState.onAttributeUpdate((newState) => updateImageIndex(newState, self), 'curIndex'),
-            (self) => galleryState.onAttributeUpdate((newState) => handleScreenResize(newState, self), 'imageWidths'),
+            (self) => galleryState.onAttributeUpdate((newState) =>
+              updateImageIndex(newState, self), 'curIndex'),
+            (self) => galleryState.onAttributeUpdate((newState) =>
+              handleScreenResize(newState, self), 'imageWidths'),
+            (self) => galleryState.onAttributeUpdate((newState) =>
+              updateTranslateX(newState, self), ['indexTranslateX', 'activeTranslateX']),
           ],
           postMountCallbacks: [
             (self) => setupSwipeInteraction(self),
@@ -231,28 +256,42 @@ function ImageGallery(images = [], galleryState) {
           ],
         }, [
           [Div, {
-            className: `${classes.imageGalleryActionsIcon} ${_curIndex === 0 && 'hide-icon'}`,
+            className: `${classes.imageGalleryActionsIcon} ${initialIndex === 0 && 'hide-icon'}`,
             attributes: {[leftScrollIconAttr]: ''},
             innerHTML: '<i class="fas fa-arrow-alt-circle-left"></i>',
             listeners: {click: [
               (event) => {
                 event.stopPropagation();
                 event.preventDefault();
-                galleryState.setState({curIndex: Math.max(_curIndex - 1, 0)});
+                const {curIndex} = galleryState.getState();
+                galleryState.setState({curIndex: Math.max(curIndex - 1, 0), prevIndex: curIndex});
               }]},
           }],
           [Div, {
-            className: `${classes.imageGalleryActionsIcon} ${_curIndex === numImages - 1 && 'hide-icon'}`,
+            className: `${classes.imageGalleryActionsIcon} ${initialIndex === numImages - 1 && 'hide-icon'}`,
             innerHTML: '<i class="fas fa-arrow-alt-circle-right"></i>',
             attributes: {[rightScrollIconAttr]: ''},
             listeners: {click: [
               (event) => {
                 event.stopPropagation();
                 event.preventDefault();
-                galleryState.setState({curIndex: Math.min(_curIndex + 1, numImages - 1)});
+                const {curIndex} = galleryState.getState();
+                galleryState.setState({curIndex: Math.min(curIndex + 1, numImages - 1), prevIndex: curIndex});
               }]},
           }],
         ]],
+        [Div, {className: classes.navDotsContainer}, [
+          ...range(numImages).map((index) => ([
+            Div, {
+              className: `${classes.navDot} ${initialIndex === index && classes.active}`,
+              attributes: {'data-index': index},
+              subscriptions: [
+                (self) => galleryState.onAttributeUpdate((newState) => updateNavDot(self, newState), 'curIndex'),
+              ],
+            },
+          ])),
+        ]],
+        [Div, {className: classes.swipeInstruction, innerHTML: 'Swipe...'}],
       ],
     ]),
   };

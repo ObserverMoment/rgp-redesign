@@ -25,7 +25,18 @@
       {% endcomment %}
 
         <p>
-          <a href="{{ collection.url }}" title="{{ 'collections.general.link_title' | t: title: title }}">{{ collection.title }}</a>
+          <a href="{{ collection.url }}" title="{{ 'collections.general.link_title' | t: title: title }}">
+            {% case collection.title %}
+              {% when "Poker Chipsets" %}
+                Poker chips
+              {% when "Poker Mats and Layouts" %}
+                Mats & layouts
+              {% when "Poker Table Tops" %}
+                Table tops
+              {% when "Poker Tables" %}
+                Tables
+            {% endcase %}
+          </a>
         </p>
       {% endunless %}
     {% endfor %}
