@@ -19,7 +19,7 @@ html {
 
 main {
   padding-top: calc(#{$header-height} + #{$main-padding-top});
-  min-height: calc(100vh - #{$footer-height});
+  min-height: calc(100vh - 150px);
 }
 
 a {

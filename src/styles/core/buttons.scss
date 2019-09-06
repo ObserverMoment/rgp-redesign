@@ -11,7 +11,7 @@ a {
    display: flex;
    justify-content: center;
    align-items: center;
-   border-radius: 40px;
+   border-radius: 4px;
 }
 
 @mixin primary-btn {
@@ -60,7 +60,20 @@ a {
   color: white;
   span { padding: 0 5px; }
   @include hover {
-    background: black;
+    background: $color-main-black;
+  }
+}
+
+@mixin grey-btn {
+  @include btn;
+  border: 1px solid $color-main-grey;
+  background: $color-main-white;
+  color: $color-main-black;
+  padding: 6px 8px;
+  span { padding: 0 5px; }
+  @include hover {
+    border-color: $color-main-black;
+    background: $color-main-light-grey;
   }
 }
 

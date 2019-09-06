@@ -11,7 +11,7 @@
     {{ form.errors | default_errors }}
 
     <div class="login-form__text-input">
-      <label for="CustomerEmail" data-login-input-label>
+      <label for="CustomerEmail" data-form-text-input-label>
         {{ 'customer.login.email' | t }}
       </label>
       <i class="far fa-envelope"></i>
@@ -25,12 +25,12 @@
         autocomplete="off"
         autocapitalize="off"
         autofocus
-        data-login-input
+        data-form-text-input
     >
     </div>
     <div class="login-form__text-input">
       {% if form.password_needed %}
-        <label for="CustomerPassword" data-login-input-label>
+        <label for="CustomerPassword" data-form-text-input-label>
           {{ 'customer.login.password' | t }}
         </label>
         <i class="fas fa-lock"></i>
@@ -40,7 +40,7 @@
           id="CustomerPassword"
           class="{% if form.errors contains 'password' %}input-error{% endif %}"
           placeholder="{{ 'customer.login.password' | t }}"
-          data-login-input
+          data-form-text-input
         >
       {% endif %}
     </div>
@@ -75,7 +75,7 @@
     {% endif %}
 
     <div class="login-form__text-input">
-      <label for="RecoverEmail" data-login-input-label>
+      <label for="RecoverEmail" data-form-text-input-label>
         {{ 'customer.recover_password.email' | t }}
       </label>
       <i class="far fa-envelope"></i>
@@ -87,7 +87,7 @@
         spellcheck="false"
         autocomplete="off"
         autocapitalize="off"
-        data-login-input
+        data-form-text-input
       >
     </div>
 

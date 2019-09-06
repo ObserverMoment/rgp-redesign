@@ -133,6 +133,7 @@ $header-ease: cubic-bezier(0.19, 1, 0.22, 1);
           list-style-type: none;
           li {
             margin: 6px;
+            cursor: pointer;
             a {
               @include text-link;
             }
@@ -224,7 +225,7 @@ $header-ease: cubic-bezier(0.19, 1, 0.22, 1);
           border: 1px solid $color-main-light-grey;
           border-radius: 2px;
           transition: 0.3s all;
-          background: white;
+          background: $color-main-white;
           @include hover {
             border-color: transparent;
             cursor: pointer;
@@ -251,7 +252,7 @@ $header-ease: cubic-bezier(0.19, 1, 0.22, 1);
             height: 24px;
             border-radius: 50%;
             color: $color-text-light-1;
-            background: #043c7e;
+            background: $color-main-blue;
             font-size: 0.9em;
           }
         }

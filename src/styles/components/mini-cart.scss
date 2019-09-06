@@ -4,9 +4,9 @@
   justify-content: center;
   align-items: center;
   &__icon {
-    > i { font-size: 2em; color: #323d48; }
+    > i { font-size: 2em; color: $color-main-grey; }
   }
-  > div { border-bottom: 1px solid #e8e8e8; }
+  > div { border-bottom: 1px solid $color-main-white; }
   &__line {
     display: flex;
     padding: 5px 0;
@@ -25,7 +25,7 @@
         text-decoration: none;
         color: $color-body-text-1;
         transition: color 0.3s;
-        &:hover { color: #234388; }
+        @include hover { color: $color-main-blue; }
       }
       &__unit {
         display: flex;
@@ -44,7 +44,7 @@
   }
   &__shipping-total, &__cart-total {
     font-weight: bold;
-    color: #965260;
+    color: $color-main-grey;
     padding: 10px 0 10px 30px;
     width: 100%;
     display: flex;

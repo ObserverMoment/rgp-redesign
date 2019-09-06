@@ -3,6 +3,7 @@ import {getCollectionProducts} from '../utils/api';
 import {render, elems} from '../utils/Renderer';
 import {Store} from '../utils/Store';
 import productConfig from '../utils/productTypes';
+import {FilterIcon, SortDownIcon} from '../utils/icons';
 
 const {Root, Div, Link} = elems;
 
@@ -12,7 +13,12 @@ const getElements = {
 };
 
 const classes = {
+  filterBtnsContainer: 'product-browser__header__filters__btns-container',
   filterSelectBtn: 'product-browser__header__filters__btn',
+  filterMobileIcon: 'product-browser__header__filters__icon',
+  selectedFilter: 'product-browser__header__filters__selected',
+  selectedFilterDisplay: 'product-browser__header__filters__selected__text',
+  selectedFilterToggle: 'product-browser__header__filters__selected__toggle',
   productLink: 'product-browser__products__product-link',
   show: 'show',
   active: 'active',
@@ -21,6 +27,7 @@ const classes = {
 const validProductTypes = ['Poker Chipset', 'Freestanding Poker Table', 'Poker Table Top', 'Poker Mat'];
 
 function updateProductDisplay(productLink, newState) {
+  // Remove all items first before adding them back in to trigger keyframe animnations.
   if (
     productLink.dataset.productType === newState.selectedProductType ||
     newState.selectedProductType === 'everything'
@@ -39,33 +46,79 @@ function updateFilterSelect(filterSelectBtn, newState) {
   }
 }
 
-function renderFilters(productTypes = ['everything'], state) {
+function getUITextForCollection(productType) {
+  return productType === 'everything'
+    ? 'Everything'
+    : productConfig[productType].uiDisplay;
+}
+
+function updateSelectedFilterDisplay(newState, selectedFilterElem) {
+  const {selectedProductType} = newState;
+  selectedFilterElem.innerHTML = getUITextForCollection(selectedProductType);
+}
+
+function updateMobileDropdown(dropdownElem, newState) {
+  if (newState.filterOpen) {
+    dropdownElem.classList.add(classes.active);
+  } else {
+    dropdownElem.classList.remove(classes.active);
+  }
+}
+
+function renderFilters(productTypes = ['everything'], State) {
   const productFilters = getElements.productFilters();
+  const {selectedProductType} = State.getState();
+  const selectedCollection = getUITextForCollection(selectedProductType);
+
   render([
     Root,
     {rootElem: productFilters},
     [
-      ...productTypes.map((handle) => (
-        [Div,
-          {
-            className: classes.filterSelectBtn,
-            innerHTML: handle === 'everything' ? 'Everything' : productConfig[handle].collection,
-            attributes: {'data-product-type': handle},
-            listeners: {
-              click: [() => state.setState({selectedProductType: handle})],
-            },
-            subscriptions: [
-              (self) => state.onAttributeUpdate((newState) => updateFilterSelect(self, newState), 'selectedProductType'),
-            ],
-            postMountCallbacks: [
-              (self) => updateFilterSelect(self, state.getState()),
-            ],
-          }])),
+      [Div, {className: classes.filterMobileIcon, innerHTML: FilterIcon}],
+      [Div, {
+        className: classes.selectedFilter,
+        listeners: {
+          click: [() => State.setState({filterOpen: !State.getState().filterOpen})],
+        },
+      }, [
+        [Div, {
+          className: classes.selectedFilterDisplay,
+          innerHTML: `Showing: ${selectedCollection}`,
+          postMountCallbacks: [(self) => updateSelectedFilterDisplay(State.getState(), self)],
+          subscriptions: [(self) => State.onAttributeUpdate((newState) => updateSelectedFilterDisplay(newState, self), 'selectedProductType')],
+        }],
+        [Div, {className: classes.selectedFilterToggle, innerHTML: SortDownIcon}],
+      ]],
+      [Div, {
+        className: classes.filterBtnsContainer,
+        subscriptions: [
+          (self) => State.onAttributeUpdate((newState) => updateMobileDropdown(self, newState), 'filterOpen'),
+        ],
+      }, [
+        ...productTypes.map((handle) => (
+          [Div,
+            {
+              className: classes.filterSelectBtn,
+              innerHTML: handle === 'everything' ? 'Everything' : productConfig[handle].uiDisplay,
+              attributes: {'data-product-type': handle},
+              listeners: {
+                click: [
+                  () => State.setState({selectedProductType: handle, filterOpen: !State.getState().filterOpen}),
+                ],
+              },
+              subscriptions: [
+                (self) => State.onAttributeUpdate((newState) => updateFilterSelect(self, newState), 'selectedProductType'),
+              ],
+              postMountCallbacks: [
+                (self) => updateFilterSelect(self, State.getState()),
+              ],
+            }])),
+      ]],
     ],
   ]);
 }
 
-function renderProductsList(products, state) {
+function renderProductsList(products, State) {
   const productsContainer = getElements.productsContainer();
   const urlRoot = '/products';
   render([
@@ -76,10 +129,10 @@ function renderProductsList(products, state) {
           className: classes.productLink,
           attributes: {href: `${urlRoot}/${product.handle}`, 'data-product-type': product.product_type},
           subscriptions: [
-            (self) => state.onAttributeUpdate((newState) => updateProductDisplay(self, newState), 'selectedProductType'),
+            (self) => State.onAttributeUpdate((newState) => updateProductDisplay(self, newState), 'selectedProductType'),
           ],
           postMountCallbacks: [
-            (self) => updateProductDisplay(self, state.getState()),
+            (self) => updateProductDisplay(self, State.getState()),
           ],
         },
           [ProductCard(product, true)],
@@ -88,12 +141,15 @@ function renderProductsList(products, state) {
 }
 
 async function initCollection() {
-  const state = Store({selectedProductType: 'everything'});
+  const State = Store({selectedProductType: 'everything', filterOpen: false});
   const {products} = await getCollectionProducts('everything');
-  const productTypes = products.map((product) => product.product_type).filter((type) => validProductTypes.includes(type));
-  const uniqueProductTypes = ['everything', ...new Set(productTypes)];
-  renderFilters(uniqueProductTypes, state);
-  renderProductsList(products, state);
+  // Sort by price - low to high.
+  const sortedProducts = products.sort((prodA, prodB) =>
+    (parseFloat(prodA.variants[0].price) <= parseFloat(prodB.variants[0].price) ? -1 : 1));
+
+  const uniqueProductTypes = ['everything', 'Poker Chipset', 'Poker Mat', 'Poker Table Top', 'Freestanding Poker Table'];
+  renderFilters(uniqueProductTypes, State);
+  renderProductsList(sortedProducts, State);
 }
 
 initCollection();

@@ -1,0 +1,16 @@
+.article {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 10px 25px;
+  ul {
+    display: flex;
+    flex-wrap: wrap;
+    list-style: none;
+    padding: 0;
+    justify-content: center;
+    li a {
+      @include grey-btn;
+      margin: 4px 8px;
+    }
+  }
+}

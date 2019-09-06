@@ -7,7 +7,7 @@
     {{ form.errors | default_errors }}
 
     <div class="login-form__text-input">
-      <label for="FirstName" data-login-input-label>
+      <label for="FirstName" data-form-text-input-label>
         {{ 'customer.register.first_name' | t }}
       </label>
       <i class="far fa-user"></i>
@@ -17,11 +17,11 @@
         placeholder="{{ 'customer.register.first_name' | t }}"
         autofocus
         {% if form.first_name %}value="{{ form.first_name }}"{% endif %}
-        data-login-input>
+        data-form-text-input>
     </div>
 
     <div class="login-form__text-input">
-      <label for="LastName" data-login-input-label>
+      <label for="LastName" data-form-text-input-label>
         {{ 'customer.register.last_name' | t }}
       </label>
       <i class="far fa-user"></i>
@@ -30,11 +30,11 @@
         id="LastName"
         placeholder="{{ 'customer.register.last_name' | t }}"
         {% if form.last_name %}value="{{ form.last_name }}"{% endif %}
-        data-login-input>
+        data-form-text-input>
     </div>
 
     <div class="login-form__text-input">
-      <label for="Email" data-login-input-label>
+      <label for="Email" data-form-text-input-label>
         {{ 'customer.register.email' | t }}
       </label>
       <i class="far fa-envelope"></i>
@@ -47,11 +47,11 @@
         spellcheck="false"
         autocomplete="off"
         autocapitalize="off"
-        data-login-input>
+        data-form-text-input>
     </div>
 
     <div class="login-form__text-input">
-      <label for="CreatePassword" data-login-input-label>
+      <label for="CreatePassword" data-form-text-input-label>
         {{ 'customer.register.password' | t }}
       </label>
       <i class="fas fa-lock"></i>
@@ -60,7 +60,7 @@
         id="CreatePassword"
         class="{% if form.errors contains 'password' %}input-error{% endif %}"
         placeholder="{{ 'customer.register.password' | t }}"
-        data-login-input>
+        data-form-text-input>
     </div>
 
     <input type="submit" value="{{ 'customer.register.submit' | t }}" class="button">
