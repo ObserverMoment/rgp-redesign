@@ -175,6 +175,8 @@
    display: flex;
    flex-direction: column;
    align-items: center;
+   width: 100%;
+   padding: 8px;
    .errors {
      color: $login-form-red;
      ul {
@@ -183,6 +185,7 @@
        padding: 5px;
      }
    }
+   form { width: 100%; }
    label {
      color: $login-form-primary;
      position: absolute;
@@ -207,7 +210,7 @@
        padding-left: 35px;
      }
      border: none;
-     border-bottom: 1px solid grey;
+     border-bottom: 1px solid $color-main-grey;
      transition: border-color 0.4s;
      &::placeholder {
        font-size: 0.9em;

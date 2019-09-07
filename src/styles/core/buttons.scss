@@ -23,18 +23,18 @@ a {
 
 @mixin secondary-btn {
   @include btn;
-  border: 1px solid $color-main-light-grey;
+  border: 2px solid rgba($color-main-green, 0.8);
   background: white;
-  color: #006b5b;
+  color: $color-main-green;
   @include hover {
     color: white;
-    background: #006b5b;
+    background: $color-main-green;
   }
 }
 
 @mixin cancel-btn {
   @include btn;
-  border: 1px solid $color-main-grey;
+  border: 2px solid $color-main-grey;
   background: white;
   color: $color-main-grey;
   @include hover {
@@ -45,7 +45,7 @@ a {
 
 @mixin delete-btn {
   @include btn;
-  border: 1px solid $color-main-red;
+  border: 2px solid $color-main-red;
   background: white;
   color: $color-main-red;
   @include hover {
@@ -66,7 +66,7 @@ a {
 
 @mixin grey-btn {
   @include btn;
-  border: 1px solid $color-main-grey;
+  border: 2px solid $color-main-grey;
   background: $color-main-white;
   color: $color-main-black;
   padding: 6px 8px;

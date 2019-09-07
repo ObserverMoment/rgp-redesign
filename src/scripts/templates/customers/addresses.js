@@ -9,6 +9,9 @@
 
 import {AddressForm} from '@shopify/theme-addresses';
 
+// Setup listeners for label animations.
+import '../../components/account_forms';
+
 const selectors = {
   addressContainer: '[data-address]',
   addressFields: '[data-address-fields]',
@@ -16,7 +19,6 @@ const selectors = {
   addressForm: '[data-address-form]',
   addressDeleteForm: '[data-address-delete-form]',
   addAddressBtn: '[data-add-address-btn]',
-  confirmAddBtn: '[data-confirm-add-btn]',
   cancelAddBtn: '[data-cancel-add-btn]',
   addressTitle: '[data-address-title]',
   addressList: '[data-address-list]',
@@ -32,7 +34,6 @@ const hideClass = 'hide';
   const addressList = document.querySelector(selectors.addressList);
   const addressListItems = Array.from(document.querySelectorAll(selectors.addressListItem)).filter((node) => node);
   const cancelAddBtn = document.querySelector(selectors.cancelAddBtn);
-  const confirmAddBtn = document.querySelector(selectors.confirmAddBtn);
   const addressForm = document.querySelector(selectors.addressForm);
   const addressTitle = document.querySelector(selectors.addressTitle);
   const editAddressBtns = Array.from(document.querySelectorAll(selectors.editAddressBtn)).filter((node) => node);
@@ -47,12 +48,6 @@ const hideClass = 'hide';
   cancelAddBtn.addEventListener('click', () => {
     addressList.classList.remove(hideClass);
     addBtn.classList.remove(hideClass);
-  });
-
-  confirmAddBtn.addEventListener('click', () => {
-    addressForm.classList.add(hideClass);
-    addBtn.classList.remove(hideClass);
-    addressList.classList.remove(hideClass);
   });
 
   editAddressBtns.forEach((btn) => {

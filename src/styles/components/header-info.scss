@@ -1,11 +1,19 @@
-.footer {
-  background: #ededed;
+.header-info {
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   padding: 10px 20px 5px;
   height: 100%;
+  div {
+    margin: 20px 0;
+    @include media-min-size($screen-tablet) {
+      margin: 2px;
+    }
+  }
+  &__message {
+    font-size: 0.9em;
+  }
   a { text-decoration: none; color: inherit; }
   &__link-list {
     list-style: none;
@@ -18,6 +26,7 @@
       @include link;
       padding: 4px;
       margin: 0 8px;
+      font-weight: bold;
     }
   }
   &__copyright {
@@ -35,6 +44,7 @@
     }
     &__payment-icons {
       margin: 0 10px;
+      display: flex;
       > i { font-size: 1.6em; margin: 0 10px; color: $color-main-black; }
     }
     &__trustbox {

@@ -15,40 +15,32 @@
   <h1>Your order</h1>
 
   {% if cart.item_count > 0 %}
-  <table class="responsive-table">
-    <tbody class="cart-page__lines">
-      {% comment %}
-
-      Cart Item Template
-      =====================
-      The data-label attributes on <td> elements are mobile-friendly
-      helpers used for responsive-table labels
-      {% endcomment %}
+    <div class="cart-page__lines">
       {% for item in cart.items %}
-        <tr
-          class="responsive-table-row cart-page__lines__line"
+        <div
+          class="cart-page__lines__line"
           data-line-key="{{ item.key }}"
           data-line-variant-id="{{ item.variant_id}}"
           data-line-unit-price="{{ item.final_price }}"
           data-line-row
         >
 
-          <td data-label="{{ 'customer.order.product' | t }}" class="cart-page__lines__line__thumb">
+          <div class="cart-page__lines__line__thumb">
             {% if item.image != blank %}
               <a href="{{ item.url | within: collections.all }}">
                 {{ item | img_url: '80x80' | img_tag: item.title }}
               </a>
             {% endif %}
-          </td>
+          </div>
 
-          <td class="cart-page__lines__line__info">
+          <div class="cart-page__lines__line__info">
             <a href="{{ item.url }}">{{ item.product.title }}</a>
             {% unless item.product.has_only_default_variant %}
               <p>{{ item.variant.title }}</p>
             {% endunless %}
-          </td>
+          </div>
 
-          <td data-label="{{ 'cart.label.quantity' | t }}" class="cart-page__lines__line__quantity">
+          <div data-label="{{ 'cart.label.quantity' | t }}" class="cart-page__lines__line__quantity">
             <input
               type="number"
               class="cart-page__lines__line__quantity__input"
@@ -69,83 +61,23 @@
             <div class="cart-page__lines__line__quantity__saved-icon" data-line-key="{{ item.key }}" data-quantity-saved-icon>
               <i class="far fa-check-circle"></i>
             </div>
-          </td>
+            <div class="cart-page__lines__line__quantity__delete">
+              <i class="fas fa-minus-circle" data-line-key="{{ item.key }}" data-line-delete-btn></i>
+            </div>
+          </div>
 
-          <td class="cart-page__lines__line__delete">
-            <i class="fas fa-minus-circle" data-line-key="{{ item.key }}" data-line-delete-btn></i>
-          </td>
-
-          <td
+          <div
             data-label="{{ 'cart.label.total' | t }}"
             class="cart-page__lines__line__total"
             data-line-key="{{ item.key }}"
             data-line-total-price
           >
             {{ item.line_price | money }}
-          </td>
-        </tr>
-
-      {% endfor %}
-    </tbody>
-  </table>
-
-
-
-      {% comment %}
-      {% for item in cart.items %}
-        <div
-          class="cart-page__lines__line"
-          data-line-key="{{ item.key }}"
-          data-line-unit-price="{{ item.final_price }}"
-          data-line-row
-        >
-          <div class="cart-page__lines__line__thumb">
-            {% if item.image != blank %}
-              <a href="{{ item.url | within: collections.all }}">
-                {{ item | img_url: '160x160' | img_tag: item.title }}
-              </a>
-            {% endif %}
-          </div>
-
-          <div class="cart-page__lines__line__info">
-            <a href="{{ item.url }}">{{ item.product.title }}</a>
-            {% unless item.product.has_only_default_variant %}
-              <p>Option: {{ item.variant.title }}</p>
-            {% endunless %}
-          </div>
-          <div class="cart-page__lines__line__quantity">
-            <input
-              type="number"
-              class="cart-page__lines__line__quantity__input"
-              value="{{ item.quantity }}"
-              min="0"
-              aria-label="{{ 'cart.general.item_quantity' | t }}"
-              data-line-key="{{ item.key }}"
-              data-quantity-input
-            >
-            <button
-              type="button"
-              class="cart-page__lines__line__quantity__save"
-              data-line-key="{{ item.key }}"
-              data-quantity-save-btn
-            >
-              Save
-            </button>
-            <div class="cart-page__lines__line__quantity__saved-icon" data-line-key="{{ item.key }}" data-quantity-saved-icon>
-              <i class="far fa-check-circle"></i>
-            </div>
-          </div>
-          <div class="cart-page__lines__line__delete">
-            <button type="button" data-line-key="{{ item.key }}" data-line-delete-btn>
-              Delete
-            </button>
-          </div>
-          <div class="cart-page__lines__line__total" data-line-key="{{ item.key }}" data-line-total-price>
-            {{ item.line_price | money }}
           </div>
         </div>
+
       {% endfor %}
-      {% endcomment %}
+    </div>
 
     <div class="cart-page__lower">
       {% if settings.cart_notes_enable %}

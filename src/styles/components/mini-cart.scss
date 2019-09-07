@@ -4,7 +4,7 @@
   justify-content: center;
   align-items: center;
   &__icon {
-    > i { font-size: 2em; color: $color-main-grey; }
+    > i { font-size: 2em; color: $color-main-black; }
   }
   > div { border-bottom: 1px solid $color-main-white; }
   &__line {
@@ -44,7 +44,7 @@
   }
   &__shipping-total, &__cart-total {
     font-weight: bold;
-    color: $color-main-grey;
+    color: $color-main-black;
     padding: 10px 0 10px 30px;
     width: 100%;
     display: flex;

@@ -1,7 +1,8 @@
 @include media-query($small) {
   .responsive-table {
     width: 100%;
-
+    border: 1px solid $color-main-light-grey;
+    border-radius: 4px;
     thead {
       display: none;
     }
@@ -22,8 +23,8 @@
     td {
       display: block;
       margin: 0;
-      padding: $grid-gutter / 2;
-      text-align: right;
+      padding: 4px 0;
+      text-align: center;
     }
 
     td::before {

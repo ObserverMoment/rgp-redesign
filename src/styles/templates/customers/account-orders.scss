@@ -5,27 +5,37 @@
   justify-content: center;
   align-items: center;
   margin-bottom: 30px;
-  h1 { margin: 20px 0 0; }
+  h2 { margin: 35px 0 0 0; }
   &__back {
-    @include text-link;
+    @include link;
     position: absolute;
-    top: 30px;
-    left: 30px;
-    i { font-size: 0.9em; }
+    top: 0;
+    left: 10px;
+    font-size: 0.9em;
+    i { font-size: 0.8em; }
   }
   &__date {
+    margin-top: 6px;
     color: $color-main-grey;
   }
   &__table {
-    flex-grow: 1;
-    margin: 10px;
-    padding: 20px;
-    border: 1px solid $color-main-black;
-    border-radius:  6px;
+    margin: 4px;
+    padding: 8px;
     text-align: left;
-    a {
-      @include text-link-alt;
+    border: 1px solid $color-main-black;
+    border-radius:  4px;
+    width: calc(100vw - 24px);
+    @include media-min-size($screen-tablet) {
+      width: calc(100vw - 32px);
+      min-width: 375px;
+      max-width: 900px;
+      margin: 10px auto;
+      padding: 20px;
     }
+    @include media-min-size($screen-medium) {
+      margin: 0 20px 0 0;
+    }
+    a { @include text-link-alt; }
     td, th { padding: 6px 8px; }
   }
   &__address {
