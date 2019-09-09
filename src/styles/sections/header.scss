@@ -2,7 +2,7 @@
   @include card;
   position: fixed;
   z-index: 5;
-  top: 0;
+  top: -5px;
   right: 0;
   display: flex;
   overflow: hidden;
@@ -177,7 +177,6 @@ $header-ease: cubic-bezier(0.19, 1, 0.22, 1);
       display: flex;
       align-items: center;
       padding-right: 6px;
-      > div { margin-right: 20px; }
       &__help {
         &__toggle {
           display: none;
@@ -229,6 +228,7 @@ $header-ease: cubic-bezier(0.19, 1, 0.22, 1);
         }
       }
       &__cart {
+        margin-right: 4px;
         &__info {
           display: flex;
           justify-content: flex-end;
@@ -256,7 +256,7 @@ $header-ease: cubic-bezier(0.19, 1, 0.22, 1);
           &__quantity {
             position: absolute;
             top: 8px;
-            right: 16px;
+            right: 3px;
             display: flex;
             justify-content: center;
             align-items: center;

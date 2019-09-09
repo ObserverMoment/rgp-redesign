@@ -32,11 +32,14 @@ const getElements = {
   lineRows: () => document.querySelectorAll('[data-line-row]'),
   lineTotals: () => document.querySelectorAll('[data-line-total-price]'),
   quantityInputs: () => document.querySelectorAll('[data-quantity-input]'),
+  quantityAdjustBtns: () => document.querySelectorAll('[data-quantity-adjust]'),
   quantitySaveBtns: () => document.querySelectorAll('[data-quantity-save-btn]'),
   confirmSavedIcons: () => document.querySelectorAll('[data-quantity-saved-icon]'),
   updateErrorElem: () => document.querySelector('[data-update-error]'),
   lineItemDeleteBtns: () => document.querySelectorAll('[data-line-delete-btn]'),
   subtotalPrice: () => document.querySelector('[data-subtotal-price]'),
+  deliveryPrice: () => document.querySelector('[data-delivery-price]'),
+  totalPrice: () => document.querySelector('[data-total-price]'),
   orderNoteTextarea: () => document.querySelector('[data-order-note-textarea]'),
   confirmNoteSaved: () => document.querySelector('[data-note-saved-message]'),
 };
@@ -68,7 +71,7 @@ const classes = {
       deleteBtn: deleteBtns.find((btn) => btn.dataset.lineKey === lineKey),
       confirmSaveIcon: confirmSavedIcons.find((icon) => icon.dataset.lineKey === lineKey),
       lineTotal: lineTotals.find((price) => price.dataset.lineKey === lineKey),
-      initialQuantity: input.value,
+      initialQuantity: parseInt(input.value, 10),
       liveQuantity: input.value,
       unitPrice,
       variantId,
@@ -82,19 +85,23 @@ const classes = {
     input.addEventListener('change', (event) => {
 
       const lineKey = event.target.dataset.lineKey;
+      const line = state[lineKey];
+      const newValue = Math.max(0, parseInt(event.target.value, 10));
+      updateInputValueState(line, newValue);
+    });
+  });
 
+  // Listen to qty adjust increase events.
+  getElements.quantityAdjustBtns().forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const lineKey = btn.dataset.lineKey;
+      const input = state[lineKey].input;
+      const curValue = parseInt(input.value, 10);
+      const newValue = btn.dataset.type === 'minus' ? Math.max(0, curValue - 1) : curValue + 1;
+      input.value = newValue;
       // Update state.
       const line = state[lineKey];
-      line.liveQuantity = event.target.value;
-
-      // Show / hide buttons.
-      if (event.target.value === line.initialQuantity) {
-        line.saveBtn.classList.remove(classes.show);
-        line.saveBtn.setAttribute('disabled', 'disabled');
-      } else {
-        line.saveBtn.removeAttribute('disabled');
-        line.saveBtn.classList.add(classes.show);
-      }
+      updateInputValueState(line, newValue);
     });
   });
 
@@ -111,7 +118,7 @@ const classes = {
       if (quantityChange <= 0) {
         // If quantity is decreased then go ahead and make the update.
         await updateCartLineQuantity({quantity: newQuantity, id: lineKey});
-        onUpdateSuccess();
+        onUpdateSuccess(line);
       } else {
         // Else add the difference to the cart via addToCart api call - which will actually return errors if not successful.
         const res = await addItemsToCart({
@@ -124,35 +131,17 @@ const classes = {
             : 'Sorry, we don\'t have that many in stock';
           onUpdateFail(errorTxt);
         } else {
-          onUpdateSuccess();
+          onUpdateSuccess(line);
         }
-      }
-
-      function onUpdateSuccess() {
-        // If quantity === 0 then you need to remove the whole lineRow element.
-        if (newQuantity === '0') {
-          line.lineRow.classList.add(classes.fadeOut);
-          setTimeout(() => {
-            line.lineRow.parentNode.removeChild(line.lineRow);
-          }, 1000);
-        }
-        line.initialQuantity = newQuantity;
-        line.saveBtn.classList.remove(classes.show);
-        line.confirmSaveIcon.classList.add(classes.show);
-        // Update line total.
-        const newTotal = newQuantity * line.unitPrice;
-        line.lineTotal.innerHTML = formatMoney(newTotal, theme.moneyFormat);
-        updateSubtotal();
-        renderMiniCart();
-        setTimeout(() => {
-          line.confirmSaveIcon.classList.remove(classes.show);
-        }, 2000);
       }
 
       function onUpdateFail(errorMsg) {
         const errorDisplay = getElements.updateErrorElem();
         errorDisplay.innerHTML = errorMsg;
         errorDisplay.classList.add(classes.show);
+        setTimeout(() => {
+          errorDisplay.classList.remove(classes.show);
+        }, 6000);
       }
     });
   });
@@ -165,9 +154,13 @@ const classes = {
       await updateCartLineQuantity({quantity: 0, id: lineKey});
       // Then remove all elements associated with the deleted line.
       line.lineRow.classList.add(classes.fadeOut);
-      renderMiniCart();
+
       setTimeout(() => {
+        // Fade out the node and then remove the line attribute from the state object.
         line.lineRow.parentNode.removeChild(line.lineRow);
+        delete state[lineKey];
+        updateSubtotal();
+        renderMiniCart();
       }, 1000);
     });
   });
@@ -183,8 +176,48 @@ const classes = {
   }));
 })();
 
+function onUpdateSuccess(line) {
+  // If quantity === 0 then you need to remove the whole lineRow element.
+  if (line.liveQuantity === 0) {
+    line.lineRow.classList.add(classes.fadeOut);
+    setTimeout(() => {
+      line.lineRow.parentNode.removeChild(line.lineRow);
+    }, 1000);
+  }
+  line.initialQuantity = line.liveQuantity;
+  line.saveBtn.classList.remove(classes.show);
+  line.confirmSaveIcon.classList.add(classes.show);
+  // Update line total.
+  const newTotal = line.liveQuantity * line.unitPrice;
+  line.lineTotal.innerHTML = formatMoney(newTotal, theme.moneyFormat);
+  updateSubtotal();
+  renderMiniCart();
+  setTimeout(() => {
+    line.confirmSaveIcon.classList.remove(classes.show);
+  }, 4000);
+}
+
+
+function updateInputValueState(line, newValue) {
+  line.liveQuantity = newValue;
+  // Show / hide buttons.
+  if (newValue === line.initialQuantity) {
+    line.saveBtn.classList.remove(classes.show);
+    line.saveBtn.setAttribute('disabled', 'disabled');
+  } else {
+    line.saveBtn.removeAttribute('disabled');
+    line.saveBtn.classList.add(classes.show);
+  }
+}
+
 // Based on current state - update subtotal display.
 function updateSubtotal() {
   const newSubtotal = Object.values(state).reduce((acum, {liveQuantity, unitPrice}) => acum + (liveQuantity * unitPrice), 0);
   getElements.subtotalPrice().innerHTML = formatMoney(newSubtotal, theme.moneyFormat);
+  updateTotal(newSubtotal);
+}
+
+function updateTotal(subTotal = 0, delivery = 0) {
+  const newTotal = subTotal + delivery;
+  getElements.totalPrice().innerHTML = formatMoney(newTotal, theme.moneyFormat);
 }

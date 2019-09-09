@@ -4,17 +4,17 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  width: calc(100vw - 8px);
-  margin: 4px;
-  padding: 10px;
+  width: calc(100vw);
+  padding: 6px;
   @include media-min-size($screen-tablet) {
+    padidng: 10px;
     margin: 0 auto;
     max-width: 1100px;
   }
   &__back-link {
     position: absolute;
-    top: -10px;
-    left: 7px;
+    top: -8px;
+    left: 9px;
     a {
       @include text-link;
       font-size: 0.9em;
@@ -22,14 +22,18 @@
     }
   }
   &__update-error {
-    position: absolute;
-    top: 20px;
+    position: fixed;
+    top: calc(#{$header-height} + 20px);
     display: none;
-    width: 100%;
+    width: calc(100vw - 30px);
     margin: 0 auto;
     text-align: center;
     color: $color-main-red;
-    font-size: 0.9em;
+    background: white;
+    border-radius: 4px;
+    z-index: 10;
+    border: 2px solid $color-error;
+    padding: 8px;
     &.show {
       display: block;
       animation: saved-icon-fadein 0.5s;
@@ -44,10 +48,18 @@
       &:last-child { border-bottom: none; }
       display: flex;
       justify-content: space-between;
-      padding: 10px;
+      padding: 10px 4px;
+      @include media-min-size($screen-tablet) {
+        padding: 10px;
+      }
       opacity: 1;
       transition: opacity 0.4s;
-      > div { padding: 8px; }
+      > div {
+        padding: 2px;
+        @include media-min-size($screen-tablet) {
+          padding: 8px;
+        }
+      }
       &.fade-out {
         opacity: 0
       }
@@ -55,37 +67,79 @@
         display: flex;
         flex-direction: column;
         justify-content: center;
+        padding: 0;
+        a { display: flex; align-items: center; }
       }
       &__info {
-        max-width: 420px;
+        font-size: 0.7em;
+        @include media-min-size($screen-tablet) {
+          font-size: 0.9em;
+        }
+        max-width: 400px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: left;
         a { text-decoration: none; color: $color-body-text-1; }
         p { margin: 0; }
       }
       &__quantity {
         position: relative;
         display: flex;
-        flex-direction: column;
-        justify-content: flex-start;
+        justify-content: center;
         align-items: center;
-        width: 80px;
-        &__input {
+        &__adjust {
           display: flex;
-          justify-content: center;
-          align-items: center;
-          width: 45px;
-          height: 35px;
-          padding-left: 10px;
-          border: 1px solid rgba(226, 226, 226, 0.8);
-          border-radius: 2px;
-          text-align: center;
-          transition: border-color 0.3s;
-          outline: none;
+          flex-direction: column;
+          &__input {
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 45px;
+            height: 35px;
+            border: 1px solid rgba(226, 226, 226, 0.8);
+            border-radius: 4px;
+            text-align: center;
+            transition: border-color 0.3s;
+            outline: none;
+            &[type=number]::-webkit-inner-spin-button,
+            &[type=number]::-webkit-outer-spin-button {
+                appearance: none;
+                margin: 0;
+            }
+            &:focus {
+              border-color: rgba($color-main-blue, 0.7);
+            }
+          }
+          &__icons {
+            display: flex;
+            justify-content: space-around;
+            div {
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              margin: 1px;
+              padding: 4px;
+              width: 50%;
+              border: 1px solid $color-main-light-grey;
+              border-radius: 3px;
+              color: $color-main-grey;
+              font-size: 0.7em;
+              text-align: center;
+              @include hover { cursor: pointer; border-color: $color-main-blue; }
+            }
+          }
         }
+
         &__save {
+          @include secondary-btn;
+          padding: 4px 6px;
+          font-size: 0.8em;
           position: relative;
-          top: 4px;
           opacity: 0;
           transition: opacity 0.4s;
+          margin: 4px;
           cursor: default;
           &.show {
             cursor: pointer;
@@ -94,20 +148,32 @@
         }
         &__saved-icon {
           position: absolute;
-          top: 40px;
-          left: 50%;
+          right: 10px;
           display: none;
           transform: translateX(-50%);
           transition: opacity 0.4s;
           color: $color-main-green;
-          font-size: 1.2em;
+          font-size: 1.5em;
           &.show {
             display: block;
             animation: saved-icon-fadein 0.5s;
           }
         }
+      }
+      &__total {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-around;
+        align-items: flex-end;
+        &__money {
+
+        }
         &__delete {
-          i { color: $color-main-red; font-size: 1.1em;}
+          cursor: pointer;
+          i {
+            color: $color-main-red;
+            font-size: 1.2em;
+          }
         }
       }
     }
@@ -118,7 +184,7 @@
     flex-direction: column;
     @include media-min-size($screen-medium) {
       flex-direction: row;
-      padding: 10px;
+      padding-top: 10px;
     }
     &__note {
       &__heading {
@@ -138,7 +204,6 @@
         font-size: 0.9em;
         @include media-min-size($screen-medium) {
           width: 500px;
-          margin-left: 40px;
         }
         padding: 10px;
         border: none;
@@ -148,6 +213,7 @@
       }
     }
     &__totals {
+      padding: 4px;
       div { margin: 3px 0; }
       @include media-min-size($screen-medium) {
         min-width: 400px;

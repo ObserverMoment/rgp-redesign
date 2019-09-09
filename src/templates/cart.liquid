@@ -41,15 +41,26 @@
           </div>
 
           <div data-label="{{ 'cart.label.quantity' | t }}" class="cart-page__lines__line__quantity">
-            <input
-              type="number"
-              class="cart-page__lines__line__quantity__input"
-              value="{{ item.quantity }}"
-              min="0"
-              aria-label="{{ 'cart.general.item_quantity' | t }}"
-              data-line-key="{{ item.key }}"
-              data-quantity-input
-            >
+            <div class="cart-page__lines__line__quantity__adjust">
+              <input
+                type="number"
+                class="cart-page__lines__line__quantity__adjust__input"
+                value="{{ item.quantity }}"
+                min="0"
+                aria-label="{{ 'cart.general.item_quantity' | t }}"
+                data-line-key="{{ item.key }}"
+                data-quantity-input
+              >
+              <div class="cart-page__lines__line__quantity__adjust__icons">
+                <div data-quantity-adjust data-type="minus" data-line-key="{{ item.key }}">
+                  <i class="fas fa-minus"></i>
+                </div>
+                <div data-quantity-adjust data-type="plus" data-line-key="{{ item.key }}">
+                  <i class="fas fa-plus"></i>
+                </div>
+              </div>
+            </div>
+
             <button
               type="button"
               class="cart-page__lines__line__quantity__save primary-btn"
@@ -61,18 +72,22 @@
             <div class="cart-page__lines__line__quantity__saved-icon" data-line-key="{{ item.key }}" data-quantity-saved-icon>
               <i class="far fa-check-circle"></i>
             </div>
-            <div class="cart-page__lines__line__quantity__delete">
-              <i class="fas fa-minus-circle" data-line-key="{{ item.key }}" data-line-delete-btn></i>
-            </div>
           </div>
 
           <div
             data-label="{{ 'cart.label.total' | t }}"
             class="cart-page__lines__line__total"
-            data-line-key="{{ item.key }}"
-            data-line-total-price
           >
-            {{ item.line_price | money }}
+            <div
+              class="cart-page__lines__line__total__money"
+              data-line-key="{{ item.key }}"
+              data-line-total-price
+            >
+              {{ item.line_price | money }}
+            </div>
+            <div class="cart-page__lines__line__total__delete">
+              <i class="far fa-minus-square" data-line-key="{{ item.key }}" data-line-delete-btn></i>
+            </div>
           </div>
         </div>
 
@@ -105,7 +120,7 @@
           <div class="cart-page__lower__totals__subtotal__heading">
             Shipping - DPD next day
           </div>
-          <div class="cart-page__lower__totals__subtotal__value">
+          <div class="cart-page__lower__totals__subtotal__value" data-delivery-price>
             £10 (TBC)
           </div>
         </div>
@@ -113,7 +128,7 @@
           <div class="cart-page__lower__totals__total__heading">
             Total (Inc VAT and shipping)
           </div>
-          <div class="cart-page__lower__totals__total__value">
+          <div class="cart-page__lower__totals__total__value" data-total-price>
             {{ cart.total_price | money }}
           </div>
         </div>
