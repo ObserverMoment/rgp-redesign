@@ -4,9 +4,9 @@
   justify-content: center;
   align-items: center;
   &__icon {
-    > i { font-size: 2em; color: #323d48; }
+    > i { font-size: 2em; color: $color-main-black; }
   }
-  > div { border-bottom: 1px solid #e8e8e8; }
+  > div { border-bottom: 1px solid $color-main-white; }
   &__line {
     display: flex;
     padding: 5px 0;
@@ -25,7 +25,7 @@
         text-decoration: none;
         color: $color-body-text-1;
         transition: color 0.3s;
-        &:hover { color: #234388; }
+        @include hover { color: $color-main-blue; }
       }
       &__unit {
         display: flex;
@@ -44,7 +44,7 @@
   }
   &__shipping-total, &__cart-total {
     font-weight: bold;
-    color: #965260;
+    color: $color-main-black;
     padding: 10px 0 10px 30px;
     width: 100%;
     display: flex;
@@ -61,24 +61,14 @@
       height: 50px;
       margin: 8px;
       padding: 6px 12px;
-      border-radius: 4px;
-      font-weight: bold;
-      font-size: 0.9em;
+      border-radius: 6px;
     }
     &__cart {
-      background: white;
-      color: #006b5b;
-      &:hover {
-        color: white;
-        background: #006b5b;
-      }
+      @include secondary-btn;
     }
     &__checkout {
-      background: #323d48;
-      color: white;
-      &:hover {
-        background: #000000;
-      }
+      @include checkout-btn;
+      i { font-size: 0.9em; color: #e6e6e6; }
     }
   }
 }

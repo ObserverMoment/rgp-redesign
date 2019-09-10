@@ -4,9 +4,7 @@
  * @namespace header
  */
 import {renderMiniCart} from '../components/mini_cart';
-import {scrollPosEmitter, events} from '../utils/global_events';
-
-const {SCROLLING} = events;
+import {globalState} from '../utils/global_events';
 
 const classes = {
   active: 'active',
@@ -24,12 +22,15 @@ const selectors = {
   miniCartToggle: '[data-cart-mini-toggle]',
   miniCartClose: '[data-cart-mini-close]',
   miniCartContent: '[data-cart-mini-content]',
+  openMenuBtn: '[data-open-menu]',
+  closeMenuBtn: '[data-close-menu]',
+  mobileNavContent: '[data-mobile-nav-content]',
 };
 
 // Gets cart data and then builds the mini cart elements.
 renderMiniCart();
 
-function toggleShowContent(event, elem) {
+function toggleShowContent(elem) {
   if (elem.classList.contains(classes.active)) {
     elem.classList.remove(classes.active);
   } else {
@@ -37,23 +38,26 @@ function toggleShowContent(event, elem) {
   }
 }
 
-function updateHeaderStyle() {
+function deactivateContent(elem) {
+  elem.classList.remove(classes.active);
+}
+
+function activateContent(elem) {
+  elem.classList.add(classes.active);
+}
+
+function updateHeaderStyle(newScrollState) {
   const headerContent = document.querySelector(selectors.headerContent);
   const urlpath = window.location.pathname;
-  const scrollY = window.scrollY;
-  if (urlpath === '/') {
-    if (scrollY <= 60) {
-      headerContent.className = 'header-content no-bg';
-    } else if (scrollY > 60 && scrollY < 800) {
-      headerContent.className = 'header-content black-bg';
-    } else {
-      headerContent.className = 'header-content white-bg';
-    }
+  const scrollY = newScrollState.scrollY;
+
+  if (urlpath === '/' && scrollY <= 50) {
+    headerContent.className = 'header-content no-bg';
   } else {
-    headerContent.className = 'header-content';
+    headerContent.className = 'header-content white-bg';
   }
 
-  if (urlpath !== '/' && scrollY > 60) {
+  if (scrollY > 50) {
     headerContent.classList.add('scrolled');
   } else {
     headerContent.classList.remove('scrolled');
@@ -62,35 +66,60 @@ function updateHeaderStyle() {
 
 function initEventListeners() {
   // Initialise header style onload.
-  updateHeaderStyle();
+  updateHeaderStyle(globalState.getState());
   // Subscribe updateHeaderStyle to the scroll event.
-  scrollPosEmitter.on(SCROLLING, updateHeaderStyle);
+  globalState.onAttributeUpdate((newState) => updateHeaderStyle(newState), 'scrollY');
 
   const accountPanelContent = document.querySelector(selectors.accountPanelContent);
   const helpPanelContent = document.querySelector(selectors.helpPanelContent);
   const miniCartContent = document.querySelector(selectors.miniCartContent);
+  const mobileNavContent = document.querySelector(selectors.mobileNavContent);
+  const closeMenuBtn = document.querySelector(selectors.closeMenuBtn);
+  const openMenuBtn = document.querySelector(selectors.openMenuBtn);
 
   const accountPanelToggles = [
-    document.querySelector(selectors.accountPanelToggle),
+    ...document.querySelectorAll(selectors.accountPanelToggle),
     document.querySelector(selectors.accountPanelClose),
   ];
   const helpPanelToggles = [
-    document.querySelector(selectors.helpPanelToggle),
+    ...document.querySelectorAll(selectors.helpPanelToggle),
     document.querySelector(selectors.helpPanelClose),
   ];
   const miniCartToggles = [
     document.querySelector(selectors.miniCartToggle),
     document.querySelector(selectors.miniCartClose),
   ];
+  const navMenuToggles = [
+    document.querySelector(selectors.openMenuBtn),
+    document.querySelector(selectors.closeMenuBtn),
+  ];
 
-  accountPanelToggles.forEach((toggle) => {
-    toggle.addEventListener('click', (event) => toggleShowContent(event, accountPanelContent));
+  // When user is logged in these elements will not exist - the filter avoids any errors caused by this.
+  accountPanelToggles.filter((toggle) => toggle).forEach((toggle) => {
+    toggle.addEventListener('click', () => {
+      toggleShowContent(accountPanelContent);
+      deactivateContent(mobileNavContent);
+      deactivateContent(closeMenuBtn);
+      activateContent(openMenuBtn);
+    });
   });
-  helpPanelToggles.forEach((toggle) => {
-    toggle.addEventListener('click', (event) => toggleShowContent(event, helpPanelContent));
+  helpPanelToggles.filter((toggle) => toggle).forEach((toggle) => {
+    toggle.addEventListener('click', () => {
+      toggleShowContent(helpPanelContent);
+      deactivateContent(mobileNavContent);
+      deactivateContent(closeMenuBtn);
+      activateContent(openMenuBtn);
+    });
   });
-  miniCartToggles.forEach((toggle) => {
-    toggle.addEventListener('click', (event) => toggleShowContent(event, miniCartContent));
+  miniCartToggles.filter((toggle) => toggle).forEach((toggle) => {
+    toggle.addEventListener('click', () => toggleShowContent(miniCartContent));
+  });
+  navMenuToggles.filter((toggle) => toggle).forEach((toggle) => {
+    toggle.addEventListener('click', () => {
+      toggleShowContent(mobileNavContent);
+      toggleShowContent(openMenuBtn);
+      toggleShowContent(closeMenuBtn);
+    });
   });
 }
 

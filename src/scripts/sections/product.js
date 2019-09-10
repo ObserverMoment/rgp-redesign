@@ -1,338 +1,202 @@
-/**
- * Product Template Script
- * ------------------------------------------------------------------------------
- * A file that contains scripts highly couple code to the Product template.
- *
- * @namespace product
- */
-
-import {getUrlWithVariant, ProductForm} from '@shopify/theme-product-form';
-import {formatMoney} from '@shopify/theme-currency';
-import {register} from '@shopify/theme-sections';
-import Flickity from 'flickity-as-nav-for';
-
-import {addItemsToCart} from '../utils/api';
-
+import queryString from 'query-string';
+import {render, elems} from '../utils/Renderer';
+import {ImageGallery} from '../components/image_gallery_view';
+import {GalleryNavThumbs} from '../components/image_gallery_nav';
+import {AddProductForm} from '../components/add_product_form';
+import {Store} from '../utils/Store';
+import {smoothFade} from '../utils/utils';
 import {renderMiniCart} from '../components/mini_cart';
 
+import {addItemsToCart, getProductData, getProductJSON} from '../utils/api';
+
+const {Root} = elems;
+
 const classes = {
-  hidden: 'hidden',
-  active: 'active',
-  flashOnce: 'flash-once',
-  galleryItem: 'product-single__images__gallery__item',
-  galleryItemImage: 'product-single__images__gallery__item__image',
-  galleryNavItem: 'product-single__images__gallery__nav__item',
-  galleryNavItemImage: 'product-single__images__gallery__nav__item__image',
+  showGalleryActions: 'show-gallery-actions',
 };
 
-const colourChangeOptions = ['Green', 'Red', 'Blue', 'Black'];
-
-const attributes = {
-  galleryItemData: 'data-product-gallery-item',
-  galleryNavItemData: 'data-product-gallery-nav-item',
+const getElements = {
+  imageGallery: () => document.querySelector('[data-product-image-gallery]'),
+  addFormWrapper: () => document.querySelector('[data-product-add-form]'),
+  addProductForm: () => document.querySelector('[data-product-form]'),
 };
-
-const selectors = {
-  addProductForm: '[data-product-form]',
-  productQuantityInput: '[data-product-quantity-input]',
-  miniCartContent: '[data-cart-mini-content]',
-  miniCartQty: '[data-cart-mini-qty]',
-  miniCartToggle: '[data-cart-mini-toggle]',
-  submitButton: '[data-submit-button]',
-  submitButtonText: '[data-submit-button-text]',
-  comparePrice: '[data-compare-price]',
-  comparePriceText: '[data-compare-text]',
-  productForm: '[data-product-form]',
-  productPrice: '[data-product-price]',
-  imagesElem: '[data-images-elem]',
-  galleryElem: '[data-gallery]',
-  galleryNavElem: '[data-nav]',
-  increaseQtyIcon: '[data-increment-product-qty]',
-  decreaseQtyIcon: '[data-decrement-product-qty]',
-};
-
-let flickityGallery = null;
-let flickityNav = null;
 
 // Must be cdn.shopify.com/s/files/1/0168/1113/0934/products/W_3985{_dimension}.jpg?v=1563988014.
-const galleryImageSize = '_850x850';
-const thumbnailImageSize = '_140x140';
+// const galleryImageSize = '_850x850';
+// const thumbnailImageSize = '_140x140';
 
-const imagesElem = document.querySelector(selectors.imagesElem);
-const galleryElem = document.querySelector(selectors.galleryElem);
-const galleryNavElem = document.querySelector(selectors.galleryNavElem);
+async function initProductPage() {
+  const urlparts = window.location.pathname.split('/');
+  const productHandle = urlparts[urlparts.length - 1].split('?')[0];
+  const query = queryString.parse(window.location.search);
+  const urlVariantId = query && query.variant && parseInt(query.variant, 10);
 
-let currentVariant = null;
+  const product = await getProductData(productHandle);
+  // Second call is needed to get array of image objects rather than just urls.
+  // The image.alt values are used for colour filtering in the gallery.
+  const imageObjs = (await getProductJSON(productHandle)).images;
+  // If multiple variants default to null so that add to cart button will be disabled.
+  // Will get overridden if there was a variant supplied in the query string.
+  // If only one variant then this is effectively no variants - as Shopify creates a default.
+  // Only variant IDs can be added to the cart - not product IDs.
+  const initialVariantId = product.variants.length > 1 ? null : product.variants[0].id;
 
-register('product', {
-  async onLoad() {
-    const productFormElement = document.querySelector(selectors.productForm);
-    const productHandle = productFormElement.dataset.productHandle;
-    this.product = await this.getProductJson(productHandle);
-    this.productImages = (await this.getProductImages(productHandle)).product.images;
+  // Create the state.
+  const productState = Store(product, `product-${product.id}`);
 
-    // Get the initial variant from the dataSet item passed by the gallery element.
-    const initialVariantId = galleryElem.dataset.currentVariantId;
-    if (this.product.variants) {
-      currentVariant = this.product.variants.find((variant) => variant.id === parseInt(initialVariantId, 10));
+  // Add the variant and default selected options to empty array.
+  // Remove any default variants / options and just set empty arrays.
+  productState.setState({
+    currentVariantId: urlVariantId || initialVariantId,
+    currentQuantity: 1,
+    variantRequired: product.variants.length > 1,
+    images: imageObjs,
+    error: null,
+    addedToCart: null,
+  });
+
+  // If variant in the querystring then add correct selected options to state.
+  if (urlVariantId) {
+    // Find the correct variant and parse its title attribute to get all the selected options.
+    // Format of variant.title is "option1Value / option2Value / option3Value" - there is a space either side of the slash.
+    const variantTitle = productState.getState().variants.find((variant) => urlVariantId === variant.id).title;
+    const selectedValues = variantTitle.trim().split('/');
+    // Check which options these values are from, and add an attribute on product state for each one - prefixed with 'selected'.
+    const selectedOptions = selectedValues.reduce((acum, nextValue) => {
+      const option = product.options.find((opt) => opt.values.includes(nextValue));
+      acum[option.name] = nextValue;
+      return acum;
+    }, {});
+
+    productState.setState({...selectedOptions});
+  } else {
+    // Loop through all the options and add an attribute on product state for each one.
+    const selectedOptions = product.options.reduce((acum, next) => {
+      acum[next.name] = null;
+      return acum;
+    }, {});
+
+    productState.setState({...selectedOptions});
+  }
+
+  function onOptionSelect(optionName, optionValue) {
+    productState.setState({[optionName]: optionValue, error: null});
+
+    const updatedState = productState.getState();
+    const allSelected = updatedState.options.every((option) => updatedState[option.name]);
+
+    if (allSelected) {
+      // Check if all required options are selected.
+      // If they are then update the currentVariantId in state and push url to history object.
+      // Form the variant.title as per Shopify data.
+      const variantTitle = updatedState.options.reduce((title, option, index) => {
+        return index === 0
+          ? updatedState[option.name]
+          : [title, updatedState[option.name]].join(' / ');
+      }, '');
+
+      const newVariantId = updatedState.variants.find((variant) => variant.title === variantTitle).id;
+
+      productState.setState({currentVariantId: newVariantId, error: null, addedToCart: null});
+
+      const url = window.location.pathname.split('?')[0];
+      const qs = queryString.stringify({variant: newVariantId});
+      const newUrl = `${url}?${qs}`;
+      window.history.pushState({path: newUrl}, '', newUrl);
     }
+  }
 
-    this.productForm = new ProductForm(productFormElement, this.product, {
-      onOptionChange: this.onFormOptionChange.bind(this),
-    });
+  function onQuantityUpdate(newValue) {
+    productState.setState({currentQuantity: newValue});
+  }
 
-    this.initGallery();
-    this.initListeners();
-  },
+  async function onSubmit() {
+    const {currentQuantity: quantity, currentVariantId: id} = productState.getState();
+    // API call.
+    const res = await addItemsToCart({id, quantity});
+    if (res.message === 'Cart Error') {
+      productState.setState({error: res.description});
+    } else {
+      productState.setState({error: null, addedToCart: true});
+      renderMiniCart();
+    }
+  }
 
-  initListeners() {
-    // Quantity increment / decrement functionality.
-    const inputElem = document.querySelector(selectors.productQuantityInput);
+  initProductForm(productState, onQuantityUpdate, onOptionSelect, onSubmit);
 
-    document.querySelector(selectors.increaseQtyIcon).addEventListener('click', () => {
-      const newValue = parseInt(inputElem.value, 10) + 1;
-      inputElem.setAttribute('value', newValue);
-      this.updateQuantity(currentVariant, newValue);
-    });
-    document.querySelector(selectors.decreaseQtyIcon).addEventListener('click', () => {
-      if (parseInt(inputElem.value, 10) <= 1) {
-        return;
-      }
-      const newValue = parseInt(inputElem.value, 10) - 1;
-      inputElem.setAttribute('value', newValue);
-      this.updateQuantity(currentVariant, newValue);
-    });
+  // Gallery.
+  function constructGallery(state) {
+    const colourSelected = state.Colour;
+    const images = colourSelected
+      ? imageObjs.filter((img) => (!img.alt || img.alt === colourSelected))
+      : imageObjs;
+    initGallery(images);
+  }
 
-    // Ajax add to cart functionality.
-    document.querySelector(selectors.addProductForm).addEventListener('submit', async (event) => {
-      event.preventDefault();
-      // Get the quantity.
-      const quantity = document.querySelector(selectors.productQuantityInput).value;
-      // Get the variant id;
-      const id = currentVariant && currentVariant.id;
-      // Fetch request to post /cart/add.js
-      if (quantity > 0 && id) {
-        const addData = {id, quantity};
-        try {
-          await addItemsToCart(addData);
-          await renderMiniCart();
+  constructGallery(productState.getState());
 
-          // Open mini cart after a short pause. Allow time for the add to cart button to change.
-          setTimeout(() => {
-            const miniCartQtyElem = document.querySelector(selectors.miniCartQty);
-            const prevCartQty = parseInt(miniCartQtyElem.textContent, 10);
-            miniCartQtyElem.textContent = prevCartQty + parseInt(quantity, 10);
-            document.querySelector(selectors.miniCartContent).classList.add(classes.active);
-          }, 100);
-
-          // Not complete!!!!!!!!!!! Need to change the add to cart button to 'added (tick)'. Plus disable the button.
-          // Then after a couple of seconds switch it back.
-        } catch (err) {
-          // Need to handle errors such as when there is not enough stock vs how many they are adding - or whatever.
-          console.log(err);
+  // If colour is an option the user can select.
+  // Then re-render the gallery whenever user selects a different colour.
+  if (product.options.some((option) => option.name === 'Colour')) {
+    productState.onAttributeUpdate((newState) => {
+      const imgGalleryElem = getElements.imageGallery();
+      // Remove event listeners that will refer to the old instance of the image gallery.
+      smoothFade([1, 0], imgGalleryElem, 100, [0.47, 0, 0.745, 0.715], () => {
+        while (imgGalleryElem.firstChild) {
+          imgGalleryElem.removeChild(imgGalleryElem.firstChild);
         }
-      }
-    });
-  },
+        constructGallery(newState);
+        smoothFade([0, 1], imgGalleryElem, 300, []);
+      });
+    }, 'Colour');
+  }
+}
 
-  initGallery() {
-    // Get the relevant images.
-    const imagesToDisplay = this.filterImagesByColour(currentVariant.title);
+// Gallery.
+function initGallery(images) {
 
-    this.createGalleryNodes(imagesToDisplay);
-    this.createThumbnailNodes(imagesToDisplay);
+  const galleryState = Store({imageWidths: []}, 'product-gallery');
 
-    // Trying to avoid any FOUC. Needs testing for effectiveness.
-    imagesElem.classList.remove(classes.hidden);
+  const imageGallery = ImageGallery(images, galleryState, 0);
+  const galleryNavThumbs = GalleryNavThumbs(images, galleryState, '200x200', 0);
 
-    this.initFlickity();
-  },
+  const rootElem = getElements.imageGallery();
 
-  filterImagesByColour(colour) {
-    // Hacky - currently using image alt in Shopify BE to define the colour!!
-    return this.productImages.filter((image) => image.alt && image.alt.toLowerCase() === colour.toLowerCase());
-  },
-
-  removeAllChildren(element) {
-    while (element.firstChild) {
-      element.removeChild(element.firstChild);
-    }
-  },
-
-  createGalleryNodes(imagesToDisplay) {
-    // For each image object. Create a div and an img and append to gallery.
-    imagesToDisplay.forEach((image) => {
-      const div = document.createElement('DIV');
-      div.setAttribute(attributes.galleryItemData, '');
-      div.className = classes.galleryItem;
-      const img = document.createElement('IMG');
-      img.className = classes.galleryItemImage;
-      img.src = image.src.replace('.jpg', `${galleryImageSize}.jpg`);
-      img.alt = `${this.product.title} - ${image.alt}`;
-      div.appendChild(img);
-      galleryElem.appendChild(div);
-    });
-  },
-
-  createThumbnailNodes(imagesToDisplay) {
-    // For each image object. Create a div and an img and append to nav.
-    imagesToDisplay.forEach((image) => {
-      const div = document.createElement('DIV');
-      div.setAttribute(attributes.galleryNavItemData, '');
-      div.className = classes.galleryNavItem;
-      const img = document.createElement('IMG');
-      img.className = classes.galleryNavItemImage;
-      img.src = image.src.replace('.jpg', `${thumbnailImageSize}.jpg`);
-      img.alt = `${this.product.title} - ${image.alt}`;
-      div.appendChild(img);
-      galleryNavElem.appendChild(div);
-    });
-  },
-
-  destroyFlickity() {
-    if (flickityGallery) {
-      flickityGallery.destroy();
-    }
-    if (flickityNav) {
-      flickityNav.destroy();
-    }
-  },
-
-  initFlickity() {
-    flickityGallery = new Flickity(galleryElem, {
-      wrapAround: true,
-      percentPosition: false,
-      setGallerySize: false,
-      ImagesLoaded: true,
-      pageDots: false,
-    });
-    flickityNav = new Flickity(galleryNavElem, {
-      asNavFor: galleryElem,
-      contain: true,
-      pageDots: false,
-      prevNextButtons: false,
-      percentPosition: false,
-      ImagesLoaded: true,
-      setGallerySize: false,
-    });
-  },
-
-  onUnload() {
-    this.productForm.destroy();
-  },
-
-  getProductJson(handle) {
-    return fetch(`/products/${handle}.js`).then((response) => {
-      return response.json();
-    });
-  },
-
-  getProductImages(handle) {
-    return fetch(`/products/${handle}/images.json`).then((response) => {
-      return response.json();
-    });
-  },
-
-  onFormOptionChange(event) {
-    currentVariant = event.dataset.variant;
-
-    // Update the gallery for colour changes only.
-    if (colourChangeOptions.includes(currentVariant.title)) {
-      // Get the relevant images.
-      const imagesToDisplay = this.filterImagesByColour(currentVariant.title);
-
-      // Remove flickity.
-      this.destroyFlickity();
-
-      // Remove all previous image nodes.
-      this.removeAllChildren(galleryElem);
-      this.removeAllChildren(galleryNavElem);
-
-      // Recreate the new nodes.
-      this.createGalleryNodes(imagesToDisplay);
-      this.createThumbnailNodes(imagesToDisplay);
-
-      // Restart flickity.
-      this.initFlickity();
-    }
-
-    // Get current quantity.
-    const qty = parseInt(document.querySelector(selectors.productQuantityInput).value, 10);
-    this.updateQuantity(currentVariant, qty);
-
-    this.renderSubmitButton(currentVariant);
-    this.updateBrowserHistory(currentVariant);
-  },
-
-  updateQuantity(variant, qty) {
-    this.renderPrice(variant, qty);
-    this.renderComparePrice(variant, qty);
-  },
-
-  renderSubmitButton(variant) {
-    const submitButton = this.container.querySelector(selectors.submitButton);
-    const submitButtonText = this.container.querySelector(
-      selectors.submitButtonText,
-    );
-
-    if (!variant) {
-      submitButton.disabled = true;
-      submitButtonText.innerText = theme.strings.unavailable;
-    } else if (variant.available) {
-      submitButton.disabled = false;
-      submitButtonText.innerText = theme.strings.addToCart;
+  function handleMouseEnter() {
+    const actionsElem = document.querySelector(`[${imageGallery.actionsElemRef}]`);
+    if (actionsElem) {
+      document.querySelector(`[${imageGallery.actionsElemRef}]`).classList.add(classes.showGalleryActions);
     } else {
-      submitButton.disabled = true;
-      submitButtonText.innerText = theme.strings.soldOut;
+      rootElem.removeEventListener('mouseenter', handleMouseEnter);
     }
-  },
+  }
 
-  renderPrice(variant, qty) {
-    const priceElement = document.querySelector(selectors.productPrice);
-    if (variant) {
-      priceElement.innerText = formatMoney(variant.price * qty, theme.moneyFormat);
-    }
-  },
-
-  renderComparePrice(variant, qty) {
-    if (!variant) {
-      return;
-    }
-
-    const comparePriceElement = document.querySelector(
-      selectors.comparePrice,
-    );
-    const compareTextElement = document.querySelector(
-      selectors.comparePriceText,
-    );
-
-    if (!comparePriceElement || !compareTextElement) {
-      return;
-    }
-
-    if (variant.compare_at_price > variant.price) {
-      comparePriceElement.innerText = formatMoney(
-        variant.compare_at_price * qty,
-        theme.moneyFormat,
-      );
-      compareTextElement.classList.remove(classes.hidden);
-      comparePriceElement.classList.remove(classes.hidden);
+  function handleMouseLeave() {
+    const actionsElem = document.querySelector(`[${imageGallery.actionsElemRef}]`);
+    if (actionsElem) {
+      document.querySelector(`[${imageGallery.actionsElemRef}]`).classList.remove(classes.showGalleryActions);
     } else {
-      comparePriceElement.innerText = '';
-      compareTextElement.classList.add(classes.hidden);
-      comparePriceElement.classList.add(classes.hidden);
+      rootElem.removeEventListener('mouseleave', handleMouseLeave);
     }
-  },
+  }
 
-  updateBrowserHistory(variant) {
-    const enableHistoryState = this.productForm.element.dataset
-      .enableHistoryState;
+  rootElem.addEventListener('mouseenter', handleMouseEnter);
+  rootElem.addEventListener('mouseleave', handleMouseLeave);
 
-    if (!variant || enableHistoryState !== 'true') {
-      return;
-    }
+  render([
+    Root, {rootElem}, [
+      galleryNavThumbs.view(),
+      imageGallery.view(),
+    ],
+  ]);
+}
 
-    const url = getUrlWithVariant(window.location.href, variant.id);
-    window.history.replaceState({path: url}, '', url);
-  },
-});
+// Add product to cart form.
+function initProductForm(productState, onQuantityUpdate, onOptionSelect, onSubmit) {
+  const formWrapper = getElements.addFormWrapper();
+  const addProductForm = AddProductForm(productState, onQuantityUpdate, onOptionSelect, onSubmit);
+
+  render([Root, {rootElem: formWrapper}, [addProductForm.view()]]);
+}
+
+initProductPage();

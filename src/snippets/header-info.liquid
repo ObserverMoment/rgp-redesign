@@ -1,0 +1,37 @@
+<div class="header-info">
+
+  <div class="header-info__message">
+    If you can't find the information you need to help with your order then please get in touch!
+  </div>
+
+  {% assign header_info_links_handle = 'header-info' %}
+
+  {% if linklists[header_info_links_handle].links.size > 0 %}
+    <ul class="header-info__link-list">
+      {% for link in linklists[header_info_links_handle].links %}
+        <li class="header-info__link-list__item">
+          <a href="{{ link.url }}">{{ link.title }}</a>
+        </li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+
+  <div class="header-info__copyright">
+      {{ 'layout.footer.copyright' | t }} &copy; {{ 'now' | date: "%Y" }}, {{ shop.name | link_to: '/' }}.
+      Part of Future Markets Limited. UK Registered Company No. 6556958. VAT Registration Number 931546428.
+  </div>
+
+  <div class="header-info__postscript">
+    <div class="header-info__postscript__payment-icons">
+      <i class="fab fa-cc-visa"></i>
+      <i class="fab fa-cc-mastercard"></i>
+      <i class="fab fa-cc-amex"></i>
+      <i class="fab fa-cc-apple-pay"></i>
+      <i class="fab fa-cc-stripe"></i>
+      <i class="fab fa-cc-paypal"></i>
+    </div>
+    <div class="header-info__postscript__trustbox">
+      {% include 'trustbox-micro-widget' %}
+    </div>
+  </div>
+</div>

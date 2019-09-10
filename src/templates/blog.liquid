@@ -1,28 +1,33 @@
-{% paginate blog.articles by 5 %}
+<div class="blog">
+  {% paginate blog.articles by 5 %}
 
   {%- assign blog_title = blog.title -%}
 
   {% if current_tags %}
-    {% capture blog_title %}{{ blog.title | link_to: blog.url }} &mdash; {{ current_tags.first }}{% endcapture %}
+    {% capture blog_title %}{{ blog.title | link_to: blog.url }}{% endcapture %}
   {% endif %}
 
-  <h1>{{ blog_title }}</h1>
+  <h1 class="blog__title">{{ blog_title }}</h1>
 
-  {% if blog.all_tags.size > 0 %}
-    <h2>{{ 'blogs.general.categories' | t }}</h2>
+  <div class="blog__tags">
+    {% if blog.all_tags.size > 0 %}
+    {% comment %}
+      <h2 class="blog__tags__heading">{{ 'blogs.general.categories' | t }}</h2>
+    {% endcomment %}
+      <ul>
+        {% for tag in blog.all_tags %}
 
-    <ul>
-      {% for tag in blog.all_tags %}
+          {% if current_tags contains tag %}
+            <li class="blog__tags__active-tag">{{ tag }}</li>
+          {% else %}
+            <li>{{ tag | link_to_tag: tag }}</li>
+          {% endif %}
 
-        {% if current_tags contains tag %}
-          <li>{{ tag }}</li>
-        {% else %}
-          <li>{{ tag | link_to_tag: tag }}</li>
-        {% endif %}
+        {% endfor %}
+      </ul>
 
-      {% endfor %}
-    </ul>
-  {% endif %}
+    {% endif %}
+  </div>
 
 
   {% comment %}
@@ -30,67 +35,72 @@
   Article Previews
   ====================
   {% endcomment %}
+  <div class="blog__articles">
+    {% for article in blog.articles %}
+      <h3>
+        <a href="{{ article.url }}">{{ article.title }}</a>
+      </h3>
+      {% comment %}
+      {% capture date %}{{ article.published_at | time_tag: format: 'month_day_year' }}{% endcapture %}
 
-  {% for article in blog.articles %}
-    <h3>
-      <a href="{{ article.url }}">{{ article.title }}</a>
-    </h3>
+      <p>
+        {{ 'blogs.article.author_on_date_html' | t: author: article.author, date: date }}
+      </p>
+      {% endcomment %}
 
-    {% capture date %}{{ article.published_at | time_tag: format: 'month_day_year' }}{% endcapture %}
-
-    <p>
-      {{ 'blogs.article.author_on_date_html' | t: author: article.author, date: date }}
-    </p>
-
-    {% if article.image %}
-      <a href="{{ article.url }}">
-        {% include 'responsive-image' with
-          image: article.image,
-          max_width: 1024,
-          max_height: 1024
-        %}
-      </a>
-    {% endif %}
-
-    <div class="rte">
-      {% if article.excerpt.size > 0 %}
-        {{ article.excerpt }}
-      {% else %}
-        <p>
-          {{ article.content | strip_html | truncatewords: 100 }}
-        </p>
+      {% if article.image %}
+        <a href="{{ article.url }}">
+          {% include 'responsive-image' with
+            image: article.image,
+            max_width: 1024,
+            max_height: 1024
+          %}
+        </a>
       {% endif %}
-    </div>
 
-    {% if blog.comments_enabled? or article.tags.size > 0 %}
-      <ul>
-        {% if blog.comments_enabled? %}
-          <li>
-            <a href="{{ article.url }}#comments">
-              {{ 'blogs.comments.with_count' | t: count: article.comments_count }}
-            </a>
-          </li>
+      <div class="rte">
+        {% if article.excerpt.size > 0 %}
+          {{ article.excerpt }}
+        {% else %}
+          <p>
+            {{ article.content | strip_html | truncatewords: 100 }}
+          </p>
         {% endif %}
+      </div>
 
-        {% if article.tags.size > 0 %}
-          {% for tag in article.tags %}
+      {% if blog.comments_enabled? or article.tags.size > 0 %}
+        <ul>
+          {% if blog.comments_enabled? %}
             <li>
-              <a href="{{ blog.url }}/tagged/{{ tag | handle }}">{{ tag }}</a>
-              {% unless forloop.last %}, {% endunless %}
+              <a href="{{ article.url }}#comments">
+                {{ 'blogs.comments.with_count' | t: count: article.comments_count }}
+              </a>
             </li>
-          {% endfor %}
-        {% endif %}
-      </ul>
-    {% endif %}
+          {% endif %}
 
-    <p>
-      <a href="{{ article.url }}">{{ 'blogs.article.read_more' | t }} &rarr;</a>
-    </p>
+          <p>
+            <a href="{{ article.url }}">{{ 'blogs.article.read_more' | t }} &rarr;</a>
+          </p>
 
-  {% endfor %}
+          <div class="blog__articles__tags">
+            {% if article.tags.size > 0 %}
+              {% for tag in article.tags %}
+                <li>
+                  <a href="{{ blog.url }}/tagged/{{ tag | handle }}">{{ tag }}</a>
+                </li>
+              {% endfor %}
+            {% endif %}
+          </div>
+
+        </ul>
+      {% endif %}
+
+    {% endfor %}
+  </div>
 
   {% if paginate.pages > 1 %}
     {% include 'pagination' %}
   {% endif %}
 
 {% endpaginate %}
+</div>

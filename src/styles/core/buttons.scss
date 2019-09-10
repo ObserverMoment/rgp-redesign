@@ -1,0 +1,108 @@
+a {
+  text-decoration: none;
+}
+
+/**
+ * Styling for buttons.
+ */
+@mixin btn {
+   cursor: pointer;
+   padding: 10px 14px;
+   display: flex;
+   justify-content: center;
+   align-items: center;
+   border-radius: 4px;
+}
+
+@mixin primary-btn {
+  @include btn;
+  background: $color-main-green;
+  color: white;
+  span { padding: 0 5px; }
+}
+
+@mixin secondary-btn {
+  @include btn;
+  border: 2px solid rgba($color-main-green, 0.8);
+  background: white;
+  color: $color-main-green;
+  @include hover {
+    color: white;
+    background: $color-main-green;
+  }
+}
+
+@mixin cancel-btn {
+  @include btn;
+  border: 2px solid $color-main-grey;
+  background: white;
+  color: $color-main-grey;
+  @include hover {
+    color: white;
+    background: $color-main-grey;
+  }
+}
+
+@mixin delete-btn {
+  @include btn;
+  border: 2px solid $color-main-red;
+  background: white;
+  color: $color-main-red;
+  @include hover {
+    color: white;
+    background: $color-main-red;
+  }
+}
+
+@mixin checkout-btn {
+  @include btn;
+  background: $color-main-black;
+  color: white;
+  span { padding: 0 5px; }
+  @include hover {
+    background: $color-main-black;
+  }
+}
+
+@mixin grey-btn {
+  @include btn;
+  border: 2px solid $color-main-grey;
+  background: $color-main-white;
+  color: $color-main-black;
+  padding: 6px 8px;
+  span { padding: 0 5px; }
+  @include hover {
+    border-color: $color-main-black;
+    background: $color-main-light-grey;
+  }
+}
+
+/**
+ * Styling for text links.
+ */
+@mixin link {
+  color: $color-main-black;
+  cursor: pointer;
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.4s;
+  @include hover {
+    border-color: $color-main-grey;
+  }
+}
+
+@mixin text-link {
+  @include link;
+  color: $color-main-green;
+  @include hover {
+    border-color: $color-main-green;
+  }
+}
+
+@mixin text-link-alt {
+  @include link;
+  color: $color-main-gold;
+  @include hover {
+    border-color: $color-main-gold;
+  }
+}

@@ -1,0 +1,40 @@
+<div class="product-browser">
+  <header role="banner" class="product-browser__header">
+    <div class="product-browser__header__filters" data-product-browser-filters>
+      {% comment %}
+        Rendered in javascript. See file ../scripts/components/product_browser.js.
+      {% endcomment %}
+    </div>
+  </header>
+
+  <div class="product-browser__products" data-product-browser-products>
+    {% comment %}
+      Rendered in javascript. See file ../scripts/components/product_browser.js.
+    {% endcomment %}
+  </div>
+</div>
+
+{% schema %}
+  {
+    "name": "Homepage Products",
+    "settings": [
+      {
+        "type": "text",
+        "id": "title",
+        "label": "Heading",
+        "default": "Our full range"
+      },
+      {
+        "id": "collection",
+        "type": "collection",
+        "label": "Collection"
+      }
+    ],
+    "presets": [
+      {
+        "name": "Homepage Products",
+        "category": "Collection"
+      }
+    ]
+  }
+{% endschema %}

@@ -1,5 +1,5 @@
 import {ProductCard} from '../components/product_card';
-import {getCollectionData} from '../utils/api';
+import {getCollectionProducts} from '../utils/api';
 import {render, elems} from '../utils/Renderer';
 
 const {Root, Link} = elems;
@@ -15,22 +15,25 @@ const classes = {
 const url = window.location.pathname;
 const collectionHandle = url.split('/')[2];
 
-function renderProductsList(data) {
+function renderProductsList({products}) {
   const productsContainer = getElements.productsContainer();
   const urlRoot = `/collections/${collectionHandle}/products`;
+  const sortedProducts = products.sort((prodA, prodB) =>
+    (parseFloat(prodA.variants[0].price) <= parseFloat(prodB.variants[0].price) ? -1 : 1));
+
   render([
-    Root, {rootElem: productsContainer}, data.products
+    Root, {rootElem: productsContainer}, sortedProducts
       .map((product) =>
         [
           Link,
           {className: classes.productLink, attributes: {href: `${urlRoot}/${product.handle}`}},
-          [ProductCard(product, '500x500', true)],
+          [ProductCard(product, true)],
         ]),
   ]);
 }
 
 async function initCollection() {
-  const data = await getCollectionData(collectionHandle);
+  const data = await getCollectionProducts(collectionHandle);
   renderProductsList(data);
 }
 

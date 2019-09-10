@@ -28,10 +28,24 @@
   }
 }
 
+@mixin media-min-size($screen-type) {
+  @media only screen and (min-width: $screen-type) {
+    @content;
+  }
+}
+
+@mixin hover($optional-selector: '') {
+  @media (hover: hover) {
+    &:hover #{$optional-selector} {
+      @content;
+    }
+  }
+}
+
 /**
 * Keyframe creators - creates a 'namespaced' keyframes object with the settings configured from args.
 */
-@mixin createFadeKeyFrames ($instanceName, $startOpacity, $endOpacity) {
+@mixin createFadeKeyFrames($instanceName, $startOpacity, $endOpacity) {
   @keyframes #{$instanceName} {
     0% {
       opacity: $startOpacity;
@@ -42,7 +56,7 @@
   }
 }
 
-@mixin createSlideKeyFrames (
+@mixin createSlideKeyFrames(
   $instanceName,
   $slideStartX: 0,
   $slideStartY: 0,
@@ -142,13 +156,108 @@
 /**
  * Styling for a card.
  */
-@mixin card {
+@mixin card() {
   padding: 10px 20px;
   background: $color-product-info-bg;
   text-align: center;
   color: $color-body-text-2;
-  box-shadow: 0 1px 4px 1px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 1px 2px 1px rgba(0, 0, 0, 0.1);
   border: 1px solid #f9f9f9;
-  border-radius: 6px;
+  border-radius: 4px;
   box-sizing: border-box;
 }
+
+/**
+ * Sitewide form styling.
+ * @param $has-icons: Adds styling to position icons on the left hand side of inputs.
+ */
+ @mixin standard-form($has-icons: false) {
+   display: flex;
+   flex-direction: column;
+   align-items: center;
+   width: 100%;
+   padding: 8px;
+   .errors {
+     color: $login-form-red;
+     ul {
+       list-style: none;
+       margin: 10px;
+       padding: 5px;
+     }
+   }
+   form { width: 100%; }
+   label {
+     color: $login-form-primary;
+     position: absolute;
+     opacity: 0;
+     transition: opacity 0.6s;
+     font-size: 0.9em;
+     left: 4px;
+     &.show-input-label {
+       opacity: 1;
+     }
+   }
+   i {
+     position: absolute;
+     color: $login-form-primary;
+     bottom: 15%;
+     left: 5px;
+   }
+   input {
+     height: 50px;
+     padding: 10px;
+     @if $has-icons == true {
+       padding-left: 35px;
+     }
+     border: none;
+     border-bottom: 1px solid $color-main-grey;
+     transition: border-color 0.4s;
+     &::placeholder {
+       font-size: 0.9em;
+       transition: color 0.4s;
+     }
+     &:focus {
+       border-color: $login-form-primary;
+       &::placeholder {
+         color: $login-form-primary;
+       }
+     }
+   }
+   input[type='submit'] {
+     @include primary-btn;
+   }
+   select {
+     padding: 20px;
+     margin: 20px;
+   }
+   textarea {
+     border-radius: 4px;
+     padding: 10px;
+     font-size: 0.9em;
+   }
+ }
+
+/**
+  * Responsive grid for displaying products cards or similar.
+ */
+ @mixin products-grid() {
+   display: flex;
+   flex-wrap: wrap;
+   justify-content: space-around;
+   padding: 0;
+   @include media-min-size($screen-tablet) {
+     padding: 10px;
+   }
+   &__product-link {
+     text-decoration: none;
+     color: $color-body-text-1;
+     padding: 12px 2px;
+     width: 100%;
+     @include media-min-size($screen-tablet) {
+       width: calc(100% / 2 - 5px);
+     }
+     @include media-min-size($screen-medium) {
+       width: calc(100% / 3 - 5px);
+     }
+   }
+ }

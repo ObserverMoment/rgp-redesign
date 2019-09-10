@@ -32,7 +32,7 @@
   {%- endunless -%}
 {%- endif -%}
 
-<article role="article">
+<article role="article" class="article">
 
   {% if article.image %}
     <div class="hero-banner hero-banner--article lazyload" data-bgset="{% include 'responsive-bg-image', image: article.image %}"></div>
@@ -45,8 +45,10 @@
 
   <header role="banner">
     <h1>{{ article.title }}</h1>
+    {% comment %}
     {% capture date %}{{ article.published_at | time_tag: format: 'month_day_year' }}{% endcapture %}
     <p>{{ 'blogs.article.author_on_date_html' | t: author: article.author, date: date }}</p>
+    {% endcomment %}
   </header>
 
   <div class="rte">
@@ -57,14 +59,10 @@
     <ul>
       {% for tag in article.tags %}
         <li>
-          <a href="{{ blog.url }}/tagged/{{ tag | handle }}">{{ tag }}</a>{% unless forloop.last %}, {% endunless %}
+          <a href="{{ blog.url }}/tagged/{{ tag | handle }}">{{ tag }}</a>
         </li>
       {% endfor %}
     </ul>
-  {% endif %}
-
-  {% if settings.social_sharing_blog %}
-    {% include 'social-sharing', share_title: article.title, share_permalink: article.url, share_image: article.image %}
   {% endif %}
 
   {% if blog.comments_enabled? %}

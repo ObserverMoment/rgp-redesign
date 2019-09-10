@@ -1,0 +1,41 @@
+.contact-form {
+  max-width: 900px;
+  text-align: center;
+  margin: 0 auto;
+  padding: 10px;
+  @include media-min-size($screen-tablet) {
+    padding: 20px;
+  }
+  &__content {
+    padding: 0 15px;
+    @include media-min-size($screen-tablet) {
+      padding: 10px 25px;
+    }
+  }
+  &__form-success {
+    font-wieight: bold;
+    color: $color-main-blue;
+    font-size: 1.3em;
+  }
+  &__text-input {
+    position: relative;
+    margin: 10px;
+    height: 50px;
+  }
+  form {
+    @include standard-form(true);
+    align-items: stretch;
+    width: 100%;
+    padding: 0;
+    @include media-min-size($screen-tablet) {
+      width: 600px;
+    }
+    input {
+      margin: 10px 0;
+      width: 100%;
+    }
+    textarea {
+      margin: 10px;
+    }
+  }
+}

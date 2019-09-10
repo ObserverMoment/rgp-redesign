@@ -1,216 +1,152 @@
-<section data-section-id="{{ section.id }}" data-section-type="product" class="product-single">
-
+<section data-section-id="{{ section.id }}" data-section-type="product" class="product">
+  {% comment %}
   {%- assign current_variant = product.selected_or_first_available_variant -%}
+  {% endcomment %}
   {%- assign info_sections = product.description | split: '##section' -%}
-  <h1 class="product-single__heading">{{ product.title }}</h1>
+  <h1 class="product__heading">{{ product.title }}</h1>
 
-  <div class="product-single">
-    <div class="product-single__images hidden" data-images-elem>
-      {% if product.images.size > 1 %}
-        <div class="product-single__images__gallery"
-          data-gallery
-          data-current-variant-id="{{  current_variant.id }}"
-        >
-        {% comment %}
-          {% for image in product.images %}
-            <div
-              class="product-single__images__gallery__item"
-              data-product-gallery-item
-            >
-              <img
-                class="product-single__images__gallery__item__image"
-                src="{{ image.src | img_url: '800x800' }}"
-                alt="{{ image.alt | escape }}"
-              >
-            </div>
-          {% endfor %}
-        {% endcomment %}
-
-        </div>
-        <div class="product-single__images__gallery__nav__wrapper">
-          <div
-            class="product-single__images__gallery__nav"
-            data-nav
-          >
+  <div class="product__content">
+    <div class="product__content__upper">
+      <div class="product__content__upper__gallery" data-product-image-gallery>
+      {% comment %}
+        Rendered via sections/product.js
+      {% endcomment %}
+      </div>
+      <div class="product__content__upper__info">
+        <div class="product__content__upper__info__add-form" data-product-add-form>
           {% comment %}
-            {% for image in product.images %}
-              <div
-                class="product-single__images__gallery__nav__item"
-                data-product-gallery-nav-item
-              >
-                <img
-                  class="product-single__images__gallery__nav__item__image"
-                  src="{{ image.src | img_url: '100x100' }}" alt="{{ image.alt | escape }}"
-                >
-              </div>
-            {% endfor %}
-            {% endcomment %}
-          </div>
-        </div>
-      {% endif %}
-    </div>
+            Rendered via sections/product.js
+          {% endcomment %}
 
-    <div class="product-single__info">
-      <div class="product-single__info__add-form">
-        {% form 'product', product, data-product-form: '', data-product-handle: product.handle, data-enable-history-state: 'true' %}
-          {% unless product.has_only_default_variant %}
-            {% for option in product.options_with_values %}
-              <div class="product-single__info__add-form__option-{{ option.name }}">
-                <div class="product-single__info__add-form__option-{{ option.name }}__title">
-                  CHOOSE {{ option.name | upcase }}
+          {% comment %}
+          {% form 'product', product, data-product-form: '', data-product-handle: product.handle, data-enable-history-state: 'true' %}
+            {% unless product.has_only_default_variant %}
+              {% for option in product.options_with_values %}
+                <div class="product__content__upper__info__add-form__option-{{ option.name }}">
+                  <div class="product__content__upper__info__add-form__option-{{ option.name }}__title">
+                    CHOOSE {{ option.name | upcase }}
+                  </div>
+                  {% for value in option.values %}
+                    <input
+                      type="radio" id="Option{{ option.position }}-{{ value }}"
+                      name="options[{{ option.name }}]" value="{{ value }}"{% if option.selected_value == value %} checked{% endif %}
+                    >
+                    <label
+                      for="Option{{ option.position }}-{{ value }}"
+                      class="product__content__upper__info__add-form__option-{{ option.name }}__value-{{ value }}"
+                    >
+                    </label>
+                  {% endfor %}
                 </div>
-                {% for value in option.values %}
-                  <input
-                    type="radio" id="Option{{ option.position }}-{{ value }}"
-                    name="options[{{ option.name }}]" value="{{ value }}"{% if option.selected_value == value %} checked{% endif %}
-                  >
-                  <label
-                    for="Option{{ option.position }}-{{ value }}"
-                    class="product-single__info__add-form__option-{{ option.name }}__value-{{ value }}"
-                  >
-                  </label>
-                {% endfor %}
-              </div>
-            {% endfor %}
-          {% endunless %}
-
-          <noscript>
-            <select name="id">
-              {% for variant in product.variants %}
-                <option
-                  {% if variant == current_variant %}selected="selected"{% endif %}
-                  {% unless variant.available %}disabled="disabled"{% endunless %}
-                  value="{{ variant.id }}">
-                    {{ variant.title }}
-                </option>
               {% endfor %}
-            </select>
-          </noscript>
+            {% endunless %}
 
-          <div class="product-single__info__add-form__quantity">
-            <label for="Quantity">{{ 'products.product.quantity' | t }}</label>
-            <div class="product-single__add-form__quantity__inputs">
-              <i data-decrement-product-qty class="far fa-minus-square"></i>
-              <input type="number" id="add-product-quantity-input" name="quantity" value="1" min="1" data-product-quantity-input>
-              <i data-increment-product-qty class="far fa-plus-square"></i>
+            <noscript>
+              <select name="id">
+                {% for variant in product.variants %}
+                  <option
+                    {% if variant == current_variant %}selected="selected"{% endif %}
+                    {% unless variant.available %}disabled="disabled"{% endunless %}
+                    value="{{ variant.id }}">
+                      {{ variant.title }}
+                  </option>
+                {% endfor %}
+              </select>
+            </noscript>
+
+            <div class="product__content__upper__info__add-form__quantity">
+              <label for="Quantity">{{ 'products.product.quantity' | t }}</label>
+              <div class="product__content__upper__info__add-form__quantity__inputs">
+                <i data-decrement-product-qty class="far fa-minus-square"></i>
+                <input type="number" id="add-product-quantity-input" name="quantity" value="1" min="1" data-product-quantity-input>
+                <i data-increment-product-qty class="far fa-plus-square"></i>
+              </div>
             </div>
-          </div>
 
-          <div data-price-wrapper>
-            <span class="product-single__info__price" data-product-price>
-              {{ current_variant.price | money }}
-            </span>
-
-            {% if product.compare_at_price_max > product.price %}
-              <span class="visually-hidden" data-compare-text>{{ 'products.product.regular_price' | t }}</span>
-              <s data-compare-price>
-                {% if current_variant.compare_at_price > current_variant.price %}
-                  {{ current_variant.compare_at_price | money }}
-                {% endif %}
-              </s>
-            {% endif %}
-          </div>
-
-          <button
-            type="submit"
-            class="product-single__info__submit"
-            name="add"
-            data-submit-button
-            {% unless current_variant.available %}disabled="disabled"{% endunless %}
-          >
-              <span data-submit-button-text>
-                {% if current_variant.available %}
-                  {{ 'products.product.add_to_cart' | t }}
-                {% else %}
-                  {{ 'products.product.sold_out' | t }}
-                {% endif %}
+            <div data-price-wrapper>
+              <span class="product__content__upper__info__price" data-product-price>
+                {{ current_variant.price | money }}
               </span>
-              <span class="product-single__info__submit__icon"><i class="fas fa-plus"></i></span>
-          </button>
-        {% endform %}
-      </div>
 
-      <div class="product-single__info__delivery-info">
-        <div class="">
-          <i class="fas fa-shipping-fast"></i>
-        </div>
-        Auto pull in delivery info somehow: <br />
-        Courier: DPD<br />
-        Dispatch: Usually same day when ordered by 2pm<br />
-        Ship time: Usually next working day<br />
-      </div>
-
-      <div class="product-single__info__custom-info">
-        <div class="">
-          <i class="fas fa-clipboard-list"></i>
-        </div>
-        {{ info_sections[0] | strip }}
-      </div>
-
-      <div class="product-single__info__trustbox-mini">
-        <div class="product-single__info__trustbox-mini__trustbox">
-          {% include 'trustbox-mini-widget' %}
-        </div>
-        <div class="product-single__info__trustbox-mini__return-icon">
-          <div>
-            <i class="fas fa-undo-alt"></i>
-          </div>
-          <div>
-            Stress free returns. Just send it back within 30 days for a full refund.
-          </div>
-        </div>
-      </div>
-
-      <div class="product-single__info__payment-icons">
-        <i class="fab fa-cc-visa"></i>
-        <i class="fab fa-cc-mastercard"></i>
-        <i class="fab fa-cc-amex"></i>
-        <i class="fab fa-cc-apple-pay"></i>
-        <i class="fab fa-cc-stripe"></i>
-        <i class="fab fa-cc-paypal"></i>
-      </div>
-
-    </div>
-
-      {% comment %}
-      {% if product.tags.size > 1 %}
-        <div class="product-single__info__tags">
-          {% for tag in product.tags %}
-            <div class="product-single__info__tags__tag">
-              {{ tag }}
+              {% if product.compare_at_price_max > product.price %}
+                <span class="visually-hidden" data-compare-text>{{ 'products.product.regular_price' | t }}</span>
+                <s data-compare-price>
+                  {% if current_variant.compare_at_price > current_variant.price %}
+                    {{ current_variant.compare_at_price | money }}
+                  {% endif %}
+                </s>
+              {% endif %}
             </div>
-          {% endfor %}
-        </div>
-      {% endif %}
-      {% endcomment %}
 
-      {% comment %}
-      {% if section.settings.show_share_buttons %}
-        {% include 'social-sharing', share_title: product.title, share_permalink: product.url, share_image: product %}
-      {% endif %}
-      {% endcomment %}
-    <div class="product-single__details">
-      <div class="product-single__details__bullet-points">
+            <button
+              type="submit"
+              class="product__content__upper__info__submit"
+              name="add"
+              data-submit-button
+              {% unless current_variant.available %}disabled="disabled"{% endunless %}
+            >
+                <span data-submit-button-text>
+                  {% if current_variant.available %}
+                    {{ 'products.product.add_to_cart' | t }}
+                  {% else %}
+                    {{ 'products.product.sold_out' | t }}
+                  {% endif %}
+                </span>
+                <span class="product__content__upper__info__submit__icon"><i class="fas fa-plus"></i></span>
+            </button>
+          {% endform %}
+          {% endcomment %}
+        </div>
+
+        <div class="product__content__upper__info__delivery-info">
+          <i class="fas fa-shipping-fast"></i>
+          {% comment %}
+            Rendered via sections/product.js
+          {% endcomment %}
+          Auto pull in delivery info somehow: <br />
+          In stock: Usually dispatched day when ordered by 2pm<br />
+          Courier: DPD<br />
+          Ship time: Usually next working day<br />
+        </div>
+
+        <div class="product__content__upper__info__custom-info">
+          <i class="fas fa-clipboard-list"></i>
+          {{ info_sections[0] | strip }}
+        </div>
+
+        <div class="product__content__upper__info__trustbox-mini">
+          <div class="product__content__upper__info__trustbox-mini__trustbox">
+            {% include 'trustbox-mini-widget' %}
+          </div>
+          <div class="product__content__upper__info__trustbox-mini__return-icon">
+            <div>
+              <i class="fas fa-undo-alt"></i>
+            </div>
+            <div>
+              Stress free returns. Just send it back within 30 days for a full refund.
+            </div>
+          </div>
+        </div>
+
+        <div class="product__content__upper__info__payment-icons">
+          <i class="fab fa-cc-visa"></i>
+          <i class="fab fa-cc-mastercard"></i>
+          <i class="fab fa-cc-amex"></i>
+          <i class="fab fa-cc-apple-pay"></i>
+          <i class="fab fa-cc-stripe"></i>
+          <i class="fab fa-cc-paypal"></i>
+        </div>
+
+      </div>
+    </div>
+    <div class="product__content__lower">
+      <div class="product__content__lower__bullet-points">
         {{ info_sections[1] | strip }}
       </div>
-      <div class="product-single__details__description">
+      <div class="product__content__lower__description">
         {{ info_sections[2] | strip }}
       </div>
     </div>
   </div>
 
 </section>
-
-{% schema %}
-  {
-    "name": "Product pages",
-    "settings": [
-      {
-        "type": "checkbox",
-        "id": "show_share_buttons",
-        "label": "Show social sharing buttons",
-        "default": true
-      }
-    ]
-  }
-{% endschema %}

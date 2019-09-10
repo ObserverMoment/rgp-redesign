@@ -1,4 +1,5 @@
-import {elems, formatMoney} from '../utils/Renderer';
+import {formatMoney} from '@shopify/theme-currency';
+import {elems} from '../utils/Renderer';
 
 const {Div, Img, Link} = elems;
 
@@ -26,6 +27,8 @@ const classes = {
 
 function MiniCartLine(lineItemObj) {
   const {featured_image, product_title, variant_title, quantity, final_price, final_line_price, url} = lineItemObj;
+  const variantTitle = variant_title ? ` (${variant_title})` : '';
+  const productTitle = `${product_title}${variantTitle}`;
   return (
   [Div, {className: classes.cartLine}, [
     [Div, {className: classes.imageWrapper}, [
@@ -33,14 +36,14 @@ function MiniCartLine(lineItemObj) {
     ]],
     [Div, {className: classes.info}, [
       [Link, {attributes: {href: url}}, [
-        [Div, {className: classes.infoTitle, innerHTML: `${product_title} (${variant_title})`}],
+        [Div, {className: classes.infoTitle, innerHTML: productTitle}],
       ]],
       [Div, {className: classes.infoUnit}, [
-        [Div, {className: classes.infoUnitPrice, innerHTML: `Per unit: ${formatMoney(final_price, 'GBP')}`}],
+        [Div, {className: classes.infoUnitPrice, innerHTML: `Per unit: ${formatMoney(final_price, theme.moneyFormat)}`}],
         [Div, {className: classes.infoUnitQuantity, innerHTML: `Qty: ${quantity}`}],
       ]],
     ]],
-    [Div, {className: classes.totalLinePrice, innerHTML: formatMoney(final_line_price, 'GBP')}],
+    [Div, {className: classes.totalLinePrice, innerHTML: formatMoney(final_line_price, theme.moneyFormat)}],
   ]]
   );
 }

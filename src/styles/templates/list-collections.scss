@@ -1,0 +1,10 @@
+.list-collections {
+  text-align: center;
+  a {
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.5s;
+    color: $color-body-text-1;
+    @include hover { border-bottom: 1px solid #c2c2c2; }
+  }
+}

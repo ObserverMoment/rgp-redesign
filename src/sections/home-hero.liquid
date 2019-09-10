@@ -20,13 +20,13 @@
           <h1>{{ section.settings.title }}</h1>
         </div>
         <div class="home-hero__content__left__text__subtitle">
-          {{ section.settings.text1 }}<i class="fas fa-check"></i>
+          {{ section.settings.text1 }}
         </div>
         <div class="home-hero__content__left__text__subtitle">
-          {{ section.settings.text2 }}<i class="fas fa-check"></i>
+          {{ section.settings.text2 }}
         </div>
         <div class="home-hero__content__left__text__subtitle">
-          {{ section.settings.text3 }}<i class="fas fa-check"></i>
+          {{ section.settings.text3 }}
         </div>
       </div>
       <div class="home-hero__content__left__collections">
@@ -48,13 +48,16 @@
               </h3>
               {% capture image_url %}{% if collection.image %}{{ collection.image | img_url: 'medium' }}{% endif %}{% endcapture %}
               <img
-                class="home-hero__content__left__collections__collection__image"
-                src="{{ image_url }}" alt=""
+                class="home-hero__content__left__collections__collection__image lazy"
+                data-src="{{ image_url }}" alt=""
               >
             </div>
           </a>
           {% endunless %}
         {% endfor %}
+      </div>
+      <div class="home-hero__content__left__mobile-trustbox">
+        {% include 'trustbox-mini-widget' %}
       </div>
       <div class="home-hero__content__left__browse" data-browse-everything>
         <div class="home-hero__content__left__browse__text">

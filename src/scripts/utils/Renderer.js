@@ -1,3 +1,5 @@
+import {globalState, globalEvents} from './global_events';
+
 // Define element type constants - all will be passed to createElement, except Root which must already be an element in the DOM.
 const elems = {
   Root: 'root',
@@ -5,10 +7,14 @@ const elems = {
   Span: 'span',
   H1: 'h1',
   H2: 'h2',
+  H3: 'h3',
   Img: 'img',
   Ul: 'ul',
   Li: 'li',
   Link: 'a',
+  Input: 'input',
+  Label: 'label',
+  Button: 'button',
 };
 
 /*
@@ -28,9 +34,13 @@ const tree = [
 
 
 function buildElement({elementType, config, parent}) {
+  if (!parent) {
+    throw Error('A parent is required to make a node - make sure you have passed a parent element via {parent} attribute');
+  }
+
   const {
-    className = null, innerHTML = null,
-    attributes = null, listeners = null,
+    className = null, innerHTML = null, attributes = null,
+    listeners = null, subscriptions = null, postMountCallbacks = null,
   } = config;
   // Make the node.
   const node = document.createElement(elementType);
@@ -48,9 +58,21 @@ function buildElement({elementType, config, parent}) {
 
   if (listeners) {
     Object.entries(listeners).forEach(([eventType, fns]) => {
+      let functions = fns;
+      if (!Array.isArray(fns)) {
+        functions = [fns];
+      }
       node.addEventListener(eventType, (event) => {
-        fns.forEach((func) => func(event));
+        functions.forEach((func) => func(event));
       });
+    });
+  }
+
+  // Subscriptions allows elements to be passed to event subscribers.
+  // An array of functions.
+  if (subscriptions) {
+    subscriptions.forEach((sub) => {
+      sub(node);
     });
   }
 
@@ -59,11 +81,15 @@ function buildElement({elementType, config, parent}) {
     node.innerHTML = innerHTML;
   }
 
-  // Append to parent.
-  if (!parent) {
-    throw Error('A parent is required to make a node - make sure you have passed a parent element via {parent} attribute');
-  }
   parent.appendChild(node);
+
+  // Setup or initialisation functions that require the node be mounted to the dom.
+  // Generally just run these functions once.
+  if (postMountCallbacks) {
+    postMountCallbacks.forEach((callback) => {
+      callback(node);
+    });
+  }
 
   return node;
 }
@@ -81,7 +107,7 @@ function render([elementType, config, children], parent) {
         throw Error('The top level of your tree must be a DOM element');
       }
       if (!children || !Array.isArray(children) || children.length < 1) {
-        throw Error('You must provide and array of children for the root element');
+        throw Error('You must provide an array of children for the root element');
       }
       children.forEach(([_type, _config, _children]) => render([_type, _config, _children], config.rootElem));
     } else {
@@ -98,7 +124,10 @@ function render([elementType, config, children], parent) {
     }
   } catch (err) {
     console.log(err);
+    console.log('Error rendering:', [elementType, config, children], parent);
   }
+  // Let everyone know that the dom has been updated. See lazyloader setup in global_events.js for example.
+  globalState.notify(globalEvents.DOMUPDATED);
 }
 
 export {render, elems};

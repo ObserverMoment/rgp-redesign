@@ -1,0 +1,45 @@
+.account {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  h1 { margin: 20px 0 0; }
+  &__content {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    &__order-history {
+      h2 { text-align: center; }
+      &__orders-table {
+        margin: 4px;
+        padding: 8px;
+        text-align: left;
+        border: 1px solid $color-main-black;
+        border-radius:  4px;
+        width: calc(100vw - 24px);
+        @include media-min-size($screen-tablet) {
+          width: calc(100vw - 32px);
+          min-width: 375px;
+          max-width: 900px;
+          margin: 10px auto;
+          padding: 20px;
+        }
+        @include media-min-size($screen-medium) {
+          margin: 0 20px 0 0;
+        }
+        a { @include text-link-alt; }
+        td, th { padding: 6px 8px; }
+      }
+    }
+    &__customer-details {
+      padding: 20px;
+      margin: 5px 30px;
+      @include media-min-size($screen-medium) {
+        margin: 0 0 0 20px;;
+      }
+      a {
+        @include text-link;
+      }
+    }
+  }
+}

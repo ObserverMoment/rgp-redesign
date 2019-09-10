@@ -9,7 +9,7 @@ $color-body: var(--color-main-background);
 $color-body-lighten: var(--color-main-background-lighten);
 
 // Collection colours
-$product-image-bg: #fff;
+$product-image-bg: #ffffff;
 $variant-red: #632424;
 $variant-blue: #0e2a5c;
 $variant-green: #0b4d25;
@@ -23,9 +23,17 @@ $placeholder-color-background: #f9fafb;
 $color-accent: var(--color-accent);
 $color-border: var(--color-border);
 $color-tag-item-bg: var(--color-tag-item-bg);
-$color-info-box-item-bg: var(--color-info-box-item-bg);
+
 $color-product-info-bg: var(--color-product-info-bg);
 $color-main-green: #006b5b;
+$color-main-gold: #DAA528;
+$color-main-grey: #737373;
+$color-main-light-grey: #d7d7d7;
+$color-main-white: #ffffff;
+$color-main-red: #ff6d6d;
+$color-main-black: #151515;
+$color-main-blue: #08839e;
+$color-info-box-item-bg: $color-main-green; // Hook into schema no longer being used! var(--color-info-box-item-bg);
 
 // Helper colors for form error states
 $color-disabled: #000000;
@@ -34,6 +42,11 @@ $color-error: #ff6d6d;
 $color-error-bg: #ffffff;
 $color-success: #000000;
 $color-success-bg: #000000;
+
+// Accounts and registration forms.
+$login-form-primary: $color-main-green;
+$login-form-red: $color-error;
+$login-form-neutral: #707070;
 
 // Typography
 $font-heading: var(--font-heading);
@@ -50,12 +63,23 @@ $font-script-style: var(--font-script-style);
 $transition-duration: 250ms;
 $transition-timing: ease-in-out;
 
-// Grid
+// Grid (Defaults provided by Shopify slate starter)
 $grid-medium: 46.85em;
 $grid-large: 61.85em;
 $grid-widescreen: 87.5em;
 $grid-max-width: 73.75em;
 $grid-gutter: 30px;
+
+// Device specific widths. Always use min-width for these.
+// Design should only break upwards to 'less' mobile when size is greater than. 'Mobile first with buffer'
+// https://ricostacruz.com/til/css-media-query-breakpoints
+$screen-mobile: 23.438em; // 375px
+$screen-tablet: 41.688em; // 677px.
+$screen-landscape: 52em;
+$screen-medium: 64em; // 1024px
+$screen-large: 85.375em; // 1366px
+$screen-wide: 105em; // 1680px
+
 
 // Breakpoints used with the media-query mixin
 $small: 'small';
@@ -80,4 +104,5 @@ $breakpoints: (
 
 // Layout.
 $header-height: 70px;
-$footer-height: 150px;
+$footer-height: 250px;
+$main-padding-top: 20px;

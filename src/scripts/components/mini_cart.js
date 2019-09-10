@@ -1,7 +1,11 @@
+import {formatMoney} from '@shopify/theme-currency';
 import {getCartData, submitCartToCheckout} from '../utils/api';
-import {render, formatMoney, elems} from '../utils/Renderer';
+import {render, elems} from '../utils/Renderer';
 import {MiniCartLine} from './mini_cart_line';
-import {ShoppingBasket} from '../utils/icons';
+import {ShoppingBasketIcon, PadlockIcon} from '../utils/icons';
+import {Store} from '../utils/Store';
+
+const {Root, Div, H2, Span, Link, Button} = elems;
 
 const getElements = {
   // headerMinicartQty is rendered in header.liquid.
@@ -9,12 +13,6 @@ const getElements = {
   miniCartContainer: () => document.querySelector('[data-mini-cart-container]'),
   submitCartButton: () => document.querySelector('[data-mini-cart-checkout]'),
 };
-
-(function addListeners() {
-  getElements.submitCartButton().addEventListener('click', async () => {
-    await submitCartToCheckout();
-  });
-})();
 
 const wrapperClass = 'mini-cart';
 
@@ -36,17 +34,24 @@ const classes = {
   cartTotal: `${wrapperClass}__cart-total`,
   cartTotalTitle: `${wrapperClass}__cart-total__title`,
   cartTotalAmount: `${wrapperClass}__cart-total__amount`,
+  actions: `${wrapperClass}__actions`,
+  toCartBtn: `${wrapperClass}__actions__cart`,
+  toCheckoutBtn: `${wrapperClass}__actions__checkout`,
 };
 
+let miniCartId = 0;
+const miniCartState = Store({id: miniCartId}, 'mini-cart');
+
 async function renderMiniCart() {
+  miniCartId += 1;
   const data = await getCartData();
+  miniCartState.setState({id: miniCartId});
 
   getElements.headerMinicartQty().innerHTML = data.item_count;
   const miniCartContainer = getElements.miniCartContainer();
 
   // Clear any previously rendered cart.
-  // !!NOTE: This is only safe to do if there are definitely no event listeners on its children!!
-  // Otherwise this would lead to memory leaks.
+  // !!NOTE: Should look for a better way...will be a minor memory leak due to the submit button venet listener.
   miniCartContainer.innerHTML = '';
 
   const totalShippingCost = 'TODO';
@@ -55,20 +60,33 @@ async function renderMiniCart() {
     return acum + next.final_line_price;
   }, 0);
 
-  const {Root, Div, H2, Span} = elems;
-
   render([
     Root, {rootElem: miniCartContainer}, [
-      [Div, {className: classes.icon, innerHTML: ShoppingBasket}],
+      [Div, {className: classes.icon, innerHTML: ShoppingBasketIcon}],
       [H2, {innerHTML: 'Your basket'}],
       ...data.items.map((lineItemObj) => MiniCartLine(lineItemObj)),
       [Div, {className: classes.shippingTotal}, [
         [Span, {className: classes.shippingTotalTitle, innerHTML: 'Shipping'}],
-        [Span, {className: classes.shippingTotalAmount, innerHTML: formatMoney(totalShippingCost, 'GBP')}],
+        [Span, {className: classes.shippingTotalAmount, innerHTML: formatMoney(totalShippingCost, theme.moneyFormat)}],
       ]],
       [Div, {className: classes.cartTotal}, [
         [Span, {className: classes.cartTotalTitle, innerHTML: 'Total'}],
-        [Span, {className: classes.cartTotalAmount, innerHTML: formatMoney(totalCartPrice, 'GBP')}],
+        [Span, {className: classes.cartTotalAmount, innerHTML: formatMoney(totalCartPrice, theme.moneyFormat)}],
+      ]],
+      [Div, {className: classes.actions}, [
+        [Link, {attributes: {href: '/cart'}}, [
+          [Button, {className: classes.toCartBtn, innerHTML: 'View cart'}],
+        ]],
+        [Button, {
+          className: classes.toCheckoutBtn,
+          listeners: {click: [submitCartToCheckout]},
+          subscriptions: [
+            (self) => miniCartState.onAttributeUpdate(() => self.removeEventListener('click', submitCartToCheckout), 'id'),
+          ],
+        }, [
+          [Span, {innerHTML: PadlockIcon}],
+          [Span, {innerHTML: 'Checkout'}],
+        ]],
       ]],
     ],
   ]);

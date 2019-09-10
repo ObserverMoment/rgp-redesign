@@ -1,0 +1,146 @@
+@include createFadeKeyFrames(address-cards-fadein, 0, 1);
+
+@mixin address-form {
+  @include standard-form;
+  div { position: relative; }
+  label {
+    top: -20px;
+    font-size: 1em;
+  }
+  input {
+    width: 100%;
+  }
+  input[type='checkbox'] {
+    width: 20px;
+  }
+  select { margin: 20px 0; padding: 6px; border-radius: 4px; width: 100%; }
+  &__fields {
+    div { position: relative; height: 80px; }
+    &__select {
+      label { opacity: 1; }
+    }
+    &__set-default {
+      position: relative;
+      display: flex;
+      width: 200px;
+      padding-bottom: 8px;
+      margin: 0 auto;
+      transform: scale(1.1);
+      label { top: 12px; left: 30px; opacity: 1; }
+    }
+  }
+  &__actions {
+    display: flex;
+    margin: 8px 0 24px 0;
+    button { flex-grow: 1; }
+  }
+}
+
+.account-addresses {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  h1 { margin: 30px 0 0 0; }
+  &__add-new {
+    display: flex;
+    justify-content: center;
+    width: 96vw;
+    border: 1px solid $color-main-light-grey;
+    border-radius: 4px;
+    padding: 8px;
+    @include media-min-size($screen-tablet) {
+      width: 600px;
+    }
+    &__form {
+      h2 { text-align: center; }
+      @include address-form;
+    }
+  }
+  &__edit {
+    display: flex;
+    justify-content: center;
+    width: 96vw;
+    border: 1px solid $color-main-light-grey;
+    border-radius: 4px;
+    padding: 8px;
+    @include media-min-size($screen-tablet) {
+      width: 600px;
+    }
+    &__form {
+      h2 { text-align: center; }
+      @include address-form;
+    }
+  }
+  &__back {
+    @include link;
+    position: absolute;
+    top: 0;
+    left: 10px;
+    i { font-size: 0.9em; }
+  }
+  &__list {
+    padding: 8px;
+    text-align: center;
+    width: 100%;
+    @include media-min-size($screen-medium) {
+      max-width: 1200px;
+    }
+    &__grid {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      text-align: left;
+      &__item {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        margin: 6px;
+        padding: 10px;
+        border: 1px solid $color-main-light-grey;
+        border-radius: 4px;
+        opacity: 0;
+        animation: address-cards-fadein 0.6s forwards;
+        flex-grow: 1;
+        flex-basis: 350px;
+        p { margin: 0; }
+        &__default {
+          position: absolute;
+          top: 5px;
+          right: 5px;
+          padding: 4px;
+          border: 1px solid $color-main-gold;
+          border-radius: 4px;
+          color: $color-main-gold;
+          font-size: 0.8em;
+        }
+        &__actions {
+          display: flex;
+          button { flex-grow: 1; margin: 2px; }
+          form {
+            flex-grow: 1;
+            margin: 2px;
+            button {
+              width: 100%;
+              margin: 0;
+            }
+          }
+        }
+      }
+    }
+  }
+  .primary-btn {
+    @include primary-btn;
+  }
+  .secondary-btn {
+    @include secondary-btn;
+  }
+  .delete-btn {
+    @include delete-btn;
+  }
+  .cancel-btn {
+    @include cancel-btn;
+  }
+}
