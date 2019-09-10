@@ -9,14 +9,16 @@ import {renderMiniCart} from '../components/mini_cart';
 
 import {addItemsToCart, getProductData, getProductJSON} from '../utils/api';
 
-const {Root} = elems;
+const {Root, Div} = elems;
 
 const classes = {
   showGalleryActions: 'show-gallery-actions',
+  productGalleryDisplay: 'product__content__upper__gallery__display',
+  productGalleryThumbs: 'product__content__upper__gallery__thumbs',
 };
 
 const getElements = {
-  imageGallery: () => document.querySelector('[data-product-image-gallery]'),
+  galleryWrapper: () => document.querySelector('[data-product-image-gallery]'),
   addFormWrapper: () => document.querySelector('[data-product-add-form]'),
   addProductForm: () => document.querySelector('[data-product-form]'),
 };
@@ -155,40 +157,46 @@ async function initProductPage() {
 // Gallery.
 function initGallery(images) {
 
-  const galleryState = Store({imageWidths: []}, 'product-gallery');
+  const galleryState = Store({curIndex: 0}, 'product-gallery');
 
-  const imageGallery = ImageGallery(images, galleryState, 0);
-  const galleryNavThumbs = GalleryNavThumbs(images, galleryState, '200x200', 0);
-
-  const rootElem = getElements.imageGallery();
+  const rootElem = getElements.galleryWrapper();
 
   function handleMouseEnter() {
-    const actionsElem = document.querySelector(`[${imageGallery.actionsElemRef}]`);
-    if (actionsElem) {
-      document.querySelector(`[${imageGallery.actionsElemRef}]`).classList.add(classes.showGalleryActions);
-    } else {
-      rootElem.removeEventListener('mouseenter', handleMouseEnter);
+    if (galleryState.getState().getActionsElem) {
+      galleryState.getState().getActionsElem().classList.add(classes.showGalleryActions);
     }
   }
 
   function handleMouseLeave() {
-    const actionsElem = document.querySelector(`[${imageGallery.actionsElemRef}]`);
-    if (actionsElem) {
-      document.querySelector(`[${imageGallery.actionsElemRef}]`).classList.remove(classes.showGalleryActions);
-    } else {
-      rootElem.removeEventListener('mouseleave', handleMouseLeave);
+    if (galleryState.getState().getActionsElem) {
+      galleryState.getState().getActionsElem().classList.remove(classes.showGalleryActions);
     }
   }
 
-  rootElem.addEventListener('mouseenter', handleMouseEnter);
-  rootElem.addEventListener('mouseleave', handleMouseLeave);
+  function renderImageGallery(imageGalleryContainer) {
+    const {getActionsElem} = ImageGallery(imageGalleryContainer, images, galleryState, 0);
+    galleryState.setState({getActionsElem});
+  }
 
   render([
     Root, {rootElem}, [
-      galleryNavThumbs.view(),
-      imageGallery.view(),
+      [Div, {
+        className: classes.productGalleryDisplay,
+        postMountCallbacks: [
+          (self) => renderImageGallery(self),
+        ],
+      }],
+      [Div, {
+        className: classes.productGalleryThumbs,
+        postMountCallbacks: [
+          (self) => GalleryNavThumbs(self, images, galleryState, '200x', 0),
+        ],
+      }],
     ],
   ]);
+
+  rootElem.addEventListener('mouseenter', handleMouseEnter);
+  rootElem.addEventListener('mouseleave', handleMouseLeave);
 }
 
 // Add product to cart form.

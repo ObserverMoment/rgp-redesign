@@ -16,20 +16,22 @@ function initGlobalState() {
     scrollY: window.scrollY,
   }, 'global-state');
 
+  // Setup global lazy loading.
+  const lazyLoader = createLazyloader({
+    elements_selector: '.lazyContainer',
+    callback_enter: (element) => {
+      // Uncomment for logging.
+      // console.log('ENTERED', element);
+      createLazyloader({thresholds: '50px 500px'}, element);
+    },
+  });
+  globalState.setState({lazyLoader});
+
   window.addEventListener('load', () => {
     globalState.setState({
       innerHeight: window.innerHeight,
       innerWidth: window.innerWidth,
       scrollY: window.scrollY,
-    });
-    // Setup global lazy loading.
-    createLazyloader({
-      elements_selector: '.lazyContainer',
-      callback_enter: (element) => {
-        // Uncomment for logging.
-        // logEvent('ENTERED', element);
-        createLazyloader({thresholds: '50px 500px'}, element);
-      },
     });
   });
 
@@ -50,5 +52,6 @@ function initGlobalState() {
 }
 
 const globalState = initGlobalState();
+
 
 export {globalState, globalEvents};

@@ -47,11 +47,12 @@ function Store(initialState, name) {
       stateEventEmitter.emit(`${storeName}-${storeEvents.STATEUPDATED}`, state);
     },
     // Allows for creation of, and subscription to, any custom events on the individual store.
-    notify(eventName) {
-      stateEventEmitter.emit(`${storeName}-${eventName}`, state);
+    // Pass any data you want as the second arg. It will be received by the subscribers along with the state.
+    notify(eventName, eventData) {
+      stateEventEmitter.emit(`${storeName}-${eventName}`, eventData);
     },
     subscribe(eventName, subscriberFn) {
-      stateEventEmitter.on(`${storeName}-${eventName}`, (newState) => subscriberFn(newState));
+      stateEventEmitter.on(`${storeName}-${eventName}`, (eventData) => subscriberFn({state, eventData}));
     },
     // Subscribe to any updates to any attributes on the state.
     onStateUpdate(subscriberFn) {

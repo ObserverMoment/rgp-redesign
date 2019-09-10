@@ -230,7 +230,10 @@ $header-ease: cubic-bezier(0.19, 1, 0.22, 1);
         }
       }
       &__cart {
-        margin-right: 4px;
+        margin-right: 14px;
+        @media (hover: none) {
+          margin-right: 4px;
+        }
         &__info {
           display: flex;
           justify-content: flex-end;
@@ -258,7 +261,10 @@ $header-ease: cubic-bezier(0.19, 1, 0.22, 1);
           &__quantity {
             position: absolute;
             top: 8px;
-            right: 3px;
+            right: 12px;
+            @media (hover: none) {
+              right: 6px;
+            }
             display: flex;
             justify-content: center;
             align-items: center;

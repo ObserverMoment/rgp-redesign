@@ -24,8 +24,6 @@ const classes = {
   active: 'active',
 };
 
-const validProductTypes = ['Poker Chipset', 'Freestanding Poker Table', 'Poker Table Top', 'Poker Mat'];
-
 function updateProductDisplay(productLink, newState) {
   // Remove all items first before adding them back in to trigger keyframe animnations.
   if (
@@ -133,9 +131,9 @@ function renderProductsList(products, State) {
           ],
           postMountCallbacks: [
             (self) => updateProductDisplay(self, State.getState()),
+            (self) => ProductCard(self, product),
           ],
         },
-          [ProductCard(product, true)],
       ]),
   ]);
 }

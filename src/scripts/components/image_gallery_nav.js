@@ -14,9 +14,11 @@ const getElements = {
 
 let galleryNavThumbIndex = 0;
 
-function GalleryNavThumbs(images = [], galleryState, imageDims = '200x200', initialIndex = 0) {
+function GalleryNavThumbs(parentElement, images = [], galleryState, imageDims = '200x200', initialIndex = 0) {
   galleryNavThumbIndex += 1;
   const navThumbsDataAttr = `gallery-nav-${galleryNavThumbIndex}`;
+
+  console.log('making navs');
 
   function handleUpdateImage(newState) {
     // Clear all highlighting classes.
