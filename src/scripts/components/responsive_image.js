@@ -2,6 +2,7 @@ import {debounce} from 'throttle-debounce';
 import {globalState} from '../utils/global_events';
 import {render, elems} from '../utils/Renderer';
 import {formImageSizeUrl} from '../utils/utils';
+import {Loader} from './loader';
 
 const {Root, Img} = elems;
 
@@ -9,9 +10,10 @@ let imageId = 0;
 
 const classes = {
   img: 'responsive-image',
+  loader: 'loader',
 };
 
-function ResponsiveImage(parentElement, imageData, postMountCallbacks = [], subscriptions = []) {
+function ResponsiveImage(parentElement, imageData, lazy = false, showLoader = false, postMountCallbacks = [], subscriptions = []) {
   imageId++;
 
   const getElements = {
@@ -21,11 +23,17 @@ function ResponsiveImage(parentElement, imageData, postMountCallbacks = [], subs
   function resizeImage(element) {
     const parentDims = parentElement.getBoundingClientRect();
     // Give image size some buffer - 20% larger than the size of the parent div.
-    const imageRequestDims = `${Math.floor(parentDims.width * 1.2)}x`;
-    const srcUrl = formImageSizeUrl(imageData.src, imageRequestDims);
-    // 'data-src' is required by the vanilla-lazyload plugin.
-    element.setAttribute('data-src', srcUrl);
-    element.style.width = `${parentDims.width}px`;
+    if (parentDims.width > 0) {
+      const imageRequestDims = `${Math.floor(parentDims.width * 1.2)}x`;
+      const srcUrl = formImageSizeUrl(imageData.src, imageRequestDims);
+      // 'data-src' is required for lazy-loading.
+      if (lazy) {
+        element.setAttribute('data-src', srcUrl);
+      } else {
+        element.setAttribute('src', srcUrl);
+      }
+      element.style.width = `${parentDims.width}px`;
+    }
   }
 
   function runPostMountCallbacks(imageElem) {
@@ -40,11 +48,11 @@ function ResponsiveImage(parentElement, imageData, postMountCallbacks = [], subs
     });
   }
 
-  render([
-    Root, {rootElem: parentElement}, [
+  function renderImage() {
+    return ([
       [
         Img, {
-          className: classes.img,
+          className: `${classes.img} swiper-lazy`,
           attributes: {
             [`responsive-image-${imageId}`]: '',
           },
@@ -58,7 +66,13 @@ function ResponsiveImage(parentElement, imageData, postMountCallbacks = [], subs
           ],
         },
       ],
-    ],
+      showLoader && Loader('responsive-image__loader swiper-lazy-preloader'),
+    ].filter((node) => node));
+  }
+
+  // http://idangero.us/swiper/api/#lazy
+  render([
+    Root, {rootElem: parentElement}, renderImage(),
   ]);
 
   return {

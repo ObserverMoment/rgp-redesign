@@ -3,7 +3,7 @@
 */
 import {throttle} from 'throttle-debounce';
 import {Store} from './Store';
-import {createLazyloader} from './initLazyload';
+// import {createLazyloader} from './initLazyload';
 
 const globalEvents = {
   DOMUPDATED: 'dom-updated',
@@ -15,17 +15,6 @@ function initGlobalState() {
     innerWidth: window.innerWidth,
     scrollY: window.scrollY,
   }, 'global-state');
-
-  // Setup global lazy loading.
-  const lazyLoader = createLazyloader({
-    elements_selector: '.lazyContainer',
-    callback_enter: (element) => {
-      // Uncomment for logging.
-      // console.log('ENTERED', element);
-      createLazyloader({thresholds: '50px 500px'}, element);
-    },
-  });
-  globalState.setState({lazyLoader});
 
   window.addEventListener('load', () => {
     globalState.setState({

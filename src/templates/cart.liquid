@@ -17,6 +17,13 @@
   {% if cart.item_count > 0 %}
     <div class="cart-page__lines">
       {% for item in cart.items %}
+        <div class="cart-page__lines__line__info mobile">
+          <a href="{{ item.url }}">{{ item.product.title }}</a>
+          {% unless item.product.has_only_default_variant %}
+            <p>({{ item.variant.title }})</p>
+          {% endunless %}
+        </div>
+
         <div
           class="cart-page__lines__line"
           data-line-key="{{ item.key }}"
@@ -28,15 +35,15 @@
           <div class="cart-page__lines__line__thumb">
             {% if item.image != blank %}
               <a href="{{ item.url | within: collections.all }}">
-                {{ item | img_url: '80x80' | img_tag: item.title }}
+                {{ item | img_url: '180x180' | img_tag: item.title }}
               </a>
             {% endif %}
           </div>
 
-          <div class="cart-page__lines__line__info">
+          <div class="cart-page__lines__line__info desktop">
             <a href="{{ item.url }}">{{ item.product.title }}</a>
             {% unless item.product.has_only_default_variant %}
-              <p>{{ item.variant.title }}</p>
+              <p>({{ item.variant.title }})</p>
             {% endunless %}
           </div>
 
@@ -67,7 +74,7 @@
               data-line-key="{{ item.key }}"
               data-quantity-save-btn
             >
-              Save
+              Update
             </button>
             <div class="cart-page__lines__line__quantity__saved-icon" data-line-key="{{ item.key }}" data-quantity-saved-icon>
               <i class="far fa-check-circle"></i>

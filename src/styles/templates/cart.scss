@@ -4,7 +4,11 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  width: calc(100vw);
+  width: 98vw;
+  @media (hover: none) {
+    // No scroll bars...
+    width: 100vw;
+  }
   padding: 6px;
   @include media-min-size($screen-tablet) {
     padidng: 10px;
@@ -44,11 +48,11 @@
     border: 1px solid $color-main-light-grey;
     border-radius: 4px;
     &__line {
-      border-bottom: 1px solid $color-main-light-grey;
-      &:last-child { border-bottom: none; }
       display: flex;
       justify-content: space-between;
-      padding: 10px 4px;
+      border-bottom: 1px solid $color-main-light-grey;
+      &:last-child { border-bottom: none; }
+      padding: 10px 6px;
       @include media-min-size($screen-tablet) {
         padding: 10px;
       }
@@ -68,36 +72,45 @@
         flex-direction: column;
         justify-content: center;
         padding: 0;
+        width: 90px;
+        flex-basis: 25%;
         a { display: flex; align-items: center; }
       }
       &__info {
-        font-size: 0.7em;
-        @include media-min-size($screen-tablet) {
-          font-size: 0.9em;
-        }
-        max-width: 400px;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: left;
+        display: none;
         a { text-decoration: none; color: $color-body-text-1; }
-        p { margin: 0; }
+        p { margin: 0; font-weight: bold; display: inline; margin-left: 3px; }
+        &.mobile {
+          display: block;
+          text-align: center;
+          align-items: center;
+          font-size: 0.9em;
+          max-width: 400px;
+          padding: 6px 12px 4px 12px;
+          @include media-min-size($screen-tablet) {
+            display: none;
+          }
+        }
+        &.desktop {
+          @include media-min-size($screen-tablet) {
+            display: block;
+            max-width: 500px;
+          }
+        }
       }
       &__quantity {
         position: relative;
         display: flex;
         justify-content: center;
         align-items: center;
+        flex-basis: 50%;
         &__adjust {
           display: flex;
           flex-direction: column;
+          width: 65px;
           &__input {
+            height: 40px;
             cursor: pointer;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            width: 45px;
-            height: 35px;
             border: 1px solid rgba(226, 226, 226, 0.8);
             border-radius: 4px;
             text-align: center;
@@ -115,6 +128,7 @@
           &__icons {
             display: flex;
             justify-content: space-around;
+            font-size: 1.2em;
             div {
               display: flex;
               justify-content: center;
@@ -125,7 +139,6 @@
               border: 1px solid $color-main-light-grey;
               border-radius: 3px;
               color: $color-main-grey;
-              font-size: 0.7em;
               text-align: center;
               @include hover { cursor: pointer; border-color: $color-main-blue; }
             }
@@ -133,13 +146,16 @@
         }
 
         &__save {
+          position: absolute;
           @include secondary-btn;
-          padding: 4px 6px;
+          padding: 10px;
           font-size: 0.8em;
-          position: relative;
           opacity: 0;
           transition: opacity 0.4s;
           margin: 4px;
+          left: 75%;
+          top: 50%;
+          transform: translateY(-50%);
           cursor: default;
           &.show {
             cursor: pointer;
@@ -148,12 +164,13 @@
         }
         &__saved-icon {
           position: absolute;
-          right: 10px;
           display: none;
-          transform: translateX(-50%);
           transition: opacity 0.4s;
+          left: 75%;
+          top: 50%;
+          transform: translate(50%, -50%);
           color: $color-main-green;
-          font-size: 1.5em;
+          font-size: 1.8em;
           &.show {
             display: block;
             animation: saved-icon-fadein 0.5s;
@@ -165,6 +182,7 @@
         flex-direction: column;
         justify-content: space-around;
         align-items: flex-end;
+        flex-basis: 25%;
         &__money {
 
         }
@@ -172,7 +190,7 @@
           cursor: pointer;
           i {
             color: $color-main-red;
-            font-size: 1.2em;
+            font-size: 1.8em;
           }
         }
       }

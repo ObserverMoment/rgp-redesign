@@ -75,8 +75,6 @@ function ImageGallery(parentElement, images = [], galleryState, initialIndex = 0
   }
 
   function setSingleImageContainerWidth(singleImageWrapper) {
-    console.log('singleImageWrapper', singleImageWrapper);
-    console.log(`${parentElement.getBoundingClientRect().width}px`);
     singleImageWrapper.style.width = `${parentElement.getBoundingClientRect().width}px`;
   }
 
@@ -89,13 +87,23 @@ function ImageGallery(parentElement, images = [], galleryState, initialIndex = 0
   }
 
   function onRenderComplete(viewportElement) {
-    if (globalState.getState().lazyLoader) {
-      globalState.getState().lazyLoader.update();
-    }
     // http://idangero.us/swiper/api/#parameters
     const swiper = new Swiper(viewportElement, {
+      // Disable preloading of all images
+      preloadImages: false,
       wrapperClass: `gallery-${_galleryId}-swiper-wrapper`,
       slideClass: `gallery-${_galleryId}-swiper-slide`,
+      on: {
+        slideChange() {
+          galleryState.setState({curIndex: this.activeIndex});
+        },
+      },
+      // Enable lazy loading
+      lazy: {
+        loadPrevNext: true,
+        loadPrevNextAmount: 1,
+      },
+      loadOnTransitionStart: true,
     });
 
     // Swiper needs to subscribe to curIndex state.
@@ -114,7 +122,7 @@ function ImageGallery(parentElement, images = [], galleryState, initialIndex = 0
         },
         postMountCallbacks: [
           (self) => setSingleImageContainerWidth(self),
-          (self) => ResponsiveImage(self, imageObj),
+          (self) => ResponsiveImage(self, imageObj, true, true),
         ],
         subscriptions: [
           (self) => globalState.onAttributeUpdate(() => setSingleImageContainerWidth(self), 'innerWidth'),
@@ -133,7 +141,7 @@ function ImageGallery(parentElement, images = [], galleryState, initialIndex = 0
           ],
         }, [
           [Div, {
-            className: `${classes.imagesContainer} gallery-${_galleryId}-swiper-wrapper lazyContainer`,
+            className: `${classes.imagesContainer} gallery-${_galleryId}-swiper-wrapper`,
             attributes: {[imagesContainerDataAttr]: ''},
           }, images.map((image, index) => renderImageWrapper(image, index))],
           [Div, {

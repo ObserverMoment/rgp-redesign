@@ -141,14 +141,15 @@ async function initProductPage() {
   // Then re-render the gallery whenever user selects a different colour.
   if (product.options.some((option) => option.name === 'Colour')) {
     productState.onAttributeUpdate((newState) => {
-      const imgGalleryElem = getElements.imageGallery();
-      // Remove event listeners that will refer to the old instance of the image gallery.
-      smoothFade([1, 0], imgGalleryElem, 100, [0.47, 0, 0.745, 0.715], () => {
-        while (imgGalleryElem.firstChild) {
-          imgGalleryElem.removeChild(imgGalleryElem.firstChild);
+      const galleryWrapper = getElements.galleryWrapper();
+      // Fade out, remove event listeners that will refer to the old instance of the image gallery.
+      // Rebuild the gallery, fade in.
+      smoothFade([1, 0], galleryWrapper, 100, [0.47, 0, 0.745, 0.715], () => {
+        while (galleryWrapper.firstChild) {
+          galleryWrapper.removeChild(galleryWrapper.firstChild);
         }
         constructGallery(newState);
-        smoothFade([0, 1], imgGalleryElem, 300, []);
+        smoothFade([0, 1], galleryWrapper, 300, []);
       });
     }, 'Colour');
   }
@@ -162,34 +163,34 @@ function initGallery(images) {
   const rootElem = getElements.galleryWrapper();
 
   function handleMouseEnter() {
-    if (galleryState.getState().getActionsElem) {
+    if (galleryState.getState().getActionsElem()) {
       galleryState.getState().getActionsElem().classList.add(classes.showGalleryActions);
     }
   }
 
   function handleMouseLeave() {
-    if (galleryState.getState().getActionsElem) {
+    if (galleryState.getState().getActionsElem()) {
       galleryState.getState().getActionsElem().classList.remove(classes.showGalleryActions);
     }
   }
 
   function renderImageGallery(imageGalleryContainer) {
     const {getActionsElem} = ImageGallery(imageGalleryContainer, images, galleryState, 0);
-    galleryState.setState({getActionsElem});
+    galleryState.setState({getActionsElem, imageGalleryContainer});
   }
 
   render([
     Root, {rootElem}, [
       [Div, {
-        className: classes.productGalleryDisplay,
+        className: classes.productGalleryThumbs,
         postMountCallbacks: [
-          (self) => renderImageGallery(self),
+          (self) => GalleryNavThumbs(self, images, galleryState),
         ],
       }],
       [Div, {
-        className: classes.productGalleryThumbs,
+        className: classes.productGalleryDisplay,
         postMountCallbacks: [
-          (self) => GalleryNavThumbs(self, images, galleryState, '200x', 0),
+          (self) => renderImageGallery(self),
         ],
       }],
     ],

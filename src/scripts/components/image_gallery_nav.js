@@ -1,10 +1,11 @@
-import {elems} from '../utils/Renderer';
-import {formImageSizeUrl} from '../utils/utils';
+import {render, elems} from '../utils/Renderer';
+import {ResponsiveImage} from './responsive_image';
 
-const {Div, Img} = elems;
+const {Root, Div} = elems;
 
 const classes = {
   galleryNavThumbs: 'image-gallery-nav',
+  singleThumbWrapper: 'image-gallery-nav__thumb-wrapper',
   selectedThumbnail: 'selected-thumbnail',
 };
 
@@ -12,13 +13,11 @@ const getElements = {
   allThumbs: () => document.querySelectorAll('[data-gallery-nav-thumb]'),
 };
 
-let galleryNavThumbIndex = 0;
+let galleryNavComponentIndex = 0;
 
-function GalleryNavThumbs(parentElement, images = [], galleryState, imageDims = '200x200', initialIndex = 0) {
-  galleryNavThumbIndex += 1;
-  const navThumbsDataAttr = `gallery-nav-${galleryNavThumbIndex}`;
-
-  console.log('making navs');
+function GalleryNavThumbs(parentElement, images = [], galleryState, initialIndex = 0) {
+  galleryNavComponentIndex += 1;
+  const navThumbsDataAttr = `gallery-nav-${galleryNavComponentIndex}`;
 
   function handleUpdateImage(newState) {
     // Clear all highlighting classes.
@@ -34,30 +33,25 @@ function GalleryNavThumbs(parentElement, images = [], galleryState, imageDims = 
 
   galleryState.onAttributeUpdate(handleUpdateImage, 'curIndex');
 
-  const imageUrlArray = images.map((img) => formImageSizeUrl(img.src, imageDims));
-
-  return {
-    view: () => ([
-      Div, {className: `${classes.galleryNavThumbs} lazyContainer`},
-      imageUrlArray.map((imageUrl, index) => ([
-        Img, {
-          className: `${initialIndex === index ? classes.selectedThumbnail : null} lazy`,
-          attributes: {'data-src': imageUrl, 'data-gallery-nav-thumb': '', [`${navThumbsDataAttr}-thumb-${index}`]: '', 'data-index': index},
-          listeners: {
-            click: [() => galleryState.setState({curIndex: index})],
+  render([
+    Root, {rootElem: parentElement}, [
+      [
+        Div, {className: classes.galleryNavThumbs},
+        images.map((image, index) => ([
+          Div, {
+            className: `${classes.singleThumbWrapper} ${initialIndex === index ? classes.selectedThumbnail : null}`,
+            attributes: {'data-gallery-nav-thumb': '', [`${navThumbsDataAttr}-thumb-${index}`]: '', 'data-index': index},
+            listeners: {
+              click: [() => galleryState.setState({curIndex: index})],
+            },
+            postMountCallbacks: [
+              (self) => ResponsiveImage(self, image),
+            ],
           },
-        },
-      ])),
-    ]),
-  };
+        ])),
+      ],
+    ],
+  ]);
 }
-
-// function GalleryNavDots(quantity, updateImage) {
-//   return {
-//     view: () => ([
-//
-//     ])
-//   }
-// }
 
 export {GalleryNavThumbs};

@@ -4,12 +4,17 @@ import {render, elems} from '../utils/Renderer';
 import {Store} from '../utils/Store';
 import productConfig from '../utils/productTypes';
 import {FilterIcon, SortDownIcon} from '../utils/icons';
+import {Loader} from './loader';
+import {globalState, globalEvents} from '../utils/global_events';
 
 const {Root, Div, Link} = elems;
+
+const loaderDataAttr = 'data-loader-product-browser';
 
 const getElements = {
   productFilters: () => document.querySelector('[data-product-browser-filters]'),
   productsContainer: () => document.querySelector('[data-product-browser-products]'),
+  productBrowserLoader: () => document.querySelector(`[${loaderDataAttr}]`),
 };
 
 const classes = {
@@ -61,6 +66,16 @@ function updateMobileDropdown(dropdownElem, newState) {
   } else {
     dropdownElem.classList.remove(classes.active);
   }
+}
+
+function renderLoader() {
+  const productsContainer = getElements.productsContainer();
+
+  render([
+    Root, {rootElem: productsContainer}, [
+      Loader(null, loaderDataAttr),
+    ],
+  ]);
 }
 
 function renderFilters(productTypes = ['everything'], State) {
@@ -119,8 +134,16 @@ function renderFilters(productTypes = ['everything'], State) {
 function renderProductsList(products, State) {
   const productsContainer = getElements.productsContainer();
   const urlRoot = '/products';
+
+  const eventId = 'product-browser-rendered';
+
+  globalState.subscribe(`${globalEvents.DOMUPDATED}-${eventId}`, () => {
+    const loaderElem = getElements.productBrowserLoader();
+    loaderElem.classList.add('hide');
+  });
+
   render([
-    Root, {rootElem: productsContainer}, products.map((product) =>
+    Root, {rootElem: productsContainer, eventCompleteId: eventId}, products.map((product) =>
       [
         Link,
         {
@@ -139,6 +162,7 @@ function renderProductsList(products, State) {
 }
 
 async function initCollection() {
+  renderLoader();
   const State = Store({selectedProductType: 'everything', filterOpen: false});
   const {products} = await getCollectionProducts('everything');
   // Sort by price - low to high.
