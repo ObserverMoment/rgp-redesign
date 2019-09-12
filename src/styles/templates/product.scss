@@ -77,6 +77,10 @@
           border: 1px solid $color-main-light-grey;
           border-radius: 4px;
           @include media-min-size($screen-medium) {
+            box-shadow: 0 1px 2px 1px rgba(0, 0, 0, 0.1);
+            border: 1px solid #f9f9f9;
+          }
+          @include media-min-size($screen-medium) {
             position: relative;
             z-index: 1;
           }
@@ -96,6 +100,7 @@
           display: flex;
           justify-content: space-between;
           padding: 4px 2px;
+          height: 115px;
           &__trustbox {
             flex-basis: 50%;
             margin: 2px 4px;
@@ -157,7 +162,7 @@
             background: $color-info-box-item-bg;
             box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
             color: $color-text-light-1;
-            border-radius: 6px;
+            border-radius: 2px;
           }
         }
       }

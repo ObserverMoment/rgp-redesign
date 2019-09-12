@@ -28,7 +28,16 @@
           margin: 0 20px 0 0;
         }
         a { @include text-link-alt; }
-        td, th { padding: 6px 8px; }
+        td, th {
+          padding: 6px 8px;
+          text-align: right;
+          @include media-min-size($screen-tablet) {
+            text-align: center;
+          }
+          @include media-min-size($screen-medium) {
+            text-align: left;
+          }
+        }
       }
     }
     &__customer-details {

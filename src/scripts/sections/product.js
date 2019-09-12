@@ -3,6 +3,7 @@ import {render, elems} from '../utils/Renderer';
 import {ImageGallery} from '../components/image_gallery_view';
 import {GalleryNavThumbs} from '../components/image_gallery_nav';
 import {AddProductForm} from '../components/add_product_form';
+import {ShippingInfo} from '../components/shipping_info';
 import {Store} from '../utils/Store';
 import {smoothFade} from '../utils/utils';
 import {renderMiniCart} from '../components/mini_cart';
@@ -21,6 +22,7 @@ const getElements = {
   galleryWrapper: () => document.querySelector('[data-product-image-gallery]'),
   addFormWrapper: () => document.querySelector('[data-product-add-form]'),
   addProductForm: () => document.querySelector('[data-product-form]'),
+  shippingInfo: () => document.querySelector('[data-product-shipping-info]'),
 };
 
 // Must be cdn.shopify.com/s/files/1/0168/1113/0934/products/W_3985{_dimension}.jpg?v=1563988014.
@@ -136,6 +138,19 @@ async function initProductPage() {
   }
 
   constructGallery(productState.getState());
+
+  // Methods to render the shipping info elements.
+  function stripVariantText(variant) {
+    const variantTitle = variant.option1.toLowerCase();
+    return variant.sku.toLowerCase().replace(variantTitle, '');
+  }
+
+  // Get the product sku and remove the variant.
+  const sku = product.variants[0].title === 'Default Title'
+    ? product.variants[0].sku.toLowerCase()
+    : stripVariantText(product.variants[0]);
+
+  ShippingInfo(getElements.shippingInfo(), sku);
 
   // If colour is an option the user can select.
   // Then re-render the gallery whenever user selects a different colour.

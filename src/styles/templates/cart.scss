@@ -10,10 +10,10 @@
     width: 100vw;
   }
   padding: 6px;
-  @include media-min-size($screen-tablet) {
-    padidng: 10px;
+  @include media-min-size($screen-medium) {
+    padding: 10px;
     margin: 0 auto;
-    max-width: 1100px;
+    max-width: 1200px;
   }
   &__back-link {
     position: absolute;
@@ -29,7 +29,7 @@
     position: fixed;
     top: calc(#{$header-height} + 20px);
     display: none;
-    width: calc(100vw - 30px);
+    width: calc(100% - 6px);
     margin: 0 auto;
     text-align: center;
     color: $color-main-red;
@@ -37,7 +37,17 @@
     border-radius: 4px;
     z-index: 10;
     border: 2px solid $color-error;
-    padding: 8px;
+    padding: 10px 0;
+    @include media-min-size($screen-mobile) {
+      width: calc(100% - 10px);
+    }
+    @include media-min-size($screen-tablet) {
+      width: calc(100% - 18px);
+    }
+    @include media-min-size($screen-medium) {
+      width: calc(100% - 28px);
+      max-width: 1180px;
+    }
     &.show {
       display: block;
       animation: saved-icon-fadein 0.5s;
@@ -112,7 +122,7 @@
             height: 40px;
             cursor: pointer;
             border: 1px solid rgba(226, 226, 226, 0.8);
-            border-radius: 4px;
+            border-radius: 1px;
             text-align: center;
             transition: border-color 0.3s;
             outline: none;
@@ -133,13 +143,13 @@
               display: flex;
               justify-content: center;
               align-items: center;
-              margin: 1px;
               padding: 4px;
               width: 50%;
               border: 1px solid $color-main-light-grey;
-              border-radius: 3px;
+              border-radius: 1px;
               color: $color-main-grey;
               text-align: center;
+              background: #f9f9f9;
               @include hover { cursor: pointer; border-color: $color-main-blue; }
             }
           }

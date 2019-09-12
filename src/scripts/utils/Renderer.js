@@ -15,6 +15,8 @@ const elems = {
   Input: 'input',
   Label: 'label',
   Button: 'button',
+  Select: 'select',
+  Option: 'option',
 };
 
 /*

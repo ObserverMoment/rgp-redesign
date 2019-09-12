@@ -246,10 +246,10 @@ $header-ease: cubic-bezier(0.19, 1, 0.22, 1);
           @include hover {
             border-color: transparent;
             cursor: pointer;
-            background: $color-main-gold;
+            background: $color-main-blue;
           }
           @include hover('&__icon') {
-            color: $color-main-light-grey;
+            color: $color-main-white;
           }
           &__icon {
             display: flex;

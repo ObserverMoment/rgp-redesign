@@ -94,8 +94,17 @@ function ImageGallery(parentElement, images = [], galleryState, initialIndex = 0
       wrapperClass: `gallery-${_galleryId}-swiper-wrapper`,
       slideClass: `gallery-${_galleryId}-swiper-slide`,
       on: {
-        slideChange() {
-          galleryState.setState({curIndex: this.activeIndex});
+        transitionStart() {
+          if (Math.abs(this.activeIndex - this.previousIndex) > 2) {
+            // Fade out.
+            this.wrapperEl.style.opacity = 0;
+          }
+        },
+        transitionEnd() {
+          if (Math.abs(this.activeIndex - this.previousIndex) > 2) {
+            // Fade in
+            this.wrapperEl.style.opacity = 1;
+          }
         },
       },
       // Enable lazy loading
