@@ -1,82 +1,82 @@
-const displayStrings = {
-  nextDay: 'Usually next working day when ordered by 2pm',
-  twoDays: 'Usually delivered within 2 working days when ordered by 2pm',
-  contactUs: 'We do not deliver here as standard. Please contact us for a quote.',
+const deliveryDisplayTexts = {
+  1: 'Usually next working day when ordered by 2pm',
+  2: 'Usually delivered 2 - 3 working days',
+  3: 'Usually delivered 3 - 5 working days',
+  4: 'Usually delivered 4 - 6 working days',
+  99: 'Sorry, we do not deliver here as standard. Please contact us for a quote.',
 };
-
-const FREE = 'free';
 
 const rates = {
   ukMainland: {
     small: {
-      price: FREE,
-      time: displayStrings.nextDay,
+      price: 0,
+      time: 1,
     },
     medium: {
-      price: FREE,
-      time: displayStrings.nextDay,
+      price: 0,
+      time: 1,
     },
     large: {
-      price: FREE,
-      time: displayStrings.twoDays,
+      price: 0,
+      time: 2,
     },
   },
   ireland: {
     small: {
       price: 10,
-      time: displayStrings.twoDays,
+      time: 2,
     },
     medium: {
       price: 20,
-      time: displayStrings.twoDays,
+      time: 2,
     },
     large: {
       price: 30,
-      time: displayStrings.twoDays,
+      time: 2,
     },
   },
   ukRemote: {
     small: {
       price: 10,
-      time: displayStrings.twoDays,
+      time: 2,
     },
     medium: {
       price: 20,
-      time: displayStrings.twoDays,
+      time: 2,
     },
     large: {
       price: 30,
-      time: displayStrings.twoDays,
+      time: 2,
     },
   },
   scottishIsles: {
     small: {
       price: 20,
-      time: displayStrings.twoDays,
+      time: 2,
     },
     medium: {
       price: 30,
-      time: displayStrings.twoDays,
+      time: 2,
     },
     large: {
       price: 40,
-      time: displayStrings.twoDays,
+      time: 2,
     },
   },
   euro1: {
     small: {
       price: 5,
-      time: displayStrings.twoDays,
+      time: 2,
     },
     medium: {
       price: 10,
-      time: displayStrings.twoDays,
+      time: 2,
     },
     large: {
       price: null,
-      time: displayStrings.contactUs,
+      time: 99,
     },
   },
 };
 
-export {rates};
+export {rates, deliveryDisplayTexts};

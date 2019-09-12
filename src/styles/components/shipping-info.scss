@@ -1,0 +1,58 @@
+.shipping-info {
+  position: relative;
+  width: 100%;
+  &__selected {
+    box-shadow: 0 1px 3px 1px rgba(0, 0, 0, 0.1);
+    border: 1px solid $color-main-grey;
+    border-radius: 3px;
+    padding: 6px 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    cursor: pointer;
+    position: relative;
+    &__text {
+      padding-right: 20px;
+    }
+    &__icon {
+      font-size: 1.2em;
+      color: $color-main-grey;
+      position: absolute;
+      right: 20px;
+      top: 7px;
+      i {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+    }
+  }
+  &__dropdown {
+    transform: scaleY(0);
+    opacity: 0;
+    transition: all 0.1s;
+    transform-origin: top;
+    width: 100%;
+    position: absolute;
+    background: $color-main-white;
+    box-shadow: 0 1px 3px 1px rgba(0, 0, 0, 0.1);
+    border: 1px solid $color-main-grey;
+    border-radius: 3px;
+    z-index: 8;
+    &.open {
+      transform: scaleY(1);
+      opacity: 1;
+    }
+    &__option {
+      padding: 4px 6px;
+      border-color: transparent;
+      @include link;
+      transition: all 0.6s;
+      &.active {
+        border-color: $color-main-grey;
+        background: rgba($color-main-light-grey, 0.4);
+      }
+    }
+  }
+}

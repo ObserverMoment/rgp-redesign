@@ -150,7 +150,7 @@ async function initProductPage() {
     ? product.variants[0].sku.toLowerCase()
     : stripVariantText(product.variants[0]);
 
-  ShippingInfo(getElements.shippingInfo(), sku);
+  ShippingInfo(getElements.shippingInfo(), {quantity: 1, sku});
 
   // If colour is an option the user can select.
   // Then re-render the gallery whenever user selects a different colour.
