@@ -28,6 +28,7 @@
           class="cart-page__lines__line"
           data-line-key="{{ item.key }}"
           data-line-variant-id="{{ item.variant_id}}"
+          data-line-sku="{{ item.sku }}"
           data-line-unit-price="{{ item.final_price }}"
           data-line-row
         >
@@ -123,13 +124,10 @@
             {{ cart.total_price | money }}
           </div>
         </div>
-        <div class="cart-page__lower__totals__subtotal">
-          <div class="cart-page__lower__totals__subtotal__heading">
-            Shipping - DPD next day
-          </div>
-          <div class="cart-page__lower__totals__subtotal__value" data-delivery-price>
-            £10 (TBC)
-          </div>
+        <div class="cart-page__lower__totals__subtotal" data-delivery-price>
+          {% comment %}
+            Rendered in /cart.js.
+          {% endcomment %}
         </div>
         <div class="cart-page__lower__totals__total">
           <div class="cart-page__lower__totals__total__heading">
@@ -140,7 +138,7 @@
           </div>
         </div>
         <form action="/cart" method="post" novalidate class="cart-page__checkout-form">
-          <button type="submit" name="checkout" class="cart-page__checkout-form__btn">
+          <button type="submit" name="checkout" class="cart-page__checkout-form__btn" data-checkout-btn>
             <span><i class="fas fa-lock"></i></span>
             <span>{{ 'cart.general.checkout' | t }}</span>
           </button>

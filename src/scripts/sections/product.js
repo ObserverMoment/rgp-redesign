@@ -139,18 +139,8 @@ async function initProductPage() {
 
   constructGallery(productState.getState());
 
-  // Methods to render the shipping info elements.
-  function stripVariantText(variant) {
-    const variantTitle = variant.option1.toLowerCase();
-    return variant.sku.toLowerCase().replace(variantTitle, '');
-  }
-
-  // Get the product sku and remove the variant.
-  const sku = product.variants[0].title === 'Default Title'
-    ? product.variants[0].sku.toLowerCase()
-    : stripVariantText(product.variants[0]);
-
-  ShippingInfo(getElements.shippingInfo(), {quantity: 1, sku});
+  // Render the shipping info elements.
+  ShippingInfo(getElements.shippingInfo(), {quantity: 1, product});
 
   // If colour is an option the user can select.
   // Then re-render the gallery whenever user selects a different colour.

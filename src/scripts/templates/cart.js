@@ -3,13 +3,15 @@
 */
 import {formatMoney} from '@shopify/theme-currency';
 import {debounce} from 'throttle-debounce';
-import {updateCartLineQuantity, updateCart, addItemsToCart} from '../utils/api';
+import {getCartData, updateCartLineQuantity, updateCart, addItemsToCart} from '../utils/api';
 import {renderMiniCart} from '../components/mini_cart';
-
+import {ShippingInfo} from '../components/shipping_info';
+import {Store} from '../utils/Store';
 
 /*
-  const state = {
+  const lineStates = {
     lineKey1: {
+      Store({
       lineRow: element,
       input: element,
       saveBtn: element,
@@ -19,6 +21,7 @@ import {renderMiniCart} from '../components/mini_cart';
       initialQuantity: number
       liveQuantity: number,
       unitPrice: number [7800 is £78]
+      }, 'cart-line-lineKey1')
     },
     lineKey2: {
      etc
@@ -26,7 +29,9 @@ import {renderMiniCart} from '../components/mini_cart';
   }
   NOTE: lineKey is the unique key code that shopify generates for each line in the shopping cart.
 */
-const state = {};
+// One store object for each cart line, plus a global state which holds the subtotal and the shipping total.
+const lineStates = {};
+const cartStates = {};
 
 const getElements = {
   lineRows: () => document.querySelectorAll('[data-line-row]'),
@@ -38,10 +43,11 @@ const getElements = {
   updateErrorElem: () => document.querySelector('[data-update-error]'),
   lineItemDeleteBtns: () => document.querySelectorAll('[data-line-delete-btn]'),
   subtotalPrice: () => document.querySelector('[data-subtotal-price]'),
-  deliveryPrice: () => document.querySelector('[data-delivery-price]'),
+  shippingPrice: () => document.querySelector('[data-delivery-price]'),
   totalPrice: () => document.querySelector('[data-total-price]'),
   orderNoteTextarea: () => document.querySelector('[data-order-note-textarea]'),
   confirmNoteSaved: () => document.querySelector('[data-note-saved-message]'),
+  checkoutBtn: () => document.querySelector('[data-checkout-btn]'),
 };
 
 const classes = {
@@ -49,7 +55,10 @@ const classes = {
   fadeOut: 'fade-out',
 };
 
-(function getInitialState() {
+(async function getInitialState() {
+  const cartData = await getCartData();
+  cartStates.cartData = cartData;
+
   const lineRows = [...getElements.lineRows()];
   const inputs = getElements.quantityInputs();
   const saveBtns = [...getElements.quantitySaveBtns()];
@@ -63,8 +72,9 @@ const classes = {
     const lineRow = lineRows.find((row) => row.dataset.lineKey === lineKey);
     const unitPrice = lineRow.dataset.lineUnitPrice;
     const variantId = lineRow.dataset.lineVariantId;
+    const sku = lineRow.dataset.lineSku.toLowerCase();
     // Save data for each line into a state object, accessible via shopify cart line key.
-    state[lineKey] = {
+    lineStates[lineKey] = Store({
       lineRow,
       input,
       saveBtn: saveBtns.find((btn) => btn.dataset.lineKey === lineKey),
@@ -72,22 +82,32 @@ const classes = {
       confirmSaveIcon: confirmSavedIcons.find((icon) => icon.dataset.lineKey === lineKey),
       lineTotal: lineTotals.find((price) => price.dataset.lineKey === lineKey),
       initialQuantity: parseInt(input.value, 10),
-      liveQuantity: input.value,
+      liveQuantity: parseInt(input.value, 10),
       unitPrice,
       variantId,
-    };
+      sku,
+    }, `cart-line-${lineKey}`);
+
+    // Setup subscribers to each state.
+    lineStates[lineKey].onStateUpdate((newLineState) => {
+      checkInputChange(newLineState);
+    });
   });
+  // Setup shipping state and render UI component.
+  const shippingState = ShippingInfo(getElements.shippingPrice(), cartStates.cartData.items);
+  cartStates.shippingState = shippingState;
+  shippingState.onAttributeUpdate(() => updateTotal(), 'shippingPrice');
+
+  updateTotal();
 })();
 
 (function addEventListeners() {
   // Listen to quantity events
   getElements.quantityInputs().forEach((input) => {
     input.addEventListener('change', (event) => {
-
       const lineKey = event.target.dataset.lineKey;
-      const line = state[lineKey];
       const newValue = Math.max(0, parseInt(event.target.value, 10));
-      updateInputValueState(line, newValue);
+      lineStates[lineKey].setState({liveQuantity: newValue});
     });
   });
 
@@ -95,13 +115,13 @@ const classes = {
   getElements.quantityAdjustBtns().forEach((btn) => {
     btn.addEventListener('click', () => {
       const lineKey = btn.dataset.lineKey;
-      const input = state[lineKey].input;
+      const input = lineStates[lineKey].getState().input;
       const curValue = parseInt(input.value, 10);
       const newValue = btn.dataset.type === 'minus' ? Math.max(0, curValue - 1) : curValue + 1;
+      // Update the input value.
       input.value = newValue;
       // Update state.
-      const line = state[lineKey];
-      updateInputValueState(line, newValue);
+      lineStates[lineKey].setState({liveQuantity: newValue});
     });
   });
 
@@ -109,20 +129,20 @@ const classes = {
   getElements.quantitySaveBtns().forEach((saveBtn) => {
     saveBtn.addEventListener('click', async (event) => {
       const lineKey = event.target.dataset.lineKey;
-      const line = state[lineKey];
-      const initialQuantity = line.initialQuantity;
-      const newQuantity = line.liveQuantity;
+      const lineState = lineStates[lineKey];
+      const initialQuantity = lineState.getState().initialQuantity;
+      const newQuantity = lineState.getState().liveQuantity;
       const quantityChange = newQuantity - initialQuantity;
 
       // Check that you have enough stock to cover the new value.
       if (quantityChange <= 0) {
         // If quantity is decreased then go ahead and make the update.
         await updateCartLineQuantity({quantity: newQuantity, id: lineKey});
-        onUpdateSuccess(line);
+        onUpdateSuccess(lineKey);
       } else {
         // Else add the difference to the cart via addToCart api call - which will actually return errors if not successful.
         const res = await addItemsToCart({
-          id: line.variantId,
+          id: lineState.getState().variantId,
           quantity: quantityChange,
         });
         if (res.message === 'Cart Error') {
@@ -131,7 +151,7 @@ const classes = {
             : 'Sorry, we don\'t have that many in stock';
           onUpdateFail(errorTxt);
         } else {
-          onUpdateSuccess(line);
+          onUpdateSuccess(lineKey);
         }
       }
 
@@ -149,19 +169,10 @@ const classes = {
   // Handle remove line from cart
   getElements.lineItemDeleteBtns().forEach((removeBtn) => {
     removeBtn.addEventListener('click', async (event) => {
-      const lineKey = event.target.dataset.lineKey;
-      const line = state[lineKey];
+      const {lineKey} = event.target.dataset;
       await updateCartLineQuantity({quantity: 0, id: lineKey});
       // Then remove all elements associated with the deleted line.
-      line.lineRow.classList.add(classes.fadeOut);
-
-      setTimeout(() => {
-        // Fade out the node and then remove the line attribute from the state object.
-        line.lineRow.parentNode.removeChild(line.lineRow);
-        delete state[lineKey];
-        updateSubtotal();
-        renderMiniCart();
-      }, 1000);
+      removeRow(lineKey);
     });
   });
 
@@ -176,48 +187,101 @@ const classes = {
   }));
 })();
 
-function onUpdateSuccess(line) {
+function onUpdateSuccess(lineKey) {
   // If quantity === 0 then you need to remove the whole lineRow element.
-  if (line.liveQuantity === 0) {
-    line.lineRow.classList.add(classes.fadeOut);
-    setTimeout(() => {
-      line.lineRow.parentNode.removeChild(line.lineRow);
-    }, 1000);
+  // And update the shippingState by removing the item from the array.
+  const {products} = cartStates.shippingState.getState();
+  const curLineState = lineStates[lineKey].getState();
+  const updatedQuantity = curLineState.liveQuantity;
+
+  if (updatedQuantity === 0) {
+    removeRow(lineKey);
+    const updatedProducts = products.filter((product) => product.sku !== curLineState.sku);
+    // Update the shippingState component.
+    cartStates.shippingState.setState({products: updatedProducts});
+  } else {
+    // Update the initial quantity after change.
+    lineStates[lineKey].setState({initialQuantity: updatedQuantity});
+    curLineState.saveBtn.classList.remove(classes.show);
+    curLineState.confirmSaveIcon.classList.add(classes.show);
+
+    // Update line total.
+    const newTotal = updatedQuantity * curLineState.unitPrice;
+    curLineState.lineTotal.innerHTML = formatMoney(newTotal, theme.moneyFormat);
+
+    const updatedProducts = products.map((product) =>
+      (product.sku === curLineState.sku
+        ? {sku: curLineState.sku, quantity: updatedQuantity}
+        : product
+    ));
+    // Update the shippingState component.
+    cartStates.shippingState.setState({products: updatedProducts});
   }
-  line.initialQuantity = line.liveQuantity;
-  line.saveBtn.classList.remove(classes.show);
-  line.confirmSaveIcon.classList.add(classes.show);
-  // Update line total.
-  const newTotal = line.liveQuantity * line.unitPrice;
-  line.lineTotal.innerHTML = formatMoney(newTotal, theme.moneyFormat);
-  updateSubtotal();
+
+  updateTotal();
   renderMiniCart();
   setTimeout(() => {
-    line.confirmSaveIcon.classList.remove(classes.show);
+    curLineState.confirmSaveIcon.classList.remove(classes.show);
   }, 4000);
 }
 
-
-function updateInputValueState(line, newValue) {
-  line.liveQuantity = newValue;
-  // Show / hide buttons.
-  if (newValue === line.initialQuantity) {
-    line.saveBtn.classList.remove(classes.show);
-    line.saveBtn.setAttribute('disabled', 'disabled');
+function checkInputChange(newLineState) {
+  // Show / hide save button.
+  if (newLineState.liveQuantity === newLineState.initialQuantity) {
+    newLineState.saveBtn.classList.remove(classes.show);
+    newLineState.saveBtn.setAttribute('disabled', 'disabled');
   } else {
-    line.saveBtn.removeAttribute('disabled');
-    line.saveBtn.classList.add(classes.show);
+    newLineState.saveBtn.removeAttribute('disabled');
+    newLineState.saveBtn.classList.add(classes.show);
   }
 }
 
-// Based on current state - update subtotal display.
-function updateSubtotal() {
-  const newSubtotal = Object.values(state).reduce((acum, {liveQuantity, unitPrice}) => acum + (liveQuantity * unitPrice), 0);
-  getElements.subtotalPrice().innerHTML = formatMoney(newSubtotal, theme.moneyFormat);
-  updateTotal(newSubtotal);
+function removeRow(lineKey) {
+  const {lineRow} = lineStates[lineKey].getState();
+  lineRow.classList.add(classes.fadeOut);
+
+  setTimeout(() => {
+    // Fade out the node and then remove the line attribute from the state object.
+    lineRow.parentNode.removeChild(lineRow);
+    delete lineStates[lineKey];
+    updateTotal();
+    renderMiniCart();
+  }, 1000);
 }
 
-function updateTotal(subTotal = 0, delivery = 0) {
-  const newTotal = subTotal + delivery;
+// Based on current state - update subtotal display.
+function calcSubtotal() {
+  const sub = Object.keys(lineStates)
+    .reduce((acum, lineKey) => {
+      if (lineKey === 'shippingState') {
+        return acum;
+      } else {
+        const {liveQuantity, unitPrice} = lineStates[lineKey].getState();
+        const nextAcum = acum + (liveQuantity * unitPrice);
+        return nextAcum;
+      }
+    }, 0);
+  getElements.subtotalPrice().innerHTML = formatMoney(sub, theme.moneyFormat);
+  return sub;
+}
+
+function checkDeliveryRegion({shippingTime}) {
+  const checkoutBtn = getElements.checkoutBtn();
+  if (shippingTime === 99) {
+    // 99 means can't ship here as standard.
+    checkoutBtn.setAttribute('disabled', 'disabled');
+  } else {
+    checkoutBtn.removeAttribute('disabled');
+  }
+}
+
+function updateTotal() {
+  const curShippingState = cartStates.shippingState.getState();
+  // Make sure that we can actually deliver to the selected region. Else disable checkout btn.
+  checkDeliveryRegion(curShippingState);
+  // Calculate delivery and sub total.
+  const {shippingPrice} = curShippingState;
+  const subTotal = calcSubtotal();
+  const newTotal = subTotal + shippingPrice;
   getElements.totalPrice().innerHTML = formatMoney(newTotal, theme.moneyFormat);
 }

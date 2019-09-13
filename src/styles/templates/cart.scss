@@ -215,6 +215,7 @@
       padding-top: 10px;
     }
     &__note {
+      flex-grow: 1;
       &__heading {
         &__saved {
           opacity: 0;
@@ -231,7 +232,8 @@
         width: 100%;
         font-size: 0.9em;
         @include media-min-size($screen-medium) {
-          width: 500px;
+          max-width: 600px;
+          margin-right: 15px;
         }
         padding: 10px;
         border: none;
@@ -242,10 +244,11 @@
     }
     &__totals {
       padding: 4px;
-      div { margin: 3px 0; }
+      flex-grow: 1;
+      div { margin-top: 4px; margin-bottom: 4px; }
       @include media-min-size($screen-medium) {
         min-width: 400px;
-        max-width: 30%;
+        max-width: 40%;
       }
       &__subtotal {
         display: flex;

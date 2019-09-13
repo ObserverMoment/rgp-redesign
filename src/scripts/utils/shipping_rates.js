@@ -3,7 +3,7 @@ const deliveryDisplayTexts = {
   2: 'Usually delivered 2 - 3 working days',
   3: 'Usually delivered 3 - 5 working days',
   4: 'Usually delivered 4 - 6 working days',
-  99: 'Sorry, we do not deliver here as standard. Please contact us for a quote.',
+  99: 'Sorry, we do not deliver some larger items here as standard. Please contact us for a quote.',
 };
 
 const rates = {
@@ -23,53 +23,53 @@ const rates = {
   },
   ireland: {
     small: {
-      price: 10,
+      price: 1000,
       time: 2,
     },
     medium: {
-      price: 20,
+      price: 2000,
       time: 2,
     },
     large: {
-      price: 30,
+      price: 3000,
       time: 2,
     },
   },
   ukRemote: {
     small: {
-      price: 10,
+      price: 2000,
       time: 2,
     },
     medium: {
-      price: 20,
+      price: 3000,
       time: 2,
     },
     large: {
-      price: 30,
+      price: 4000,
       time: 2,
     },
   },
   scottishIsles: {
     small: {
-      price: 20,
+      price: 3000,
       time: 2,
     },
     medium: {
-      price: 30,
+      price: 4000,
       time: 2,
     },
     large: {
-      price: 40,
+      price: 5000,
       time: 2,
     },
   },
   euro1: {
     small: {
-      price: 5,
+      price: 500,
       time: 2,
     },
     medium: {
-      price: 10,
+      price: 1000,
       time: 2,
     },
     large: {

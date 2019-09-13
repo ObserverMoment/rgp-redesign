@@ -22,16 +22,25 @@ const zones = {
   belgium: 'euro1',
 };
 
-const productGroup = {
+const groups = {
   dice500: 'small',
   wpc300high: 'small',
   rt200green: 'medium',
-  bcfolding: 'large',
+  bcfoldinggreen: 'large',
+  bcfoldingred: 'large',
+  bcfoldingblue: 'large',
+  bcfoldingblack: 'large',
 };
 
 function calculateRate(sku, country) {
+  if (!sku) {
+    console.error('You must provide a sku to be able to calculate shipping');
+  }
+  if (!country) {
+    console.error('You must provide a country to be able to calculate shipping');
+  }
   const zone = zones[country];
-  const group = productGroup[sku];
+  const group = groups[sku.toLowerCase()];
   return rates[zone][group];
 }
 

@@ -4,6 +4,7 @@ import {render, elems} from '../utils/Renderer';
 import {MiniCartLine} from './mini_cart_line';
 import {ShoppingBasketIcon, PadlockIcon} from '../utils/icons';
 import {Store} from '../utils/Store';
+import {ShippingInfo} from './shipping_info';
 
 const {Root, Div, H2, Span, Link, Button} = elems;
 
@@ -45,33 +46,60 @@ const miniCartState = Store({id: miniCartId}, 'mini-cart');
 async function renderMiniCart() {
   miniCartId += 1;
   const data = await getCartData();
-  miniCartState.setState({id: miniCartId});
+  miniCartState.setState({
+    id: miniCartId,
+    subtotal: 0,
+    shipping: 0,
+    total: 0,
+  });
 
   getElements.headerMinicartQty().innerHTML = data.item_count;
   const miniCartContainer = getElements.miniCartContainer();
 
-  // Clear any previously rendered cart.
-  // !!NOTE: Should look for a better way...will be a minor memory leak due to the submit button venet listener.
   miniCartContainer.innerHTML = '';
 
-  const totalShippingCost = 'TODO';
-
-  const totalCartPrice = data.items.reduce((acum, next) => {
+  const subtotal = data.items.reduce((acum, next) => {
     return acum + next.final_line_price;
   }, 0);
+
+  miniCartState.setState({subtotal});
+
+  function renderShippingComponent(shippingTotalElem, items) {
+    // ShippingInfo renders the component and also returns the state object.
+    const shippingState = ShippingInfo(shippingTotalElem, items);
+    miniCartState.setState({shippingState});
+  }
+
+  function updateCartTotal(cartState, cartTotalAmountElem) {
+    const {shippingPrice} = cartState.shippingState.getState();
+    const {subtotal: cartSubTotal} = cartState;
+    cartTotalAmountElem.innerHTML = formatMoney(cartSubTotal + shippingPrice, theme.moneyFormat);
+  }
 
   render([
     Root, {rootElem: miniCartContainer}, [
       [Div, {className: classes.icon, innerHTML: ShoppingBasketIcon}],
       [H2, {innerHTML: 'Your basket'}],
       ...data.items.map((lineItemObj) => MiniCartLine(lineItemObj)),
-      [Div, {className: classes.shippingTotal}, [
-        [Span, {className: classes.shippingTotalTitle, innerHTML: 'Shipping'}],
-        [Span, {className: classes.shippingTotalAmount, innerHTML: formatMoney(totalShippingCost, theme.moneyFormat)}],
-      ]],
+      [Div, {
+        className: classes.shippingTotal,
+        postMountCallbacks: [
+          (self) => renderShippingComponent(self, data.items),
+        ],
+      }],
       [Div, {className: classes.cartTotal}, [
         [Span, {className: classes.cartTotalTitle, innerHTML: 'Total'}],
-        [Span, {className: classes.cartTotalAmount, innerHTML: formatMoney(totalCartPrice, theme.moneyFormat)}],
+        [Span, {
+          className: classes.cartTotalAmount,
+          postMountCallbacks: [
+            (self) => updateCartTotal(miniCartState.getState(), self),
+          ],
+          subscriptions: [
+          // Subscribe to the shipping state updates...which is saved as an attribute in miniCartState.
+            (self) => miniCartState.getState().shippingState.onAttributeUpdate(() =>
+              updateCartTotal(miniCartState.getState(), self), 'shippingPrice'),
+          ],
+        }],
       ]],
       [Div, {className: classes.actions}, [
         [Link, {attributes: {href: '/cart'}}, [

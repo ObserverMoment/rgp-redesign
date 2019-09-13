@@ -7,6 +7,7 @@
     > i { font-size: 2em; color: $color-main-black; }
   }
   > div { border-bottom: 1px solid $color-main-light-grey; }
+  h2 { margin: 6px 0 8px 0; }
   &__line {
     display: flex;
     padding: 5px 0;
@@ -43,13 +44,13 @@
     }
   }
   &__shipping-total, &__cart-total {
-    font-weight: bold;
     color: $color-main-black;
-    padding: 10px 0 10px 30px;
+    padding: 10px;
     width: 100%;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    text-align: center;
   }
   &__actions {
     display: flex;

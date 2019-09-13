@@ -36,7 +36,7 @@
 
 @mixin hover($optional-selector: '') {
   @media (hover: hover) {
-    &:hover #{$optional-selector} {
+    &:hover:not(:disabled) #{$optional-selector} {
       @content;
     }
   }

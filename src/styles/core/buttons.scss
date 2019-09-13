@@ -6,12 +6,19 @@ a {
  * Styling for buttons.
  */
 @mixin btn {
-   cursor: pointer;
    padding: 10px 14px;
    display: flex;
    justify-content: center;
    align-items: center;
    border-radius: 4px;
+   transition: all 0.2s;
+   &:disabled {
+     color: $color-main-light-grey;
+     background: rgba($color-main-grey, 0.5);
+     &:hover {
+       cursor: auto;
+     }
+   }
 }
 
 @mixin primary-btn {
