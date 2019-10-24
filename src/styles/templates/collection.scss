@@ -13,6 +13,8 @@
     }
   }
   &__products {
+    position: relative;
     @include products-grid;
+    &__loader { top: 100px; }
   }
 }

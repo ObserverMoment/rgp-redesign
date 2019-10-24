@@ -3,22 +3,26 @@ import {render, elems} from '../utils/Renderer';
 import {ImageGallery} from '../components/image_gallery_view';
 import {GalleryNavThumbs} from '../components/image_gallery_nav';
 import {AddProductForm} from '../components/add_product_form';
+import {ShippingInfo} from '../components/shipping_info';
 import {Store} from '../utils/Store';
 import {smoothFade} from '../utils/utils';
 import {renderMiniCart} from '../components/mini_cart';
 
 import {addItemsToCart, getProductData, getProductJSON} from '../utils/api';
 
-const {Root} = elems;
+const {Root, Div} = elems;
 
 const classes = {
   showGalleryActions: 'show-gallery-actions',
+  productGalleryDisplay: 'product__content__upper__gallery__display',
+  productGalleryThumbs: 'product__content__upper__gallery__thumbs',
 };
 
 const getElements = {
-  imageGallery: () => document.querySelector('[data-product-image-gallery]'),
+  galleryWrapper: () => document.querySelector('[data-product-image-gallery]'),
   addFormWrapper: () => document.querySelector('[data-product-add-form]'),
   addProductForm: () => document.querySelector('[data-product-form]'),
+  shippingInfo: () => document.querySelector('[data-product-shipping-info]'),
 };
 
 // Must be cdn.shopify.com/s/files/1/0168/1113/0934/products/W_3985{_dimension}.jpg?v=1563988014.
@@ -135,18 +139,22 @@ async function initProductPage() {
 
   constructGallery(productState.getState());
 
+  // Render the shipping info elements.
+  ShippingInfo(getElements.shippingInfo(), {quantity: 1, product});
+
   // If colour is an option the user can select.
   // Then re-render the gallery whenever user selects a different colour.
   if (product.options.some((option) => option.name === 'Colour')) {
     productState.onAttributeUpdate((newState) => {
-      const imgGalleryElem = getElements.imageGallery();
-      // Remove event listeners that will refer to the old instance of the image gallery.
-      smoothFade([1, 0], imgGalleryElem, 100, [0.47, 0, 0.745, 0.715], () => {
-        while (imgGalleryElem.firstChild) {
-          imgGalleryElem.removeChild(imgGalleryElem.firstChild);
+      const galleryWrapper = getElements.galleryWrapper();
+      // Fade out, remove event listeners that will refer to the old instance of the image gallery.
+      // Rebuild the gallery, fade in.
+      smoothFade([1, 0], galleryWrapper, 100, [0.47, 0, 0.745, 0.715], () => {
+        while (galleryWrapper.firstChild) {
+          galleryWrapper.removeChild(galleryWrapper.firstChild);
         }
         constructGallery(newState);
-        smoothFade([0, 1], imgGalleryElem, 300, []);
+        smoothFade([0, 1], galleryWrapper, 300, []);
       });
     }, 'Colour');
   }
@@ -155,40 +163,46 @@ async function initProductPage() {
 // Gallery.
 function initGallery(images) {
 
-  const galleryState = Store({imageWidths: []}, 'product-gallery');
+  const galleryState = Store({curIndex: 0}, 'product-gallery');
 
-  const imageGallery = ImageGallery(images, galleryState, 0);
-  const galleryNavThumbs = GalleryNavThumbs(images, galleryState, '200x200', 0);
-
-  const rootElem = getElements.imageGallery();
+  const rootElem = getElements.galleryWrapper();
 
   function handleMouseEnter() {
-    const actionsElem = document.querySelector(`[${imageGallery.actionsElemRef}]`);
-    if (actionsElem) {
-      document.querySelector(`[${imageGallery.actionsElemRef}]`).classList.add(classes.showGalleryActions);
-    } else {
-      rootElem.removeEventListener('mouseenter', handleMouseEnter);
+    if (galleryState.getState().getActionsElem()) {
+      galleryState.getState().getActionsElem().classList.add(classes.showGalleryActions);
     }
   }
 
   function handleMouseLeave() {
-    const actionsElem = document.querySelector(`[${imageGallery.actionsElemRef}]`);
-    if (actionsElem) {
-      document.querySelector(`[${imageGallery.actionsElemRef}]`).classList.remove(classes.showGalleryActions);
-    } else {
-      rootElem.removeEventListener('mouseleave', handleMouseLeave);
+    if (galleryState.getState().getActionsElem()) {
+      galleryState.getState().getActionsElem().classList.remove(classes.showGalleryActions);
     }
   }
 
-  rootElem.addEventListener('mouseenter', handleMouseEnter);
-  rootElem.addEventListener('mouseleave', handleMouseLeave);
+  function renderImageGallery(imageGalleryContainer) {
+    const {getActionsElem} = ImageGallery(imageGalleryContainer, images, galleryState, 0);
+    galleryState.setState({getActionsElem, imageGalleryContainer});
+  }
 
   render([
     Root, {rootElem}, [
-      galleryNavThumbs.view(),
-      imageGallery.view(),
+      [Div, {
+        className: classes.productGalleryThumbs,
+        postMountCallbacks: [
+          (self) => GalleryNavThumbs(self, images, galleryState),
+        ],
+      }],
+      [Div, {
+        className: classes.productGalleryDisplay,
+        postMountCallbacks: [
+          (self) => renderImageGallery(self),
+        ],
+      }],
     ],
   ]);
+
+  rootElem.addEventListener('mouseenter', handleMouseEnter);
+  rootElem.addEventListener('mouseleave', handleMouseLeave);
 }
 
 // Add product to cart form.

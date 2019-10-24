@@ -15,6 +15,8 @@ const elems = {
   Input: 'input',
   Label: 'label',
   Button: 'button',
+  Select: 'select',
+  Option: 'option',
 };
 
 /*
@@ -84,6 +86,7 @@ function buildElement({elementType, config, parent}) {
   parent.appendChild(node);
 
   // Setup or initialisation functions that require the node be mounted to the dom.
+  // Can also use this to run a new render method with this element as the root - allowing sub tree sections to be built easily.
   // Generally just run these functions once.
   if (postMountCallbacks) {
     postMountCallbacks.forEach((callback) => {
@@ -96,6 +99,7 @@ function buildElement({elementType, config, parent}) {
 
 /*
   @param elementType: see elems obj.
+  @param config (root): { rootElem, eventCompleteId }
   @param config: { className, attributes:{}, innerHTML: '', listeners: { event: [fn,fn], event: [fn,fn] } }
   @param children: Array[ [elementType, config, children], [elementType, config, children] ]
   @param parent: do not pass this arg - automatically passed during recursion.
@@ -123,11 +127,16 @@ function render([elementType, config, children], parent) {
       }
     }
   } catch (err) {
-    console.log(err);
-    console.log('Error rendering:', [elementType, config, children], parent);
+    console.error(err);
+    console.error('Error rendering node:', [elementType, config, children]);
+    console.error('For parent:', parent);
   }
   // Let everyone know that the dom has been updated. See lazyloader setup in global_events.js for example.
-  globalState.notify(globalEvents.DOMUPDATED);
+  // Pass event id to the subscribers, allowing components to monitor when a render has completed.
+  // Pass the containing parent element as default arg arg.
+  if (elementType === 'root' && config.eventCompleteId) {
+    globalState.notify(`${globalEvents.DOMUPDATED}-${config.eventCompleteId}`);
+  }
 }
 
 export {render, elems};

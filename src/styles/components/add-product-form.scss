@@ -89,10 +89,16 @@ $radio-button-width: 32px;
     &__quantity {
       display: flex;
       justify-content: center;
-      align-items: baseline;
+      align-items: center;
+      &__update {
+        display: flex;
+      }
       i {
-        font-size: 0.9em;
-        margin: 0 8px;
+        font-size: 1.8em;
+        @include media-min-size($screen-medium) {
+          font-size: 1.4em;
+        }
+        margin: 0 10px;
         color: $color-body-text-1;
         opacity: 0.6;
         user-select: none;

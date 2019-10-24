@@ -126,11 +126,11 @@
           }
           &__title {
             position: absolute;
-            top: 0;
+            height: 100%;
+            width: 80%;
+            top: 8px;
             left: 10px;
-            @include media-min-size($screen-medium) {
-              left: 30px;
-            }
+            margin: 0;
           }
           &__image {
             width: 100%;
@@ -142,7 +142,7 @@
         display: flex;
         justify-content: center;
         width: 94%;
-        height: 130px;
+        height: 140px;
         margin: 0 auto;
         @include card;
         @include media-min-size($screen-tablet) {

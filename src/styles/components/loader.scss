@@ -1,0 +1,62 @@
+// Loader for lazy loading images.s
+@keyframes responsive-image__loader-opacity {
+  0% {
+    transform: translate(0 0);
+    opacity: 1;
+  }
+  49.99% {
+    opacity: 1;
+    transform: translate($loader-width, 0);
+  }
+  50% {
+    opacity: 0;
+    transform: translate($loader-width, 0);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(0, 0);
+  }
+}
+@keyframes responsive-image__loader {
+  0% {
+    transform: translate(0, 0);
+  }
+  50% {
+    transform: translate($loader-width, 0);
+  }
+  100% {
+    transform: translate(0, 0);
+  }
+}
+
+.loader {
+  transition: opacity 0.6s;
+  &.hide {
+    opacity: 0
+  }
+  position: absolute;
+  top: 50px;
+  transform: translate(-100px, -100px) scale(1) translate(100px, 100px);
+  div {
+    top: -$loader-width;
+    position: absolute;
+    width: $loader-width;
+    height: $loader-width;
+    border-radius: 50%;
+  }
+  div:nth-child(1) {
+    background: $color-main-blue;
+    animation: responsive-image__loader 0.8s linear infinite;
+    animation-delay: -0.4s;
+  }
+  div:nth-child(2) {
+    background: $color-main-gold;
+    animation: responsive-image__loader 0.8s linear infinite;
+    animation-delay: 0s;
+  }
+  div:nth-child(3) {
+    background: $color-main-blue;
+    animation: responsive-image__loader-opacity 0.8s linear infinite;
+    animation-delay: -0.4s;
+  }
+}

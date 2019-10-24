@@ -1,6 +1,7 @@
 .product-browser {
   padding-bottom: 20px;
   border-bottom: 1px solid #cbcbcb;
+  min-height: 400px;
   &__header {
     margin-top: 20px;
     text-align: center;
@@ -94,6 +95,7 @@
     }
   }
   &__products {
+    position: relative;
     @include products-grid;
     &__product-link {
       display: none;

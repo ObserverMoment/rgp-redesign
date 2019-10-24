@@ -230,7 +230,10 @@ $header-ease: cubic-bezier(0.19, 1, 0.22, 1);
         }
       }
       &__cart {
-        margin-right: 4px;
+        margin-right: 14px;
+        @media (hover: none) {
+          margin-right: 4px;
+        }
         &__info {
           display: flex;
           justify-content: flex-end;
@@ -243,10 +246,10 @@ $header-ease: cubic-bezier(0.19, 1, 0.22, 1);
           @include hover {
             border-color: transparent;
             cursor: pointer;
-            background: $color-main-gold;
+            background: $color-main-blue;
           }
           @include hover('&__icon') {
-            color: $color-main-light-grey;
+            color: $color-main-white;
           }
           &__icon {
             display: flex;
@@ -258,7 +261,10 @@ $header-ease: cubic-bezier(0.19, 1, 0.22, 1);
           &__quantity {
             position: absolute;
             top: 8px;
-            right: 3px;
+            right: 12px;
+            @media (hover: none) {
+              right: 6px;
+            }
             display: flex;
             justify-content: center;
             align-items: center;
@@ -277,7 +283,7 @@ $header-ease: cubic-bezier(0.19, 1, 0.22, 1);
           width: 100vw;
           height: 100%;
           max-height: 100vh;
-          padding: 20px 25px 10px;
+          padding: 20px 15px 10px 15px;
           border: 1px solid rgba(80, 112, 133, 0.4);
           border-radius: 2px;
           overflow-y: scroll;
@@ -293,6 +299,7 @@ $header-ease: cubic-bezier(0.19, 1, 0.22, 1);
           @include media-min-size($screen-tablet) {
             right: -600px;
             max-width: 600px;
+            padding: 20px 25px 10px;
           }
           &.active {
             transform: translateX(-500px);

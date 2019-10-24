@@ -1,10 +1,10 @@
-import Hammer from 'hammerjs';
-import {elems} from '../utils/Renderer';
-import {smoothFade, smoothTranslate, range} from '../utils/utils';
-import {globalState} from '../utils/global_events';
+import Swiper from 'swiper';
+import {render, elems} from '../utils/Renderer';
+import {range} from '../utils/utils';
+import {globalState, globalEvents} from '../utils/global_events';
 import {ResponsiveImage} from './responsive_image';
 
-const {Div} = elems;
+const {Root, Div} = elems;
 
 const classes = {
   hideIcon: 'hide-icon',
@@ -22,27 +22,20 @@ const classes = {
 
 // Each gallery will need its own id so the correct elements can be targeted.
 let _galleryId = 0;
-const _imageFadeTime = 400;
-const _imageScrollTime = 500;
 
 /*
   @param {images: object[]}: {src, alt, height, width, position}
 */
-function ImageGallery(images = [], galleryState, initialIndex = 0) {
+function ImageGallery(parentElement, images = [], galleryState, initialIndex = 0) {
   _galleryId++;
   // Initialise state with inits / defaults.
   galleryState.setState({
     galleryId: _galleryId,
-    activeTranslateX: 0,
-    indexTranslateX: 0,
-    imageWidths: [],
+    imageWidth: parentElement.getBoundingClientRect().width,
     curIndex: initialIndex,
     prevIndex: initialIndex,
+    numImages: images.length,
   });
-
-  const numImages = images.length;
-
-  // TOD: Calculate the swipe breakpoint based on the total size of the images container / the total number of images.
 
   const viewportDataAttr = `data-gallery-${_galleryId}-viewport`;
   const imagesContainerDataAttr = `data-gallery-${_galleryId}-images-container`;
@@ -53,69 +46,12 @@ function ImageGallery(images = [], galleryState, initialIndex = 0) {
 
   const getElements = {
     viewportElem: () => document.querySelector(`[${viewportDataAttr}]`),
+    actionsElem: () => document.querySelector(`[${actionsDataAttr}]`),
     imagesContainer: () => document.querySelector(`[${imagesContainerDataAttr}]`),
-    imageElem: (imageElemId) => document.querySelector(`[${imageElemsDataAttr}-image-${imageElemId}]`),
+    imageWrapperElem: (index) => document.querySelector(`[${imageElemsDataAttr}-image-${index}]`),
     leftScrollIcon: () => document.querySelector(`[${leftScrollIconAttr}]`),
     rightScrollIcon: () => document.querySelector(`[${rightScrollIconAttr}]`),
   };
-
-  function updateTranslateX(newState, imagesContainerElem) {
-    const {indexTranslateX, activeTranslateX} = newState;
-    imagesContainerElem.style.transform = `translateX(${parseInt(indexTranslateX, 10) + parseInt(activeTranslateX, 10)}px`;
-  }
-
-  function updateImageIndex(newState, imagesContainerElem) {
-    const {
-      curIndex: newIndex, prevIndex, indexTranslateX, activeTranslateX, imageWidths,
-    } = newState;
-    if (newIndex < 0 || newIndex > numImages - 1) {
-      console.error('You can\'t display an image with an index that is outside the range of the imageurls array');
-      return;
-    }
-
-    // Need to total up all the image widths between the two new indexes - based on imageWidths state array.
-    const newTranslateAmt = parseInt(-(imageWidths.slice(0, newIndex).reduce((acum, next) => acum + next, 0)), 10);
-    const indexDiff = newIndex - prevIndex;
-    // How much of the full image width distance is left to b scrolld after the swipe.
-    const scrollPercent = (imageWidths[newIndex] - Math.abs(activeTranslateX)) / imageWidths[newIndex];
-
-    // If swiping, animate using a transform only. If going direct to an index, fade out, transform instantly, then fade in.
-    if (Math.abs(indexDiff) === 1) {
-      smoothTranslate(
-        (newPos) => galleryState.setState({indexTranslateX: parseInt(newPos, 10), activeTranslateX: 0}),
-        {xPos: [indexTranslateX + activeTranslateX, newTranslateAmt]},
-        [0.14, 0.58, 0.79, 0.69],
-        _imageScrollTime * scrollPercent,
-      );
-    } else {
-      // Fade out fast, instant translate, then slow fade back in.
-      imagesContainerElem.style.opacity = 0;
-      imagesContainerElem.style.transform = `translateX(${newTranslateAmt}px`;
-      smoothFade([0, 1], imagesContainerElem, _imageFadeTime, []);
-      galleryState.setState({indexTranslateX: newTranslateAmt, activeTranslateX: 0});
-    }
-  }
-
-  function updateGalleryImageDims(imageElem, index) {
-    const widths = galleryState.getState().imageWidths || [];
-    const nextWidth = imageElem.getBoundingClientRect().width;
-    galleryState.setState({
-      imageWidths: [
-        ...widths.slice(0, index),
-        nextWidth,
-        ...widths.slice(index + 1),
-      ],
-    });
-    // Set the height of the viewport.
-    getElements.viewportElem().style.height = `${nextWidth * 0.68}px`;
-  }
-
-  function handleScreenResize(newState, imagesContainerElem) {
-    const {curIndex: newIndex, imageWidths} = newState;
-    const newTranslateAmt = -(imageWidths.slice(0, newIndex).reduce((acum, next) => acum + next, 0));
-    imagesContainerElem.style.transform = `translateX(${newTranslateAmt}px`;
-    galleryState.setState({indexTranslateX: newTranslateAmt});
-  }
 
   function updateActionsElement(newState) {
     // Show / hide the prev/next arrows.
@@ -130,7 +66,7 @@ function ImageGallery(images = [], galleryState, initialIndex = 0) {
 
     const rightIcon = getElements.rightScrollIcon();
     if (rightIcon) {
-      if (newState.curIndex === numImages - 1) {
+      if (newState.curIndex === galleryState.getState().numImages - 1) {
         rightIcon.classList.add(classes.hideIcon);
       } else {
         rightIcon.classList.remove(classes.hideIcon);
@@ -138,80 +74,8 @@ function ImageGallery(images = [], galleryState, initialIndex = 0) {
     }
   }
 
-  function renderResponsiveImage(imageObj, index) {
-    // ResponsiveImage args: {ImageData}, {WrapperDataAttr}, {postMountCallbacks}, {subscriptions}.
-    const responsiveImage = ResponsiveImage(
-      imageObj,
-      viewportDataAttr,
-      [(self) => updateGalleryImageDims(self, index)],
-      [(self) => globalState.onAttributeUpdate(() => updateGalleryImageDims(self, index), ['innerWidth', 'innerHeight'])],
-    );
-    return ([
-      Div, {
-        className: classes.singleImage,
-        attributes: {'data-index': index},
-      }, [responsiveImage.view()],
-    ]);
-  }
-
-  function setupSwipeInteraction(imagesContainer) {
-    const hammer = new Hammer(imagesContainer);
-    hammer.add(new Hammer.Pan({direction: Hammer.DIRECTION_HORIZONTAL, threshold: 0}));
-    // Is it a swipe? Allow fast swipes / flicks. What speed does the panend at? Above what velocity end is a flick?
-    // Is it a slow pan (like Google)? If so then how far has the pan moved. Above what distance is a swipe?
-    // https://github.com/hammerjs/hammer.js/issues/1100
-    const fastSwipeMinVel = 0.3;
-    const fastSwipeMinDist = 10;
-
-    hammer.on('panend', (event) => {
-      const {activeTranslateX, curIndex, imageWidths} = galleryState.getState();
-      const slowSwipeBreakpoint = imageWidths[curIndex] / 3.5;
-      if (event.velocityX < -fastSwipeMinVel && event.distance > fastSwipeMinDist && curIndex < numImages - 1) {
-        // Fast swipe left
-        galleryState.setState({curIndex: curIndex + 1, prevIndex: curIndex});
-      } else if (event.velocityX > fastSwipeMinVel && event.distance > fastSwipeMinDist && curIndex > 0) {
-        // Fast swipe right
-        galleryState.setState({curIndex: curIndex - 1, prevIndex: curIndex});
-      } else if (event.deltaX < -slowSwipeBreakpoint && curIndex < numImages - 1) {
-        // Slow swipe left
-        galleryState.setState({curIndex: curIndex + 1, prevIndex: curIndex});
-      } else if (event.deltaX > slowSwipeBreakpoint && curIndex > 0) {
-        // Slow swipe right
-        galleryState.setState({curIndex: curIndex - 1, prevIndex: curIndex});
-      } else {
-        // Animate back to the previous index.
-        const scrollPercent = (imageWidths[curIndex] - Math.abs(activeTranslateX)) / imageWidths[curIndex];
-        smoothTranslate(
-          (newPos) => galleryState.setState({activeTranslateX: parseInt(newPos, 10)}),
-          {xPos: [activeTranslateX, 0]},
-          [],
-          _imageScrollTime * scrollPercent,
-        );
-      }
-    });
-
-    hammer.on('pan', (event) => {
-      // Pan the actual element if there a more images to swipe to.
-      const deltaX = getDeltaX(event);
-      galleryState.setState({activeTranslateX: parseInt(deltaX, 10)});
-    });
-
-    function getDeltaX(event) {
-      const {imageWidths, curIndex} = galleryState.getState();
-      let deltaX;
-      if (curIndex === 0 && event.deltaX >= 0) {
-        deltaX = 0;
-      } else if (curIndex === numImages - 1 && event.deltaX < 0) {
-        deltaX = 0;
-      } else if (Math.abs(event.deltaX) < imageWidths[curIndex]) {
-        deltaX = event.deltaX;
-      } else if (event.deltaX < 0) {
-        deltaX = -imageWidths[curIndex];
-      } else {
-        deltaX = imageWidths[curIndex];
-      }
-      return deltaX;
-    }
+  function setSingleImageContainerWidth(singleImageWrapper) {
+    singleImageWrapper.style.width = `${parentElement.getBoundingClientRect().width}px`;
   }
 
   function updateNavDot(navDotElem, newState) {
@@ -222,78 +86,129 @@ function ImageGallery(images = [], galleryState, initialIndex = 0) {
     }
   }
 
-  return {
-    galleryImageRef: viewportDataAttr,
-    actionsElemRef: actionsDataAttr,
-    view: () => ([
+  function onRenderComplete(viewportElement) {
+    // http://idangero.us/swiper/api/#parameters
+    const swiper = new Swiper(viewportElement, {
+      // Disable preloading of all images
+      preloadImages: false,
+      wrapperClass: `gallery-${_galleryId}-swiper-wrapper`,
+      slideClass: `gallery-${_galleryId}-swiper-slide`,
+      on: {
+        transitionStart() {
+          if (Math.abs(this.activeIndex - this.previousIndex) > 2) {
+            // Fade out.
+            this.wrapperEl.style.opacity = 0;
+          }
+        },
+        transitionEnd() {
+          if (Math.abs(this.activeIndex - this.previousIndex) > 2) {
+            // Fade in
+            this.wrapperEl.style.opacity = 1;
+          }
+        },
+      },
+      // Enable lazy loading
+      lazy: {
+        loadPrevNext: true,
+        loadPrevNextAmount: 1,
+      },
+      loadOnTransitionStart: true,
+    });
+
+    // Swiper needs to subscribe to curIndex state.
+    galleryState.onAttributeUpdate((newState) => {
+      swiper.slideTo(newState.curIndex);
+    }, 'curIndex');
+  }
+
+  function renderImageWrapper(imageObj, index) {
+    return ([
       Div, {
-        className: `${classes.imageGalleryViewport} lazyContainer`,
-        attributes: {[viewportDataAttr]: ''},
-      }, [
-        [Div, {
-          className: classes.imagesContainer,
-          attributes: {[imagesContainerDataAttr]: ''},
-          subscriptions: [
-            (self) => galleryState.onAttributeUpdate((newState) =>
-              updateImageIndex(newState, self), 'curIndex'),
-            (self) => galleryState.onAttributeUpdate((newState) =>
-              handleScreenResize(newState, self), 'imageWidths'),
-            (self) => galleryState.onAttributeUpdate((newState) =>
-              updateTranslateX(newState, self), ['indexTranslateX', 'activeTranslateX']),
-          ],
-          postMountCallbacks: [
-            (self) => setupSwipeInteraction(self),
-          ],
-        }, images.map((imageObj, index) => (
-            renderResponsiveImage(imageObj, index)
-          )),
+        className: `${classes.singleImage} gallery-${_galleryId}-swiper-slide`,
+        attributes: {
+          'data-index': index,
+          [`${imageElemsDataAttr}-image-${index}`]: '',
+        },
+        postMountCallbacks: [
+          (self) => setSingleImageContainerWidth(self),
+          (self) => ResponsiveImage(self, imageObj, true, true),
         ],
-        [Div, {
-          className: classes.imageGalleryActions,
-          attributes: {[actionsDataAttr]: ''},
+        subscriptions: [
+          (self) => globalState.onAttributeUpdate(() => setSingleImageContainerWidth(self), 'innerWidth'),
+        ],
+      },
+    ]);
+  }
+
+  render([
+    Root, {rootElem: parentElement, eventCompleteId: `image-gallery-${_galleryId}`}, [
+      [
+        Div, {
+          className: classes.imageGalleryViewport,
           subscriptions: [
-            () => galleryState.onAttributeUpdate((newState) => updateActionsElement(newState), 'curIndex'),
+            (self) => globalState.subscribe(`${globalEvents.DOMUPDATED}-image-gallery-${_galleryId}`, () => onRenderComplete(self)),
           ],
         }, [
           [Div, {
-            className: `${classes.imageGalleryActionsIcon} ${initialIndex === 0 && 'hide-icon'}`,
-            attributes: {[leftScrollIconAttr]: ''},
-            innerHTML: '<i class="fas fa-arrow-alt-circle-left"></i>',
-            listeners: {click: [
-              (event) => {
-                event.stopPropagation();
-                event.preventDefault();
-                const {curIndex} = galleryState.getState();
-                galleryState.setState({curIndex: Math.max(curIndex - 1, 0), prevIndex: curIndex});
-              }]},
-          }],
+            className: `${classes.imagesContainer} gallery-${_galleryId}-swiper-wrapper`,
+            attributes: {[imagesContainerDataAttr]: ''},
+          }, images.map((image, index) => renderImageWrapper(image, index))],
           [Div, {
-            className: `${classes.imageGalleryActionsIcon} ${initialIndex === numImages - 1 && 'hide-icon'}`,
-            innerHTML: '<i class="fas fa-arrow-alt-circle-right"></i>',
-            attributes: {[rightScrollIconAttr]: ''},
-            listeners: {click: [
-              (event) => {
-                event.stopPropagation();
-                event.preventDefault();
-                const {curIndex} = galleryState.getState();
-                galleryState.setState({curIndex: Math.min(curIndex + 1, numImages - 1), prevIndex: curIndex});
-              }]},
-          }],
-        ]],
-        [Div, {className: classes.navDotsContainer}, [
-          ...range(numImages).map((index) => ([
-            Div, {
-              className: `${classes.navDot} ${initialIndex === index && classes.active}`,
-              attributes: {'data-index': index},
-              subscriptions: [
-                (self) => galleryState.onAttributeUpdate((newState) => updateNavDot(self, newState), 'curIndex'),
-              ],
-            },
-          ])),
-        ]],
+            className: classes.imageGalleryActions,
+            attributes: {[actionsDataAttr]: ''},
+            subscriptions: [
+              () => galleryState.onAttributeUpdate((newState) => updateActionsElement(newState), 'curIndex'),
+            ],
+          }, [
+            [Div, {
+              className: `${classes.imageGalleryActionsIcon} ${initialIndex === 0 && 'hide-icon'}`,
+              attributes: {[leftScrollIconAttr]: ''},
+              innerHTML: '<i class="fas fa-arrow-alt-circle-left"></i>',
+              listeners: {click: [
+                (event) => {
+                  event.stopPropagation();
+                  event.preventDefault();
+                  const {curIndex} = galleryState.getState();
+                  galleryState.setState({curIndex: Math.max(curIndex - 1, 0), prevIndex: curIndex});
+                }]},
+            }],
+            [Div, {
+              className: `${classes.imageGalleryActionsIcon} ${initialIndex === galleryState.getState().numImages - 1 && 'hide-icon'}`,
+              innerHTML: '<i class="fas fa-arrow-alt-circle-right"></i>',
+              attributes: {[rightScrollIconAttr]: ''},
+              listeners: {click: [
+                (event) => {
+                  event.stopPropagation();
+                  event.preventDefault();
+                  const {curIndex} = galleryState.getState();
+                  galleryState.setState({curIndex: Math.min(curIndex + 1, galleryState.getState().numImages - 1), prevIndex: curIndex});
+                }]},
+            }],
+          ]],
+          [Div, {className: classes.navDotsContainer}, [
+            ...range(galleryState.getState().numImages).map((index) => ([
+              Div, {
+                className: `${classes.navDot} ${initialIndex === index && classes.active}`,
+                attributes: {'data-index': index},
+                subscriptions: [
+                  (self) => galleryState.onAttributeUpdate((newState) => updateNavDot(self, newState), 'curIndex'),
+                ],
+              },
+            ])),
+          ]],
         [Div, {className: classes.swipeInstruction, innerHTML: 'Swipe...'}],
+        ],
       ],
-    ]),
+    ],
+  ]);
+
+  return {
+    getViewportElem: getElements.viewportElem,
+    getImagesContainerElem: getElements.imagesContainer,
+    getSingleImageWrapper: (imageIndex) => getElements.imageWrapperElem(imageIndex),
+    getActionsElem: getElements.actionsElem,
+    getLeftScrollIcon: getElements.leftScrollIcon,
+    getRightScrollIcon: getElements.getRightScrollIcon,
   };
 }
 
