@@ -54,9 +54,11 @@
   <!-- End TrustBox script -->
 
   {% comment %}
+  Fixed by version beta 19
   https://community.shopify.com/c/Technical-Q-A/window-BOOMR-throws-an-error/td-p/575757
+  https://github.com/Shopify/slate/issues/1055
   {% endcomment %}
-  {{ content_for_header | replace: "<body onload='document._boomrl();'>", "<bodx onload='document._boomrl();'>" }}
+  {{ content_for_header }}
 
 </head>
 

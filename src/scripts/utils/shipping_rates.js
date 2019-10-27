@@ -1,6 +1,6 @@
 const deliveryDisplayTexts = {
   1: 'Usually next working day when ordered by 2pm',
-  2: 'Usually delivered 2 - 3 working days',
+  2: 'Usually delivered 2 - 4 working days',
   3: 'Usually delivered 3 - 5 working days',
   4: 'Usually delivered 4 - 6 working days',
   99: 'Sorry, we do not deliver some larger items here as standard. Please contact us for a quote.',

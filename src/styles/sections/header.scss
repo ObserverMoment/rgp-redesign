@@ -10,6 +10,8 @@
   justify-content: space-around;
   align-items: center;
   height: 0;
+  transform-origin: top;
+  transform: scaleY(0);
   margin: 0;
   padding: 0 5px;
   @include media-min-size($screen-tablet) {
@@ -25,6 +27,7 @@
     border-width 0.6s $header-ease;
   &.active {
     height: 100%;
+    transform: scaleY(1);
     padding: 5px;
     @include media-min-size($screen-tablet) {
       padding: 20px;

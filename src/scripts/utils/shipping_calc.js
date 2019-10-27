@@ -1,4 +1,5 @@
 import {rates} from './shipping_rates';
+import {groups} from './shipping_groups';
 
 const options = [
   {value: 'ukMainland', text: 'England, Wales, Lowland Scotland'},
@@ -22,16 +23,6 @@ const zones = {
   belgium: 'euro1',
 };
 
-const groups = {
-  dice500: 'small',
-  wpc300high: 'small',
-  rt200green: 'medium',
-  bcfoldinggreen: 'large',
-  bcfoldingred: 'large',
-  bcfoldingblue: 'large',
-  bcfoldingblack: 'large',
-};
-
 function calculateRate(sku, country) {
   if (!sku) {
     console.error('You must provide a sku to be able to calculate shipping');
@@ -41,6 +32,9 @@ function calculateRate(sku, country) {
   }
   const zone = zones[country];
   const group = groups[sku.toLowerCase()];
+  if (!zone || !group) {
+    console.error(`Could not find shipping info for ${sku}, ${country}`);
+  }
   return rates[zone][group];
 }
 

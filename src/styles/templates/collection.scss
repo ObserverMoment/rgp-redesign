@@ -1,12 +1,19 @@
 .collection {
-  padding: 8px;
+  padding: 4px 8px;
   &__header {
     display: flex;
-    align-items: baseline;
-    margin: 0 8px;;
     flex-wrap: wrap;
+    font-size: 1.1em;
+    text-align: center;
+    background: $color-content-light-grey;
+    color: $color-text-dark-grey;
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+    align-items: baseline;
+    padding: 10px;
     &__heading {
       margin: 0 8px 0 0;
+      display: flex;
     }
     &__description {
       color: $color-body-text-1;

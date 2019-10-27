@@ -1,6 +1,6 @@
 import {formatMoney} from '@shopify/theme-currency';
 import {render, elems} from '../utils/Renderer';
-import {calculateRate, options} from '../utils/shipping';
+import {calculateRate, options} from '../utils/shipping_calc';
 import {deliveryDisplayTexts} from '../utils/shipping_rates';
 import {Store} from '../utils/Store';
 import {SortDownIcon} from '../utils/icons';

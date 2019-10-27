@@ -23,6 +23,7 @@ const getElements = {
   addFormWrapper: () => document.querySelector('[data-product-add-form]'),
   addProductForm: () => document.querySelector('[data-product-form]'),
   shippingInfo: () => document.querySelector('[data-product-shipping-info]'),
+  recommended: () => document.querySelector('[data-recommended-products]'),
 };
 
 // Must be cdn.shopify.com/s/files/1/0168/1113/0934/products/W_3985{_dimension}.jpg?v=1563988014.
@@ -128,16 +129,7 @@ async function initProductPage() {
 
   initProductForm(productState, onQuantityUpdate, onOptionSelect, onSubmit);
 
-  // Gallery.
-  function constructGallery(state) {
-    const colourSelected = state.Colour;
-    const images = colourSelected
-      ? imageObjs.filter((img) => (!img.alt || img.alt === colourSelected))
-      : imageObjs;
-    initGallery(images);
-  }
-
-  constructGallery(productState.getState());
+  constructGallery(productState.getState(), imageObjs);
 
   // Render the shipping info elements.
   ShippingInfo(getElements.shippingInfo(), {quantity: 1, product});
@@ -211,6 +203,15 @@ function initProductForm(productState, onQuantityUpdate, onOptionSelect, onSubmi
   const addProductForm = AddProductForm(productState, onQuantityUpdate, onOptionSelect, onSubmit);
 
   render([Root, {rootElem: formWrapper}, [addProductForm.view()]]);
+}
+
+// Gallery.
+function constructGallery(state, imageObjs) {
+  const colourSelected = state.Colour;
+  const images = colourSelected
+    ? imageObjs.filter((img) => (!img.alt || img.alt === colourSelected))
+    : imageObjs;
+  initGallery(images);
 }
 
 initProductPage();
