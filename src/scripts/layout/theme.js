@@ -5,17 +5,19 @@ import 'lazysizes/plugins/bgset/ls.bgset';
 import 'lazysizes';
 import 'lazysizes/plugins/respimg/ls.respimg';
 
-// Sets up the global state and the image lazyloader.
-import '../utils/global_events';
-
-// Header is needed on every page
-import '../sections/header';
-
 import '../../styles/theme.scss';
 import '../../styles/theme.scss.liquid';
 
 import {focusHash, bindInPageLinks} from '@shopify/theme-a11y';
 import {cookiesEnabled} from '@shopify/theme-cart';
+
+// Sets up the global state.
+import '../utils/global_events';
+
+// Header is needed on every page
+import {initHeader} from '../sections/header';
+
+initHeader();
 
 // Common a11y fixes
 focusHash();

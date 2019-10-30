@@ -10,7 +10,7 @@ const classes = {
 /**
  *  Show/Hide input labels when using standard-form mixin. Attach the data attributes above to labels and text inputs.
  */
-(function() {
+function initEventListeners() {
   window.addEventListener('load', () => {
     document.querySelectorAll(selectors.textInput).forEach((input) => {
       const labels = Array.from(document.querySelectorAll(selectors.textInputLabel));
@@ -31,4 +31,6 @@ const classes = {
     });
   });
 
-})();
+}
+
+initEventListeners();

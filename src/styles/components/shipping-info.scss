@@ -52,7 +52,7 @@
       transform-origin: top;
       &.open {
         opacity: 1;
-        height: calc(100vh - #{$header-height} - 8px);
+        height: calc(100vh - #{$header-height} - 30px);
         bottom: 0;
         transform: scaleY(1);
       }

@@ -42,5 +42,4 @@ function initGlobalState() {
 
 const globalState = initGlobalState();
 
-
 export {globalState, globalEvents};

@@ -1,7 +1,6 @@
 /**
  * Main site header section script
  * ------------------------------------------------------------------------------
- * @namespace header
  */
 import {renderMiniCart} from '../components/mini_cart';
 import {globalState} from '../utils/global_events';
@@ -64,10 +63,10 @@ function updateHeaderStyle(newScrollState) {
   }
 }
 
-function initEventListeners() {
+function initHeader() {
   // Initialise header style onload.
   updateHeaderStyle(globalState.getState());
-  // Subscribe updateHeaderStyle to the scroll event.
+  // Subscribe updateHeaderStyle to the scroll event. i.e. when globalState.scrollY is updated.
   globalState.onAttributeUpdate((newState) => updateHeaderStyle(newState), 'scrollY');
 
   const accountPanelContent = document.querySelector(selectors.accountPanelContent);
@@ -123,4 +122,4 @@ function initEventListeners() {
   });
 }
 
-initEventListeners();
+export {initHeader};

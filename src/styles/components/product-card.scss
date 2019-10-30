@@ -13,10 +13,12 @@
   justify-content: space-between;
   animation: product-card-fadein 0.4s ease-in-out, product-card-slide 0.5s ease-in-out;
   border: 1px solid transparent;
-  transition: 0.5s border-color;
+  transition: 0.1s box-shadow, 0.2s transform, border-color 0.2s;
   height: 100%;
   @include hover {
-    border-color: #2f3133;
+    box-shadow: 0 0 7px 1px rgba(0, 0, 0, 0.2);
+    transform: scale(1.02);
+    border-color: $color-main-light-grey;
   }
   &__meta {
     display: flex;

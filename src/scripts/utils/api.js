@@ -115,8 +115,14 @@ async function submitCartToCheckout() {
   }
 }
 
+async function getRecommendedProducts(productId, limit = 3) {
+  const res = await fetch(`/recommendations/products.json?product_id=${productId}&limit=${limit}`);
+  const json = await res.json();
+  return json;
+}
+
 export {
   addItemsToCart, updateCartLineQuantity, updateCart, getCartData,
   getProductData, getProductJSON, getCollectionData,
-  getCollectionProducts, submitCartToCheckout,
+  getCollectionProducts, submitCartToCheckout, getRecommendedProducts,
 };

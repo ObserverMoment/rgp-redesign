@@ -21,7 +21,8 @@ const classes = {
 // Returns a single array of the form required by Renderer.render().
 // [Type, {config}, [children]]
 function ProductCard(parentElement, productObj) {
-  const {title, images, options, variants} = productObj;
+  const {title = 'Unnamed', images = [], options = [], variants = []} = productObj;
+
   const price = variants[0] && variants[0].price;
 
   const colours = (options.length > 0) && (options[0].name === 'Colour') && options[0].values;

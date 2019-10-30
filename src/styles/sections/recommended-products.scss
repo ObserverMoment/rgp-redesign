@@ -1,0 +1,6 @@
+.recommended-products {
+  position: relative;
+  &__grid {
+    @include products-grid;
+  }
+}

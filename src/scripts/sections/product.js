@@ -30,7 +30,7 @@ const getElements = {
 // const galleryImageSize = '_850x850';
 // const thumbnailImageSize = '_140x140';
 
-async function initProductPage() {
+async function initProductSection() {
   const urlparts = window.location.pathname.split('/');
   const productHandle = urlparts[urlparts.length - 1].split('?')[0];
   const query = queryString.parse(window.location.search);
@@ -214,4 +214,4 @@ function constructGallery(state, imageObjs) {
   initGallery(images);
 }
 
-initProductPage();
+initProductSection();

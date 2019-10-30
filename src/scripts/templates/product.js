@@ -1,4 +1,2 @@
-import {load} from '@shopify/theme-sections';
 import '../sections/product';
-
-load('*');
+import '../sections/recommended_products';
