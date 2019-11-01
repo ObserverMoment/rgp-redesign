@@ -151,7 +151,7 @@ function AddProductForm(productState, onQuantityUpdate, onOptionSelect, onSubmit
             Div, {className: classes.option}, [
               [H3, {innerHTML: `Select ${option.name.toLowerCase()}`}],
               [Div, {className: `${classes.option}__${option.name}`}, [
-                ...option.values.map((value) => ([
+                ...option.values.map((value) => value.toLowerCase()).map((value) => ([
                   Div, {className: `${classes.option}__${option.name}__value`}, [
                     [Input, {
                       attributes: {

@@ -40,7 +40,7 @@ async function initProductSection() {
   // Second call is needed to get array of image objects rather than just urls.
   // The image.alt values are used for colour filtering in the gallery.
   const imageObjs = (await getProductJSON(productHandle)).images;
-  // If multiple variants default to null so that add to cart button will be disabled.
+  // If multiple variants, default to null so that add to cart button will be disabled.
   // Will get overridden if there was a variant supplied in the query string.
   // If only one variant then this is effectively no variants - as Shopify creates a default.
   // Only variant IDs can be added to the cart - not product IDs.
@@ -66,16 +66,16 @@ async function initProductSection() {
     // Format of variant.title is "option1Value / option2Value / option3Value" - there is a space either side of the slash.
     const variantTitle = productState.getState().variants.find((variant) => urlVariantId === variant.id).title;
     const selectedValues = variantTitle.trim().split('/');
-    // Check which options these values are from, and add an attribute on product state for each one - prefixed with 'selected'.
+    // Check which options these values are from, and add an attribute on product state for each one.
     const selectedOptions = selectedValues.reduce((acum, nextValue) => {
       const option = product.options.find((opt) => opt.values.includes(nextValue));
-      acum[option.name] = nextValue;
+      acum[option.name] = nextValue.toLowerCase();
       return acum;
     }, {});
 
     productState.setState({...selectedOptions});
   } else {
-    // Loop through all the options and add an attribute on product state for each one.
+    // Loop through all the options and add an empty attribute on product state for each one.
     const selectedOptions = product.options.reduce((acum, next) => {
       acum[next.name] = null;
       return acum;
@@ -100,7 +100,8 @@ async function initProductSection() {
           : [title, updatedState[option.name]].join(' / ');
       }, '');
 
-      const newVariantId = updatedState.variants.find((variant) => variant.title === variantTitle).id;
+      const newVariantId = updatedState.variants.find((variant) =>
+        variant.title.toLowerCase() === variantTitle).id;
 
       productState.setState({currentVariantId: newVariantId, error: null, addedToCart: null});
 
@@ -145,7 +146,7 @@ async function initProductSection() {
         while (galleryWrapper.firstChild) {
           galleryWrapper.removeChild(galleryWrapper.firstChild);
         }
-        constructGallery(newState);
+        constructGallery(newState, imageObjs);
         smoothFade([0, 1], galleryWrapper, 300, []);
       });
     }, 'Colour');

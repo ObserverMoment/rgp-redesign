@@ -35,7 +35,7 @@ function ProductCard(parentElement, productObj) {
   function renderPriceText() {
     return isAvailable
       ? formatMoney(price, theme.moneyFormat)
-      : `<strike>${formatMoney(price, theme.moneyFormat)}</strike> - Sold out`;
+      : `<strike>${formatMoney(price, theme.moneyFormat)}</strike> - Back soon`;
   }
 
   function renderImageGallery(parentElem) {
@@ -69,7 +69,7 @@ function ProductCard(parentElement, productObj) {
                 Span, {innerHTML: tag},
               ])],
               [Div, {className: classes.metaColours}, colours && colours.map((colour) => [
-                Div, {className: `${classes.metaColours}__colour ${colour}`},
+                Div, {className: `${classes.metaColours}__colour ${colour.toLowerCase()}`},
               ])],
             ]],
             [Div, {

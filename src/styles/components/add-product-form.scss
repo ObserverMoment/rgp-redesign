@@ -39,10 +39,10 @@ $radio-button-width: 32px;
             margin: 10px;
             cursor: pointer;
             color: #666666;
-            &.Red::before { background: $variant-red; }
-            &.Blue::before { background: $variant-blue; }
-            &.Green::before { background: $variant-green; }
-            &.Black::before { background: $variant-black; }
+            &.red::before { background: $variant-red; }
+            &.blue::before { background: $variant-blue; }
+            &.green::before { background: $variant-green; }
+            &.black::before { background: $variant-black; }
             &::before {
               content: '';
               position: absolute;

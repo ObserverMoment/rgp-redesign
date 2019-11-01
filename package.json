@@ -1,9 +1,9 @@
 {
-  "name": "starter-theme",
+  "name": "RGP_Nov_2019_Redesign",
   "version": "1.0.0-alpha.1",
   "private": true,
-  "author": "Shopify Inc.",
-  "description": "An opinionated, Slate compatible, starting point for developing Shopify themes.",
+  "author": "Bosonsoul",
+  "description": "RGP Website build primarily in JS using custom renderer and state management.",
   "keywords": [
     "shopify",
     "theme"
