@@ -57,7 +57,7 @@ const groups = {
   tourneypro1000low: 'small',
   tourneypro1000high: 'small',
   propoker500high: 'small',
-  montecarl500high: 'small',
+  montecarlo500high: 'small',
   casinoroyale500: 'small',
 };
 
