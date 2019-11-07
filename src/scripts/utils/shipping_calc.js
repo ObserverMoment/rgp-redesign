@@ -18,6 +18,22 @@ const options = [
   {value: 'zone9', text: 'Norway, Switzerland'},
 ];
 
+function getProductGroup(sku) {
+  return groups[sku.toLowerCase()];
+}
+
+// Gets the rate based on the shipping group of the item and the delivery zone.
+function getRatesFromGroup(group, zone) {
+  if (!group) {
+    console.error('You must provide a shipping group to be able to calculate shipping');
+  }
+  if (!zone) {
+    console.error('You must provide a zone to be able to calculate shipping');
+  }
+  return rates[zone][group];
+}
+
+// Gets the rate based on the sku and the delivery zone.
 function calculateRate(sku, zone) {
   if (!sku) {
     console.error('You must provide a sku to be able to calculate shipping');
@@ -33,4 +49,4 @@ function calculateRate(sku, zone) {
   return rates[zone][group];
 }
 
-export {calculateRate, options};
+export {calculateRate, getProductGroup, getRatesFromGroup, options};

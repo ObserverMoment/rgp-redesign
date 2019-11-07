@@ -4,7 +4,7 @@ import {render, elems} from '../utils/Renderer';
 import {MiniCartLine} from './mini_cart_line';
 import {ShoppingBasketIcon, PadlockIcon} from '../utils/icons';
 import {Store} from '../utils/Store';
-import {ShippingInfo} from './shipping_info';
+import {ShippingTotal} from './shipping_total';
 
 const {Root, Div, H2, Span, Link, Button} = elems;
 
@@ -65,18 +65,20 @@ async function renderMiniCart() {
   miniCartState.setState({subtotal});
 
   function renderShippingComponent(shippingTotalElem, items) {
-    // ShippingInfo renders the component and also returns the state object.
+    // ShippingTotal renders the component and also returns the state object.
     if (!items || items.length < 1) {
       return;
     }
-    const shippingState = ShippingInfo(shippingTotalElem, items);
+    const shippingState = ShippingTotal(shippingTotalElem, items);
     miniCartState.setState({shippingState});
   }
 
   function updateCartTotal(cartState, cartTotalAmountElem) {
-    const {shippingPrice} = cartState.shippingState.getState();
+    const {shippingPrice, shippingTime} = cartState.shippingState.getState();
     const {subtotal: cartSubTotal} = cartState;
-    cartTotalAmountElem.innerHTML = formatMoney(cartSubTotal + shippingPrice, theme.moneyFormat);
+    cartTotalAmountElem.innerHTML = shippingTime === 99
+      ? 'Contact us for delivery cost'
+      : formatMoney(cartSubTotal + shippingPrice, theme.moneyFormat);
   }
 
   const noItems = !data || !data.items || (!data.items.length > 0);

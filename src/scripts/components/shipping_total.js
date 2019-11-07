@@ -1,6 +1,6 @@
 import {formatMoney} from '@shopify/theme-currency';
 import {render, elems} from '../utils/Renderer';
-import {calculateRate, options} from '../utils/shipping_calc';
+import {getProductGroup, getRatesFromGroup, options} from '../utils/shipping_calc';
 import {deliveryDisplayTexts} from '../utils/shipping_rates';
 import {Store} from '../utils/Store';
 import {SortDownIcon} from '../utils/icons';
@@ -28,7 +28,7 @@ const classes = {
 /*
  * @param items: [{quantity: number, product: shopifyProductObj || shopifyCartItemObj}]
 */
-function ShippingInfo(parentElem, items = []) {
+function ShippingTotal(parentElem, items = []) {
 
   shippingInfoId++;
   // Cast single objects to an array.
@@ -61,12 +61,14 @@ function ShippingInfo(parentElem, items = []) {
     shippingTime: 99,
   }, `shipping-info-${shippingInfoId}`);
 
-  function formatDisplay({time, price}) {
+  function formatDisplay(price, time) {
     // Set the total price into state.
     let display;
     if (time === 99) {
       // Non standard delivery.
-      display = `<p class="undeliverable-area">${deliveryDisplayTexts[time]}</p>`;
+      display = `<p class="undeliverable-area">
+        Sorry, we are unable to deliver some of these products to your selected area as standard. Please contact us for a quote.
+      </p>`;
     } else if (price === 0) {
       display = `<p>Free delivery</p><p>${deliveryDisplayTexts[time]}</p>`;
     } else {
@@ -78,17 +80,33 @@ function ShippingInfo(parentElem, items = []) {
 
   function updateShippingInfo(newState, shippingInfoElem) {
     // Remove any products with quantity of zero before calculating.
-    const validProducts = newState.products.filter((product) => product.quantity > 0);
+    const validProducts = newState.products
+      .filter((product) => product.quantity > 0);
 
-    const delInfo = validProducts.reduce((total, nextProduct) => {
-      const {time, price} = calculateRate(nextProduct.sku, newState.selectedRegion);
-      total.time = Math.max(time, total.time);
-      total.price += price * nextProduct.quantity;
-      return total;
-    }, {time: 1, price: 0});
-    // NOTE: Add discount calculation here?
-    shippingState.setState({shippingPrice: delInfo.price, shippingTime: delInfo.time});
-    shippingInfoElem.innerHTML = formatDisplay(delInfo);
+    const groupTotals = validProducts.reduce((acum, nextProduct) => {
+      const group = getProductGroup(nextProduct.sku);
+      acum[group] += nextProduct.quantity;
+      return acum;
+    }, {small: 0, medium: 0, large: 0});
+
+
+    const delTotal = Object.keys(groupTotals).reduce((acum, nextGroupName) => {
+      // price is a tuple where [0] is cost to ship first item and [1] is cost to ship subsequent items.
+      const {time, price} = getRatesFromGroup(nextGroupName, newState.selectedRegion);
+      acum.totalTime = Math.max(time, acum.totalTime);
+
+      const numProductsInGroup = groupTotals[nextGroupName];
+      const numAtHalfPrice = Math.max(0, numProductsInGroup - 1);
+      const groupPrice = numProductsInGroup > 0
+        ? price[0] + (numAtHalfPrice * price[1])
+        : 0;
+      acum.totalPrice += groupPrice;
+      return acum;
+    }, {totalTime: 0, totalPrice: 0});
+
+    const {totalPrice, totalTime} = delTotal;
+    shippingState.setState({shippingPrice: totalPrice, shippingTime: totalTime});
+    shippingInfoElem.innerHTML = formatDisplay(totalPrice, totalTime);
   }
 
   function updateSelectedRegion(value) {
@@ -177,4 +195,4 @@ function ShippingInfo(parentElem, items = []) {
   return shippingState;
 }
 
-export {ShippingInfo};
+export {ShippingTotal};
