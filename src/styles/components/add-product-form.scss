@@ -2,6 +2,26 @@ $radio-button-height: 26px;
 $radio-button-width: 32px;
 
 .add-product {
+  &__pre-order {
+    color: white;
+    background: $color-error;
+    border: 2px solid $color-error;
+    border-radius: 4px;
+    font-size: 1.2em;
+    transform-origin: bottom;
+    transform: scaleY(0);
+    height: 0;
+    opacity: 0;
+    transition: all 0.2s ease-in-out;
+    @include media-min-size($screen-tablet) {
+      transform-origin: top;
+    }
+    &.show {
+      transform: scaleY(1);
+      height: 100%;
+      opacity: 1;
+    }
+  }
   &__options {
     text-align: center;
     &__option {
@@ -200,10 +220,7 @@ $radio-button-width: 32px;
       }
       &__review-cart {
         @include secondary-btn;
-      }
-      &__checkout {
-        @include checkout-btn;
-        i { font-size: 0.9em; }
+        i { font-size: 0.9em; margin-right: 8px; }
       }
     }
   }

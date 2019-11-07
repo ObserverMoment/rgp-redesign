@@ -23,7 +23,7 @@ const groups = {
   t800green: 'small',
   t800black: 'small',
   htop500green: 'small',
-  htop500darkblue: 'small',
+  htop500blue: 'small',
   htop500black: 'small',
   rtminigreen: 'small',
   rtminiblack: 'small',

@@ -3,7 +3,7 @@ import {render, elems} from '../utils/Renderer';
 import {ImageGallery} from '../components/image_gallery_view';
 import {GalleryNavThumbs} from '../components/image_gallery_nav';
 import {AddProductForm} from '../components/add_product_form';
-import {ShippingInfo} from '../components/shipping_info';
+import {ShippingRate} from '../components/shipping_rate';
 import {Store} from '../utils/Store';
 import {smoothFade} from '../utils/utils';
 import {renderMiniCart} from '../components/mini_cart';
@@ -133,7 +133,7 @@ async function initProductSection() {
   constructGallery(productState.getState(), imageObjs);
 
   // Render the shipping info elements.
-  ShippingInfo(getElements.shippingInfo(), {quantity: 1, product});
+  ShippingRate(getElements.shippingInfo(), product);
 
   // If colour is an option the user can select.
   // Then re-render the gallery whenever user selects a different colour.
