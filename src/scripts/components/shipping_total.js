@@ -93,9 +93,13 @@ function ShippingTotal(parentElem, items = []) {
     const delTotal = Object.keys(groupTotals).reduce((acum, nextGroupName) => {
       // price is a tuple where [0] is cost to ship first item and [1] is cost to ship subsequent items.
       const {time, price} = getRatesFromGroup(nextGroupName, newState.selectedRegion);
-      acum.totalTime = Math.max(time, acum.totalTime);
 
       const numProductsInGroup = groupTotals[nextGroupName];
+      // If there are products in the shipping group then update the delivery time.
+      if (numProductsInGroup > 0) {
+        acum.totalTime = Math.max(time, acum.totalTime);
+      }
+
       const numAtHalfPrice = Math.max(0, numProductsInGroup - 1);
       const groupPrice = numProductsInGroup > 0
         ? price[0] + (numAtHalfPrice * price[1])

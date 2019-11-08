@@ -26,7 +26,7 @@ const availableForPreOrder = [
   'rtminigreen',
   'rtminiblack',
   'rtminiblue',
-  'cs500darkblue',
+  'cs500blue',
   'cs500green',
   'cs500black',
   'rt100red',

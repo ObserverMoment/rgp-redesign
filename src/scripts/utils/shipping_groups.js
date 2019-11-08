@@ -28,7 +28,7 @@ const groups = {
   rtminigreen: 'small',
   rtminiblack: 'small',
   rtminiblue: 'small',
-  cs500darkblue: 'medium',
+  cs500blue: 'medium',
   cs500green: 'medium',
   cs500black: 'medium',
   rt100red: 'small',

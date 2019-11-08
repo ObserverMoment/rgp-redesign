@@ -1,5 +1,6 @@
 import {formatMoney} from '@shopify/theme-currency';
 import {render, elems} from '../utils/Renderer';
+import {renderMiniCart} from '../components/mini_cart';
 import {calculateRate, options} from '../utils/shipping_calc';
 import {deliveryDisplayTexts} from '../utils/shipping_rates';
 import {Store} from '../utils/Store';
@@ -27,6 +28,7 @@ const classes = {
 
 /*
  * @param product: shopifyProductObj
+ * Displays on the product page and shows the ship rates for that particular product to all the regions.
 */
 function ShippingRate(parentElem, product) {
   shippingRateId++;
@@ -71,6 +73,8 @@ function ShippingRate(parentElem, product) {
   function updateSelectedRegion(value) {
     shippingRateState.setState({selectedRegion: value, dropdownOpen: false});
     localStorage.setItem(SAVEDSHIPPINGZONE, value);
+    // Render mini cart with the updated shipping zone to calculate the shipping_total.
+    renderMiniCart();
   }
 
   function updateSelectedText(newState, selectedTextElem) {
