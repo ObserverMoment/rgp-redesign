@@ -1,7 +1,6 @@
 import {formatMoney} from '@shopify/theme-currency';
 import {render, elems} from '../utils/Renderer';
 import {ImageGallery} from './image_gallery_view';
-import {Loader} from './loader';
 import {Store} from '../utils/Store';
 
 const {Root, Div, Span} = elems;
@@ -49,7 +48,6 @@ function ProductCard(parentElement, productObj) {
         if (hasRendered) {
           // Is unobserver and / or disconnect actually doing anything here? Not working on Chrome 13.11.19.
           observer.unobserve(parentElem);
-          observer.disconnect();
           return;
         }
         if (entries[0].isIntersecting) {
