@@ -1,9 +1,12 @@
 import {formatMoney} from '@shopify/theme-currency';
 import {render, elems} from '../utils/Renderer';
 import {ImageGallery} from './image_gallery_view';
+import {Loader} from './loader';
 import {Store} from '../utils/Store';
 
 const {Root, Div, Span} = elems;
+
+let observer;
 
 const classes = {
   card: 'product-card',
@@ -39,8 +42,28 @@ function ProductCard(parentElement, productObj) {
   }
 
   function renderImageGallery(parentElem) {
-    const {getActionsElem} = ImageGallery(parentElem, images, galleryState);
-    galleryState.setState({getActionsElem});
+    // The observer callback will render the ImageGallery once it is entering the viewport.
+    let hasRendered = false;
+    observer = new IntersectionObserver(
+      (entries) => {
+        if (hasRendered) {
+          // Is unobserver and / or disconnect actually doing anything here? Not working on Chrome 13.11.19.
+          observer.unobserve(parentElem);
+          observer.disconnect();
+          return;
+        }
+        if (entries[0].isIntersecting) {
+          const {getActionsElem} = ImageGallery(parentElem, images, galleryState);
+          galleryState.setState({getActionsElem});
+          hasRendered = true;
+        }
+      },
+      {
+        rootMargin: '300px 0px 300px 0px',
+        threshold: 1.0,
+      },
+    );
+    observer.observe(parentElem);
   }
 
   function handleMouseEnter() {

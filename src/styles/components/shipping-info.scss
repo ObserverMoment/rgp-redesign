@@ -39,7 +39,7 @@
       }
     }
     &__dropdown {
-      transition: transform 0.2s ease-in;
+      transition: opacity 0.1s, transform 0.2s ease-in;
       width: 100vw;
       background: $color-main-white;
       box-shadow: 0 1px 3px 1px rgba(0, 0, 0, 0.1);
@@ -52,19 +52,21 @@
       transform: scaleY(0);
       transform-origin: top;
       height: 0;
+      opacity: 0;
       &.open {
+        top: $header-height;
         opacity: 1;
         height: calc(100vh - #{$header-height});
         transform: scaleY(1);
         z-index: 12;
       }
       @include media-min-size($screen-tablet) {
-        opacity: 0;
         position: absolute;
         top: 0;
         right: 0;
         width: 100%;
         &.open {
+          top: 0;
           transform: scaleY(1);
           max-height: 350px;
           overflow-y: auto;

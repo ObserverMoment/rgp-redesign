@@ -72,7 +72,7 @@ function ResponsiveImage(parentElement, imageData, lazy = false, showLoader = fa
           ],
         },
       ],
-      showLoader && Loader('responsive-image__loader swiper-lazy-preloader'),
+      showLoader && Loader('swiper-lazy-preloader'),
     ].filter((node) => node));
   }
 

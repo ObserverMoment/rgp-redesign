@@ -101,10 +101,13 @@ function ImageGallery(parentElement, images = [], galleryState, initialIndex = 0
           }
         },
         transitionEnd() {
-          if (Math.abs(this.activeIndex - this.previousIndex) > 2) {
+          const newIndex = this.activeIndex;
+          const oldIndex = this.previousIndex;
+          if (Math.abs(newIndex - this.previousIndex) > 2) {
             // Fade in
             this.wrapperEl.style.opacity = 1;
           }
+          galleryState.setState({curIndex: Math.min(newIndex, galleryState.getState().numImages - 1), prevIndex: oldIndex});
         },
       },
       // Enable lazy loading

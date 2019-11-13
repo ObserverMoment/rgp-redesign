@@ -43,7 +43,7 @@
   }
   &__nav-dots-container {
     position: absolute;
-    bottom: 3%;
+    bottom: 0;
     width: 100%;
     display: flex;
     justify-content: center;
@@ -61,7 +61,7 @@
   }
   &__swipe-instruction {
     position: absolute;
-    bottom: 0;
+    bottom: 10px;
     right: 10px;
     opacity: 0.5;
     font-size: 0.8em;

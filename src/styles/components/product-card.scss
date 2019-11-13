@@ -15,6 +15,7 @@
   border: 1px solid transparent;
   transition: 0.1s box-shadow, 0.2s transform, border-color 0.2s;
   height: 100%;
+  min-height: 200px;
   @include hover {
     box-shadow: 0 0 7px 1px rgba(0, 0, 0, 0.2);
     transform: scale(1.02);
@@ -54,6 +55,7 @@
   &__image {
     display: flex;
     align-items: center;
+    min-height: 200px;
   }
   &__info {
     padding: 10px 10px 0;
