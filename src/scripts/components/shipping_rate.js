@@ -2,7 +2,7 @@ import {formatMoney} from '@shopify/theme-currency';
 import {render, elems} from '../utils/Renderer';
 import {renderMiniCart} from '../components/mini_cart';
 import {calculateRate, options} from '../utils/shipping_calc';
-import {deliveryDisplayTexts} from '../utils/shipping_rates';
+import {deliveryDisplayTexts, defaultShipZone} from '../utils/shipping_rates';
 import {Store} from '../utils/Store';
 import {SortDownIcon} from '../utils/icons';
 
@@ -39,7 +39,7 @@ function ShippingRate(parentElem, product) {
   const savedShippingZone = localStorage.getItem(SAVEDSHIPPINGZONE);
 
   const shippingRateState = Store({
-    selectedRegion: savedShippingZone ? savedShippingZone : 'ukMainland',
+    selectedRegion: savedShippingZone ? savedShippingZone : defaultShipZone,
     sku,
     dropdownOpen: false,
     shippingPrice: 0,

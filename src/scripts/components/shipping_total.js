@@ -1,7 +1,7 @@
 import {formatMoney} from '@shopify/theme-currency';
 import {render, elems} from '../utils/Renderer';
 import {getProductGroup, getRatesFromGroup, options} from '../utils/shipping_calc';
-import {deliveryDisplayTexts} from '../utils/shipping_rates';
+import {deliveryDisplayTexts, defaultShipZone} from '../utils/shipping_rates';
 import {Store} from '../utils/Store';
 import {SortDownIcon} from '../utils/icons';
 
@@ -54,7 +54,7 @@ function ShippingTotal(parentElem, items = []) {
   const savedShippingZone = localStorage.getItem(SAVEDSHIPPINGZONE);
 
   const shippingState = Store({
-    selectedRegion: savedShippingZone ? savedShippingZone : 'ukMainland',
+    selectedRegion: savedShippingZone ? savedShippingZone : defaultShipZone,
     products: formattedData,
     dropdownOpen: false,
     shippingPrice: 0,

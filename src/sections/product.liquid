@@ -17,21 +17,6 @@
           {% comment %}
             Rendered via sections/product.js
           {% endcomment %}
-
-          {% comment %}
-          <noscript>
-            <select name="id">
-              {% for variant in product.variants %}
-                <option
-                  {% if variant == current_variant %}selected="selected"{% endif %}
-                  {% unless variant.available %}disabled="disabled"{% endunless %}
-                  value="{{ variant.id }}">
-                    {{ variant.title }}
-                </option>
-              {% endfor %}
-            </select>
-          </noscript>
-          {% endcomment %}
         </div>
 
         <div class="product__content__upper__info__delivery-info" data-product-shipping-info>

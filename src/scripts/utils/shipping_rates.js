@@ -1,3 +1,5 @@
+const defaultShipZone = 'ukmainland';
+
 const deliveryDisplayTexts = {
   0: 'Usually next working day when ordered by 2pm',
   1: 'Usually delivered 1 - 2 working days',
@@ -83,4 +85,4 @@ const rates = {
   },
 };
 
-export {rates, deliveryDisplayTexts};
+export {rates, deliveryDisplayTexts, defaultShipZone};

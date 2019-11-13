@@ -48,15 +48,15 @@
       z-index: 8;
       position: fixed;
       left: 0;
-      bottom: -100vh;
+      top: 0;
       transform: scaleY(0);
       transform-origin: top;
       height: 0;
       &.open {
         opacity: 1;
-        height: calc(100vh - #{$header-height} - 30px);
-        bottom: 0;
+        height: calc(100vh - #{$header-height});
         transform: scaleY(1);
+        z-index: 12;
       }
       @include media-min-size($screen-tablet) {
         opacity: 0;

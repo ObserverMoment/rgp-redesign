@@ -47,7 +47,7 @@
     };
   </script>
 
-  <script src="https://kit.fontawesome.com/b52ac96fe7.js"></script>
+  <script src="https://kit.fontawesome.com/b52ac96fe7.js" async></script>
   {% include 'script-tags', layout: 'theme' %}
   <!-- TrustBox script -->
     <script type="text/javascript" src="//widget.trustpilot.com/bootstrap/v5/tp.widget.bootstrap.min.js" async></script>
@@ -67,6 +67,14 @@
   <a class="in-page-link visually-hidden skip-link" href="#MainContent">{{ 'general.accessibility.skip_to_content' | t }}</a>
 
   {% section 'header' %}
+
+  <noscript>
+    <div
+      style='position: absolute; margin: 0 auto; font-size: 2em; background-color: white; color:black; z-index: 100; text-align: center; padding: 30px'
+    >
+      {% include 'no-js-alert' %}
+    </div>
+  </noscript>
 
   <main role="main" id="MainContent">
     {{ content_for_layout }}
