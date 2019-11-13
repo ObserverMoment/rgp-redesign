@@ -4,7 +4,7 @@ import {render, elems} from '../utils/Renderer';
 import {MiniCartLine} from './mini_cart_line';
 import {ShoppingBasketIcon, PadlockIcon} from '../utils/icons';
 import {Store} from '../utils/Store';
-import {ShippingInfo} from './shipping_info';
+import {ShippingTotal} from './shipping_total';
 
 const {Root, Div, H2, Span, Link, Button} = elems;
 
@@ -65,59 +65,74 @@ async function renderMiniCart() {
   miniCartState.setState({subtotal});
 
   function renderShippingComponent(shippingTotalElem, items) {
-    // ShippingInfo renders the component and also returns the state object.
-    const shippingState = ShippingInfo(shippingTotalElem, items);
+    // ShippingTotal renders the component and also returns the state object.
+    if (!items || items.length < 1) {
+      return;
+    }
+    const shippingState = ShippingTotal(shippingTotalElem, items);
     miniCartState.setState({shippingState});
   }
 
   function updateCartTotal(cartState, cartTotalAmountElem) {
-    const {shippingPrice} = cartState.shippingState.getState();
+    const {shippingPrice, shippingTime} = cartState.shippingState.getState();
     const {subtotal: cartSubTotal} = cartState;
-    cartTotalAmountElem.innerHTML = formatMoney(cartSubTotal + shippingPrice, theme.moneyFormat);
+    cartTotalAmountElem.innerHTML = shippingTime === 99
+      ? 'Contact us for delivery cost'
+      : formatMoney(cartSubTotal + shippingPrice, theme.moneyFormat);
   }
 
-  render([
-    Root, {rootElem: miniCartContainer}, [
-      [Div, {className: classes.icon, innerHTML: ShoppingBasketIcon}],
-      [H2, {innerHTML: 'Your basket'}],
-      ...data.items.map((lineItemObj) => MiniCartLine(lineItemObj)),
-      [Div, {
-        className: classes.shippingTotal,
-        postMountCallbacks: [
-          (self) => renderShippingComponent(self, data.items),
-        ],
-      }],
-      [Div, {className: classes.cartTotal}, [
-        [Span, {className: classes.cartTotalTitle, innerHTML: 'Total'}],
-        [Span, {
-          className: classes.cartTotalAmount,
+  const noItems = !data || !data.items || (!data.items.length > 0);
+
+  if (noItems) {
+    render([
+      Root, {rootElem: miniCartContainer}, [
+        [Div, {className: classes.icon, innerHTML: ShoppingBasketIcon}],
+        [H2, {innerHTML: 'Nothing here yet!'}],
+      ]]);
+  } else {
+    render([
+      Root, {rootElem: miniCartContainer}, [
+        [Div, {className: classes.icon, innerHTML: ShoppingBasketIcon}],
+        [H2, {innerHTML: 'Your basket'}],
+        ...data.items.map((lineItemObj) => MiniCartLine(lineItemObj)),
+        [Div, {
+          className: classes.shippingTotal,
           postMountCallbacks: [
-            (self) => updateCartTotal(miniCartState.getState(), self),
-          ],
-          subscriptions: [
-          // Subscribe to the shipping state updates...which is saved as an attribute in miniCartState.
-            (self) => miniCartState.getState().shippingState.onAttributeUpdate(() =>
-              updateCartTotal(miniCartState.getState(), self), 'shippingPrice'),
+            (self) => renderShippingComponent(self, data.items),
           ],
         }],
-      ]],
-      [Div, {className: classes.actions}, [
-        [Link, {attributes: {href: '/cart'}}, [
-          [Button, {className: classes.toCartBtn, innerHTML: 'View cart'}],
+        [Div, {className: classes.cartTotal}, [
+          [Span, {className: classes.cartTotalTitle, innerHTML: 'Total'}],
+          [Span, {
+            className: classes.cartTotalAmount,
+            postMountCallbacks: [
+              (self) => updateCartTotal(miniCartState.getState(), self),
+            ],
+            subscriptions: [
+            // Subscribe to the shipping state updates...which is saved as an attribute in miniCartState.
+              (self) => miniCartState.getState().shippingState.onAttributeUpdate(() =>
+                updateCartTotal(miniCartState.getState(), self), 'shippingPrice'),
+            ],
+          }],
         ]],
-        [Button, {
-          className: classes.toCheckoutBtn,
-          listeners: {click: [submitCartToCheckout]},
-          subscriptions: [
-            (self) => miniCartState.onAttributeUpdate(() => self.removeEventListener('click', submitCartToCheckout), 'id'),
-          ],
-        }, [
-          [Span, {innerHTML: PadlockIcon}],
-          [Span, {innerHTML: 'Checkout'}],
+        [Div, {className: classes.actions}, [
+          [Link, {attributes: {href: '/cart'}}, [
+            [Button, {className: classes.toCartBtn, innerHTML: 'View cart'}],
+          ]],
+          [Button, {
+            className: classes.toCheckoutBtn,
+            listeners: {click: [submitCartToCheckout]},
+            subscriptions: [
+              (self) => miniCartState.onAttributeUpdate(() => self.removeEventListener('click', submitCartToCheckout), 'id'),
+            ],
+          }, [
+            [Span, {innerHTML: PadlockIcon}],
+            [Span, {innerHTML: 'Checkout'}],
+          ]],
         ]],
-      ]],
-    ],
-  ]);
+      ],
+    ]);
+  }
 }
 
 export {renderMiniCart};

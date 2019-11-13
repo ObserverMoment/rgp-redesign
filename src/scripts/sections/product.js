@@ -3,7 +3,7 @@ import {render, elems} from '../utils/Renderer';
 import {ImageGallery} from '../components/image_gallery_view';
 import {GalleryNavThumbs} from '../components/image_gallery_nav';
 import {AddProductForm} from '../components/add_product_form';
-import {ShippingInfo} from '../components/shipping_info';
+import {ShippingRate} from '../components/shipping_rate';
 import {Store} from '../utils/Store';
 import {smoothFade} from '../utils/utils';
 import {renderMiniCart} from '../components/mini_cart';
@@ -23,13 +23,14 @@ const getElements = {
   addFormWrapper: () => document.querySelector('[data-product-add-form]'),
   addProductForm: () => document.querySelector('[data-product-form]'),
   shippingInfo: () => document.querySelector('[data-product-shipping-info]'),
+  recommended: () => document.querySelector('[data-recommended-products]'),
 };
 
 // Must be cdn.shopify.com/s/files/1/0168/1113/0934/products/W_3985{_dimension}.jpg?v=1563988014.
 // const galleryImageSize = '_850x850';
 // const thumbnailImageSize = '_140x140';
 
-async function initProductPage() {
+async function initProductSection() {
   const urlparts = window.location.pathname.split('/');
   const productHandle = urlparts[urlparts.length - 1].split('?')[0];
   const query = queryString.parse(window.location.search);
@@ -39,7 +40,7 @@ async function initProductPage() {
   // Second call is needed to get array of image objects rather than just urls.
   // The image.alt values are used for colour filtering in the gallery.
   const imageObjs = (await getProductJSON(productHandle)).images;
-  // If multiple variants default to null so that add to cart button will be disabled.
+  // If multiple variants, default to null so that add to cart button will be disabled.
   // Will get overridden if there was a variant supplied in the query string.
   // If only one variant then this is effectively no variants - as Shopify creates a default.
   // Only variant IDs can be added to the cart - not product IDs.
@@ -65,16 +66,16 @@ async function initProductPage() {
     // Format of variant.title is "option1Value / option2Value / option3Value" - there is a space either side of the slash.
     const variantTitle = productState.getState().variants.find((variant) => urlVariantId === variant.id).title;
     const selectedValues = variantTitle.trim().split('/');
-    // Check which options these values are from, and add an attribute on product state for each one - prefixed with 'selected'.
+    // Check which options these values are from, and add an attribute on product state for each one.
     const selectedOptions = selectedValues.reduce((acum, nextValue) => {
       const option = product.options.find((opt) => opt.values.includes(nextValue));
-      acum[option.name] = nextValue;
+      acum[option.name] = nextValue.toLowerCase();
       return acum;
     }, {});
 
     productState.setState({...selectedOptions});
   } else {
-    // Loop through all the options and add an attribute on product state for each one.
+    // Loop through all the options and add an empty attribute on product state for each one.
     const selectedOptions = product.options.reduce((acum, next) => {
       acum[next.name] = null;
       return acum;
@@ -99,7 +100,8 @@ async function initProductPage() {
           : [title, updatedState[option.name]].join(' / ');
       }, '');
 
-      const newVariantId = updatedState.variants.find((variant) => variant.title === variantTitle).id;
+      const newVariantId = updatedState.variants.find((variant) =>
+        variant.title.toLowerCase() === variantTitle).id;
 
       productState.setState({currentVariantId: newVariantId, error: null, addedToCart: null});
 
@@ -128,19 +130,10 @@ async function initProductPage() {
 
   initProductForm(productState, onQuantityUpdate, onOptionSelect, onSubmit);
 
-  // Gallery.
-  function constructGallery(state) {
-    const colourSelected = state.Colour;
-    const images = colourSelected
-      ? imageObjs.filter((img) => (!img.alt || img.alt === colourSelected))
-      : imageObjs;
-    initGallery(images);
-  }
-
-  constructGallery(productState.getState());
+  constructGallery(productState.getState(), imageObjs);
 
   // Render the shipping info elements.
-  ShippingInfo(getElements.shippingInfo(), {quantity: 1, product});
+  ShippingRate(getElements.shippingInfo(), product);
 
   // If colour is an option the user can select.
   // Then re-render the gallery whenever user selects a different colour.
@@ -153,7 +146,7 @@ async function initProductPage() {
         while (galleryWrapper.firstChild) {
           galleryWrapper.removeChild(galleryWrapper.firstChild);
         }
-        constructGallery(newState);
+        constructGallery(newState, imageObjs);
         smoothFade([0, 1], galleryWrapper, 300, []);
       });
     }, 'Colour');
@@ -213,4 +206,13 @@ function initProductForm(productState, onQuantityUpdate, onOptionSelect, onSubmi
   render([Root, {rootElem: formWrapper}, [addProductForm.view()]]);
 }
 
-initProductPage();
+// Gallery.
+function constructGallery(state, imageObjs) {
+  const colourSelected = state.Colour;
+  const images = colourSelected
+    ? imageObjs.filter((img) => (!img.alt || img.alt === colourSelected))
+    : imageObjs;
+  initGallery(images);
+}
+
+initProductSection();

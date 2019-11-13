@@ -5,7 +5,7 @@ import {formatMoney} from '@shopify/theme-currency';
 import {debounce} from 'throttle-debounce';
 import {getCartData, updateCartLineQuantity, updateCart, addItemsToCart} from '../utils/api';
 import {renderMiniCart} from '../components/mini_cart';
-import {ShippingInfo} from '../components/shipping_info';
+import {ShippingTotal} from '../components/shipping_total';
 import {Store} from '../utils/Store';
 
 /*
@@ -94,7 +94,7 @@ const classes = {
     });
   });
   // Setup shipping state and render UI component.
-  const shippingState = ShippingInfo(getElements.shippingPrice(), cartStates.cartData.items);
+  const shippingState = ShippingTotal(getElements.shippingPrice(), cartStates.cartData.items);
   cartStates.shippingState = shippingState;
   shippingState.onAttributeUpdate(() => updateTotal(), 'shippingPrice');
 
@@ -171,8 +171,14 @@ const classes = {
     removeBtn.addEventListener('click', async (event) => {
       const {lineKey} = event.target.dataset;
       await updateCartLineQuantity({quantity: 0, id: lineKey});
-      // Then remove all elements associated with the deleted line.
+      // Remove all elements associated with the deleted line.
       removeRow(lineKey);
+
+      const {products} = cartStates.shippingState.getState();
+      const curLineState = lineStates[lineKey].getState();
+      const updatedProducts = products.filter((product) => product.sku !== curLineState.sku);
+      // Then update the shippingState component.
+      cartStates.shippingState.setState({products: updatedProducts});
     });
   });
 
@@ -280,8 +286,9 @@ function updateTotal() {
   // Make sure that we can actually deliver to the selected region. Else disable checkout btn.
   checkDeliveryRegion(curShippingState);
   // Calculate delivery and sub total.
-  const {shippingPrice} = curShippingState;
+  const {shippingPrice, shippingTime} = curShippingState;
   const subTotal = calcSubtotal();
-  const newTotal = subTotal + shippingPrice;
-  getElements.totalPrice().innerHTML = formatMoney(newTotal, theme.moneyFormat);
+  getElements.totalPrice().innerHTML = shippingTime === 99
+    ? 'Contact us for delivery cost'
+    : formatMoney(subTotal + shippingPrice, theme.moneyFormat);
 }

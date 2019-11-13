@@ -17,85 +17,6 @@
           {% comment %}
             Rendered via sections/product.js
           {% endcomment %}
-
-          {% comment %}
-          {% form 'product', product, data-product-form: '', data-product-handle: product.handle, data-enable-history-state: 'true' %}
-            {% unless product.has_only_default_variant %}
-              {% for option in product.options_with_values %}
-                <div class="product__content__upper__info__add-form__option-{{ option.name }}">
-                  <div class="product__content__upper__info__add-form__option-{{ option.name }}__title">
-                    CHOOSE {{ option.name | upcase }}
-                  </div>
-                  {% for value in option.values %}
-                    <input
-                      type="radio" id="Option{{ option.position }}-{{ value }}"
-                      name="options[{{ option.name }}]" value="{{ value }}"{% if option.selected_value == value %} checked{% endif %}
-                    >
-                    <label
-                      for="Option{{ option.position }}-{{ value }}"
-                      class="product__content__upper__info__add-form__option-{{ option.name }}__value-{{ value }}"
-                    >
-                    </label>
-                  {% endfor %}
-                </div>
-              {% endfor %}
-            {% endunless %}
-
-            <noscript>
-              <select name="id">
-                {% for variant in product.variants %}
-                  <option
-                    {% if variant == current_variant %}selected="selected"{% endif %}
-                    {% unless variant.available %}disabled="disabled"{% endunless %}
-                    value="{{ variant.id }}">
-                      {{ variant.title }}
-                  </option>
-                {% endfor %}
-              </select>
-            </noscript>
-
-            <div class="product__content__upper__info__add-form__quantity">
-              <label for="Quantity">{{ 'products.product.quantity' | t }}</label>
-              <div class="product__content__upper__info__add-form__quantity__inputs">
-                <i data-decrement-product-qty class="far fa-minus-square"></i>
-                <input type="number" id="add-product-quantity-input" name="quantity" value="1" min="1" data-product-quantity-input>
-                <i data-increment-product-qty class="far fa-plus-square"></i>
-              </div>
-            </div>
-
-            <div data-price-wrapper>
-              <span class="product__content__upper__info__price" data-product-price>
-                {{ current_variant.price | money }}
-              </span>
-
-              {% if product.compare_at_price_max > product.price %}
-                <span class="visually-hidden" data-compare-text>{{ 'products.product.regular_price' | t }}</span>
-                <s data-compare-price>
-                  {% if current_variant.compare_at_price > current_variant.price %}
-                    {{ current_variant.compare_at_price | money }}
-                  {% endif %}
-                </s>
-              {% endif %}
-            </div>
-
-            <button
-              type="submit"
-              class="product__content__upper__info__submit"
-              name="add"
-              data-submit-button
-              {% unless current_variant.available %}disabled="disabled"{% endunless %}
-            >
-                <span data-submit-button-text>
-                  {% if current_variant.available %}
-                    {{ 'products.product.add_to_cart' | t }}
-                  {% else %}
-                    {{ 'products.product.sold_out' | t }}
-                  {% endif %}
-                </span>
-                <span class="product__content__upper__info__submit__icon"><i class="fas fa-plus"></i></span>
-            </button>
-          {% endform %}
-          {% endcomment %}
         </div>
 
         <div class="product__content__upper__info__delivery-info" data-product-shipping-info>
@@ -143,6 +64,7 @@
         {{ info_sections[2] | strip }}
       </div>
     </div>
+
   </div>
 
 </section>

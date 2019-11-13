@@ -2,11 +2,13 @@
 $color-body-text-1: var(--color-body-text-1);
 $color-body-text-2: var(--color-body-text-2);
 $color-text-light-1: var(--color-text-light-1);
+  $color-text-dark-grey: #3d3d3e;
 $color-text-grey: #3d3d3d;
 
 // Background colors
 $color-body: var(--color-main-background);
 $color-body-lighten: var(--color-main-background-lighten);
+$color-content-light-grey: #f5f5f5;
 
 // Collection colours
 $product-image-bg: #ffffff;
@@ -105,5 +107,5 @@ $breakpoints: (
 // Layout.
 $header-height: 70px;
 $footer-height: 250px;
-$main-padding-top: 20px;
+$main-padding-top: 7px;
 $loader-width: 25px;

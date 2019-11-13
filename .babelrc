@@ -1,4 +1,9 @@
 {
-  "presets": ["shopify/web"],
-  "plugins": ["transform-async-to-generator"]
+  "presets": [
+    "shopify/web"
+  ],
+  "plugins": [
+    "transform-async-to-generator",
+    "transform-object-assign"
+  ]
 }

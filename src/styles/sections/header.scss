@@ -10,6 +10,8 @@
   justify-content: space-around;
   align-items: center;
   height: 0;
+  transform-origin: top;
+  transform: scaleY(0);
   margin: 0;
   padding: 0 5px;
   @include media-min-size($screen-tablet) {
@@ -25,6 +27,7 @@
     border-width 0.6s $header-ease;
   &.active {
     height: 100%;
+    transform: scaleY(1);
     padding: 5px;
     @include media-min-size($screen-tablet) {
       padding: 20px;
@@ -60,6 +63,7 @@
     color: #444444;
     cursor: pointer;
     transition: 0.2s color;
+    z-index: 10;
       @include hover {
       color: black;
     }
@@ -262,6 +266,7 @@ $header-ease: cubic-bezier(0.19, 1, 0.22, 1);
             position: absolute;
             top: 8px;
             right: 12px;
+            z-index: 4;
             @media (hover: none) {
               right: 6px;
             }
@@ -292,6 +297,7 @@ $header-ease: cubic-bezier(0.19, 1, 0.22, 1);
           transform: translateX(0);
           background: $color-body;
           color: $color-body-text-1;
+          z-index: 10;
           @include media-min-size($screen-mobile) {
             right: -100vw;
             max-width: 600px;

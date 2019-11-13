@@ -1,5 +1,5 @@
 import {formatMoney} from '@shopify/theme-currency';
-import {submitCartToCheckout} from '../utils/api';
+import {isPreOrder, getDueDate} from '../utils/pre_order';
 import {elems} from '../utils/Renderer';
 import {PadlockIcon} from '../utils/icons';
 
@@ -7,6 +7,7 @@ const {Div, Input, Label, H3, Button, Span, Link} = elems;
 
 const classes = {
   wrapper: 'add-product',
+  preOrder: 'add-product__pre-order',
   options: 'add-product__options',
   option: 'add-product__options__option',
   submit: 'add-product__submit',
@@ -20,7 +21,6 @@ const classes = {
   successMsg: 'add-product__success__msg',
   successBtns: 'add-product__success__btns',
   reviewCart: 'add-product__success__btns__review-cart',
-  checkout: 'add-product__success__btns__checkout',
   show: 'show',
 };
 
@@ -143,15 +143,35 @@ function AddProductForm(productState, onQuantityUpdate, onOptionSelect, onSubmit
     }
   }
 
+  function togglePreOrderInfo(newState, preOrderInfoElem) {
+    const sku = newState.currentVariantId && newState.variants.find((variant) => variant.id === newState.currentVariantId).sku;
+    if (sku && isPreOrder(sku)) {
+      preOrderInfoElem.innerHTML = `
+        Available for Pre-order<br>
+        Stock due to arrive on ${getDueDate()}`;
+      preOrderInfoElem.classList.add(classes.show);
+    } else {
+      preOrderInfoElem.classList.remove(classes.show);
+    }
+  }
+
   return {
     view: () => ([
       Div, {className: classes.wrapper}, [
+        [Div, {className: classes.preOrder,
+          postMountCallbacks: [
+            (self) => togglePreOrderInfo(productState.getState(), self),
+          ],
+          subscriptions: [
+            (self) => productState.onAttributeUpdate((newState) => togglePreOrderInfo(newState, self), 'currentVariantId'),
+          ],
+        }],
         [Div, {className: classes.options}, [
           ...options.filter((opt) => opt.name !== 'Title').map((option) => ([
             Div, {className: classes.option}, [
               [H3, {innerHTML: `Select ${option.name.toLowerCase()}`}],
               [Div, {className: `${classes.option}__${option.name}`}, [
-                ...option.values.map((value) => ([
+                ...option.values.map((value) => value.toLowerCase()).map((value) => ([
                   Div, {className: `${classes.option}__${option.name}__value`}, [
                     [Input, {
                       attributes: {
@@ -245,13 +265,9 @@ function AddProductForm(productState, onQuantityUpdate, onOptionSelect, onSubmit
         }, [
           [Div, {className: classes.successMsg, innerHTML: '&#10003; Added to cart!'}],
           [Div, {className: classes.successBtns}, [
-            [Link, {className: classes.reviewCart, innerHTML: 'View cart', attributes: {href: '/cart'}}],
-            [Button, {
-              className: classes.checkout,
-              listeners: {click: [submitCartToCheckout]},
-            }, [
+            [Link, {className: classes.reviewCart, attributes: {href: '/cart'}}, [
               [Span, {innerHTML: PadlockIcon}],
-              [Span, {innerHTML: 'Checkout'}],
+              [Span, {innerHTML: 'View cart and checkout'}],
             ]],
           ]],
         ]],
