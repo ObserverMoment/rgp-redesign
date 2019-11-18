@@ -4,6 +4,7 @@ import 'lazysizes/plugins/rias/ls.rias';
 import 'lazysizes/plugins/bgset/ls.bgset';
 import 'lazysizes';
 import 'lazysizes/plugins/respimg/ls.respimg';
+import 'intersection-observer';
 
 import '../../styles/theme.scss';
 import '../../styles/theme.scss.liquid';
@@ -58,11 +59,3 @@ if (window.navigator.cookieEnabled) {
     'supports-cookies',
   );
 }
-
-// Apply a specific class to the html element for browser support of cookies.
-// if (cookiesEnabled()) {
-//   document.documentElement.className = document.documentElement.className.replace(
-//     'supports-no-cookies',
-//     'supports-cookies',
-//   );
-// }

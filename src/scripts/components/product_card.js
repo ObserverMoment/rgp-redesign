@@ -6,6 +6,7 @@ import {Store} from '../utils/Store';
 const {Root, Div, Span} = elems;
 
 let observer;
+const soldOutText = document.querySelector('[data-sold-out-text]').innerHTML;
 
 const classes = {
   card: 'product-card',
@@ -37,7 +38,7 @@ function ProductCard(parentElement, productObj) {
   function renderPriceText() {
     return isAvailable
       ? formatMoney(price, theme.moneyFormat)
-      : `<strike>${formatMoney(price, theme.moneyFormat)}</strike> - Back soon`;
+      : `<strike>${formatMoney(price, theme.moneyFormat)}</strike> - ${soldOutText}`;
   }
 
   function renderImageGallery(parentElem) {

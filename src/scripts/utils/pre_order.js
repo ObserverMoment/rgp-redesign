@@ -45,6 +45,7 @@ const availableForPreOrder = [
   'pmat100blue',
   'pmat140blue',
   'pmat180blue',
+  'tourneypro1000low',
 ];
 
 function getDueDate() {

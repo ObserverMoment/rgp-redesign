@@ -37,7 +37,7 @@
   }
   &__elements {
     opacity: 0;
-    transition: opacity 0.4s ease-out, transform 0.6s ease-out;
+    transition: opacity 0.2s ease-out, transform 0.4s ease-out;
     color: $color-body-text-1;
     transform: translateY(-100px);
     &__flex-container {

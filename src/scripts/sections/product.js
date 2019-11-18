@@ -8,7 +8,7 @@ import {Store} from '../utils/Store';
 import {smoothFade} from '../utils/utils';
 import {renderMiniCart} from '../components/mini_cart';
 
-import {addItemsToCart, getProductData, getProductJSON} from '../utils/api';
+import {addItemsToCart, getProductJSON} from '../utils/api';
 
 const {Root, Div} = elems;
 
@@ -35,11 +35,12 @@ async function initProductSection() {
   const productHandle = urlparts[urlparts.length - 1].split('?')[0];
   const query = queryString.parse(window.location.search);
   const urlVariantId = query && query.variant && parseInt(query.variant, 10);
-
-  const product = await getProductData(productHandle);
+  // Get the product JSON from product.liquid file via script tags.
+  const product = JSON.parse(document.querySelector('[data-product-json]').innerHTML);
   // Second call is needed to get array of image objects rather than just urls.
+  // And for array of Option objects, not just option names.
   // The image.alt values are used for colour filtering in the gallery.
-  const imageObjs = (await getProductJSON(productHandle)).images;
+  const {images: imageObjs, options} = await getProductJSON(productHandle);
   // If multiple variants, default to null so that add to cart button will be disabled.
   // Will get overridden if there was a variant supplied in the query string.
   // If only one variant then this is effectively no variants - as Shopify creates a default.
@@ -49,8 +50,6 @@ async function initProductSection() {
   // Create the state.
   const productState = Store(product, `product-${product.id}`);
 
-  // Add the variant and default selected options to empty array.
-  // Remove any default variants / options and just set empty arrays.
   productState.setState({
     currentVariantId: urlVariantId || initialVariantId,
     currentQuantity: 1,
@@ -58,6 +57,7 @@ async function initProductSection() {
     images: imageObjs,
     error: null,
     addedToCart: null,
+    options,
   });
 
   // If variant in the querystring then add correct selected options to state.

@@ -73,7 +73,7 @@ function ShippingTotal(parentElem, items = []) {
       display = `<p>Free delivery</p><p>${deliveryDisplayTexts[time]}</p>`;
     } else {
       display =
-      `<p>Delivery cost: ${formatMoney(price, theme.moneyFormat)}</p><p>${deliveryDisplayTexts[time]}</p>`;
+      `<p>Delivery cost: <strong>${formatMoney(price, theme.moneyFormat)}</strong></p><p>${deliveryDisplayTexts[time]}</p>`;
     }
     return display;
   }

@@ -34,7 +34,7 @@
           {% unless collection.title == "Everything" %}
           <a href="{{ collection.url }}">
             <div class="home-hero__content__left__collections__collection">
-              <h1 class="home-hero__content__left__collections__collection__title">
+              <h2 class="home-hero__content__left__collections__collection__title">
                 {% case collection.title %}
                   {% when "Poker Chipsets" %}
                     Poker chips
@@ -45,7 +45,7 @@
                   {% when "Poker Tables" %}
                     Tables
                 {% endcase %}
-              </h3>
+              </h2>
               {% capture image_url %}{% if collection.image %}{{ collection.image | img_url: 'medium' }}{% endif %}{% endcapture %}
               <img
                 class="home-hero__content__left__collections__collection__image lazy"
