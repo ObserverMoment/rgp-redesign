@@ -49,7 +49,7 @@ const availableForPreOrder = [
 ];
 
 function getDueDate() {
-  return 'November 22nd';
+  return 'November 21st';
 }
 
 function isPreOrder(sku) {

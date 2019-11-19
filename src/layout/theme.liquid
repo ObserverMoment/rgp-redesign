@@ -81,11 +81,7 @@
   </main>
 
   {% section 'footer' %}
-
-  <!-- Use these script tags to pass data to javascript files -->
-  <script type="application/json" data-sold-out-text>
-    {{ 'products.product.sold_out' | t }}
-  </script>
+  {% include 'locale-script-tags' %}
 
 </body>
 </html>
