@@ -21,11 +21,14 @@
     transform: scale(1.02);
     border-color: $color-main-light-grey;
   }
+  @include hover('.image-gallery__actions') {
+    opacity: 1;
+  }
   &__meta {
     display: flex;
     justify-content: space-between;
     padding: 2px 2px 8px;
-    &__info {
+    &__tags {
       > span {
         padding: 2px 4px;
         margin-right: 6px;
@@ -57,7 +60,7 @@
     align-items: center;
     min-height: 200px;
   }
-  &__info {
+  &__details {
     padding: 10px 10px 0;
     height: 98px;
     display: flex;
@@ -71,6 +74,7 @@
       justify-content: space-between;
       &__price {
         font-size: 1.1em;
+        font-weight: bold;
       }
     }
   }

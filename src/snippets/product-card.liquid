@@ -1,0 +1,31 @@
+<div class="product-card">
+  <div class="product-card__meta">
+    <div class="product-card__meta__tags">
+      {% for tag in product.tags %}
+        <span>{{ tag }}</span>
+      {% endfor %}
+    </div>
+    <div class="product-card__meta__colours">
+      {% for variant in product.variants %}
+        {% if colour_options contains variant.title %}
+          <div class="product-card__meta__colours__colour {{ variant.title | downcase }}"></div>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+  <div class="product-card__image" data-product-id="{{ product.id }}" data-product-card>
+    {% comment %}
+      Gallery rendered via sections/collection.js
+    {% endcomment %}
+  </div>
+  <div class="product-card__details">
+    <div class="product-card__details__title">
+      {{ product.title }}
+    </div>
+    <div class="product-card__details__footer">
+      <div class="product-card__details__footer__price">
+        {{ product.price | money }}
+      </div>
+    </div>
+  </div>
+</div>

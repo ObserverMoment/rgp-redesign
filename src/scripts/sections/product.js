@@ -68,7 +68,7 @@ async function initProductSection() {
     const selectedValues = variantTitle.trim().split('/');
     // Check which options these values are from, and add an attribute on product state for each one.
     const selectedOptions = selectedValues.reduce((acum, nextValue) => {
-      const option = product.options.find((opt) => opt.values.includes(nextValue));
+      const option = options.find((opt) => opt.values.includes(nextValue));
       acum[option.name] = nextValue.toLowerCase();
       return acum;
     }, {});
@@ -76,7 +76,7 @@ async function initProductSection() {
     productState.setState({...selectedOptions});
   } else {
     // Loop through all the options and add an empty attribute on product state for each one.
-    const selectedOptions = product.options.reduce((acum, next) => {
+    const selectedOptions = options.reduce((acum, next) => {
       acum[next.name] = null;
       return acum;
     }, {});
@@ -137,7 +137,7 @@ async function initProductSection() {
 
   // If colour is an option the user can select.
   // Then re-render the gallery whenever user selects a different colour.
-  if (product.options.some((option) => option.name === 'Colour')) {
+  if (options.some((option) => option.name === 'Colour')) {
     productState.onAttributeUpdate((newState) => {
       const galleryWrapper = getElements.galleryWrapper();
       // Fade out, remove event listeners that will refer to the old instance of the image gallery.
