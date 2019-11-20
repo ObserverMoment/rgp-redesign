@@ -69,12 +69,14 @@ const hideClass = 'hide';
     btn.addEventListener('click', () => {
       addressListItems.forEach((add) => add.classList.remove(hideClass));
       deleteAddressBtns.forEach((del) => del.classList.remove(hideClass));
+      editAddressBtns.forEach((edit) => edit.classList.remove(hideClass));
       addressTitle.classList.remove(hideClass);
     });
   });
 
   // Defaults to hidden on every page load.
   addressForm.classList.add(hideClass);
+
 })();
 
 function initializeAddressForm(container) {
@@ -88,7 +90,7 @@ function initializeAddressForm(container) {
     });
   });
 
-  AddressForm(addressFields, 'en');
+  AddressForm(addressFields, 'en', {shippingCountriesOnly: true});
 
   if (deleteForm) {
     deleteForm.addEventListener('submit', (event) => {
