@@ -32,25 +32,32 @@
       <div class="home-hero__content__left__collections">
         {% for collection in collections %}
           {% unless collection.title == "Everything" %}
-          <a href="{{ collection.url }}">
-            <div class="home-hero__content__left__collections__collection">
-              <h2 class="home-hero__content__left__collections__collection__title">
+          <a href="{{ collection.url }}" class="home-hero__content__left__collections__collection">
+            <div class="home-hero__content__left__collections__collection__content">
+              <h2 class="home-hero__content__left__collections__collection__content__title">
                 {% case collection.title %}
                   {% when "Poker Chipsets" %}
                     Poker chips
                   {% when "Poker Mats and Layouts" %}
-                    Mats & layouts
+                    Mats, layouts
                   {% when "Poker Table Tops" %}
                     Table tops
                   {% when "Poker Tables" %}
                     Tables
                 {% endcase %}
               </h2>
-              {% capture image_url %}{% if collection.image %}{{ collection.image | img_url: 'medium' }}{% endif %}{% endcapture %}
-              <img
-                class="home-hero__content__left__collections__collection__image lazy"
-                data-src="{{ image_url }}" alt=""
-              >
+              <div class="home-hero__content__left__collections__collection__content__icon">
+                {% case collection.title %}
+                  {% when "Poker Chipsets" %}
+                    {% include 'icon-poker-chips' %}
+                  {% when "Poker Mats and Layouts" %}
+                    {% include 'icon-poker-mats' %}
+                  {% when "Poker Table Tops" %}
+                    {% include 'icon-poker-tops' %}
+                  {% when "Poker Tables" %}
+                    {% include 'icon-poker-tables' %}
+                {% endcase %}
+              </div>
             </div>
           </a>
           {% endunless %}
