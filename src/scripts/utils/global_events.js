@@ -3,7 +3,6 @@
 */
 import {throttle} from 'throttle-debounce';
 import {Store} from './Store';
-// import {createLazyloader} from './initLazyload';
 
 const globalEvents = {
   DOMUPDATED: 'dom-updated',

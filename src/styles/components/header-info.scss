@@ -50,6 +50,9 @@
     &__trustbox {
       margin: 0 10px;
       padding-bottom: 8px;
+      @include hover {
+        cursor: pointer;
+      }
     }
   }
 

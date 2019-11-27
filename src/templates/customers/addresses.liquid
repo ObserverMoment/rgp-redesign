@@ -18,30 +18,30 @@
 
           <div class="account-addresses__add-new__form__fields" data-address-fields>
 
-              <div>
-                <label for="AddressFirstNameNew" data-form-text-input-label>
-                  {{ 'customer.addresses.first_name' | t }}
-                </label>
-                <input type="text"
+            <div class="account-addresses__add-new__form__fields__field">
+              <label for="AddressFirstNameNew" data-form-text-input-label>
+                {{ 'customer.addresses.first_name' | t }}
+              </label>
+              <input type="text"
                 name="address[first_name]"
                 id="AddressFirstNameNew"
                 value="{{ form.first_name }}"
                 data-form-text-input
                 placeholder="{{ 'customer.addresses.first_name' | t }}"
                 autocapitalize="words">
-              </div>
-              <div>
-                <label for="AddressLastNameNew" data-form-text-input-label>
-                  {{ 'customer.addresses.last_name' | t }}
-                </label>
-                <input type="text"
-                      name="address[last_name]"
-                      id="AddressLastNameNew"
-                      value="{{ form.last_name }}"
-                      data-form-text-input
-                      placeholder="{{ 'customer.addresses.last_name' | t }}"
-                      autocapitalize="words">
-              </div>
+            </div>
+            <div class="account-addresses__add-new__form__fields__field">
+              <label for="AddressLastNameNew" data-form-text-input-label>
+                {{ 'customer.addresses.last_name' | t }}
+              </label>
+              <input type="text"
+                    name="address[last_name]"
+                    id="AddressLastNameNew"
+                    value="{{ form.last_name }}"
+                    data-form-text-input
+                    placeholder="{{ 'customer.addresses.last_name' | t }}"
+                    autocapitalize="words">
+            </div>
 
             <div class="account-addresses__add-new__form__fields__field">
               <label for="AddressCompanyNew" data-form-text-input-label>
@@ -270,20 +270,21 @@
                     id="AddressCountry_{{ form.id }}"
                     class="address-country-option"
                     data-form-id="{{ form.id }}"
-                    data-default="{{ form.country }}">
+                    data-default="{{ address.country_code }}">
                   </select>
-
-                  <div class="account-addresses__edit__form__fields__select">
-                    <label for="AddressProvince_{{ form.id }}">
-                      {{ 'customer.addresses.province' | t }}
-                    </label>
-                    <select
-                      name="address[province]"
-                      id="AddressProvince_{{ form.id }}"
-                      data-default="{{ form.province }}">
-                    </select>
-                  </div>
                 </div>
+
+                <div class="account-addresses__edit__form__fields__select">
+                  <label for="AddressProvince_{{ form.id }}">
+                    {{ 'customer.addresses.province' | t }}
+                  </label>
+                  <select
+                    name="address[province]"
+                    id="AddressProvince_{{ form.id }}"
+                    data-default="{{ address.province_code }}">
+                  </select>
+                </div>
+
                 <div class="account-addresses__edit__form__fields__field">
                   <label for="AddressZip_{{ form.id }}" data-form-text-input-label>
                     {{ 'customer.addresses.zip' | t }}

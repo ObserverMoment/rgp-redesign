@@ -206,7 +206,7 @@ function AddProductForm(productState, onQuantityUpdate, onOptionSelect, onSubmit
             [Input, {
               className: classes.displayQuantity,
               attributes: {type: 'number', name: 'quantity', value: '1', min: '1', [`data-add-product-form-${addProductFormId}`]: ''},
-              listeners: {change: [(event) => onQuantityUpdate(parseInt(event.target.value, 10))]},
+              listeners: {change: [(event) => onQuantityUpdate(Math.max(1, parseInt(event.target.value, 10)))]},
               subscriptions: [
                 (self) => productState.onAttributeUpdate((newState) => updateInputElem(newState, self), 'currentQuantity'),
               ],

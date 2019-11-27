@@ -1,5 +1,12 @@
 .recommended-products {
   position: relative;
+  h3 {
+    text-align: center;
+    font-size: 2em;
+    font-weight: bold;
+    padding: 0;
+    margin: 5px;
+  }
   &__grid {
     @include products-grid;
   }

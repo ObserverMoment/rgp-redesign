@@ -106,7 +106,7 @@ function buildElement({elementType, config, parent}) {
 */
 function render([elementType, config, children], parent) {
   try {
-    if (elementType === 'root') {
+    if (elementType === elems.Root) {
       if (!(config.rootElem instanceof Element || config.rootElem instanceof HTMLDocument)) {
         throw Error('The top level of your tree must be a DOM element');
       }
@@ -131,10 +131,10 @@ function render([elementType, config, children], parent) {
     console.error('Error rendering node:', [elementType, config, children]);
     console.error('For parent:', parent);
   }
-  // Let everyone know that the dom has been updated. See lazyloader setup in global_events.js for example.
+  // Let everyone know that the dom has been updated. Eg lazyloader so it can capture new elements.
   // Pass event id to the subscribers, allowing components to monitor when a render has completed.
-  // Pass the containing parent element as default arg arg.
-  if (elementType === 'root' && config.eventCompleteId) {
+  // Pass the containing parent element as default arg.
+  if (elementType === elems.Root && config.eventCompleteId) {
     globalState.notify(`${globalEvents.DOMUPDATED}-${config.eventCompleteId}`);
   }
 }

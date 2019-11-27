@@ -5,16 +5,18 @@ import {Store} from '../utils/Store';
 
 const {Root, Div, Span} = elems;
 
+let observer;
+
 const classes = {
   card: 'product-card',
   meta: 'product-card__meta',
-  metaInfo: 'product-card__meta__info',
+  metaTags: 'product-card__meta__tags',
   metaColours: 'product-card__meta__colours',
   image: 'product-card__image',
-  info: 'product-card__info',
-  infoTitle: 'product-card__info__title',
-  infoFooter: 'product-card__info__footer',
-  infoFooterPrice: 'product-card__info__footer__price',
+  details: 'product-card__details',
+  detailsTitle: 'product-card__details__title',
+  detailsFooter: 'product-card__details__footer',
+  detailsFooterPrice: 'product-card__details__footer__price',
   showGalleryActions: 'show-gallery-actions',
 };
 
@@ -39,8 +41,27 @@ function ProductCard(parentElement, productObj) {
   }
 
   function renderImageGallery(parentElem) {
-    const {getActionsElem} = ImageGallery(parentElem, images, galleryState);
-    galleryState.setState({getActionsElem});
+    // The observer callback will render the ImageGallery once it is entering the viewport.
+    let hasRendered = false;
+    observer = new IntersectionObserver(
+      (entries) => {
+        if (hasRendered) {
+          // Is unobserver and / or disconnect actually doing anything here? Not working on Chrome 13.11.19.
+          observer.unobserve(parentElem);
+          return;
+        }
+        if (entries[0].isIntersecting) {
+          const {getActionsElem} = ImageGallery(parentElem, images, galleryState);
+          galleryState.setState({getActionsElem});
+          hasRendered = true;
+        }
+      },
+      {
+        rootMargin: '300px 0px 300px 0px',
+        threshold: 1.0,
+      },
+    );
+    observer.observe(parentElem);
   }
 
   function handleMouseEnter() {
@@ -65,7 +86,7 @@ function ProductCard(parentElement, productObj) {
             mouseleave: [handleMouseLeave],
           }}, [
             [Div, {className: classes.meta}, [
-              [Div, {className: classes.metaInfo}, tags && tags.map((tag) => [
+              [Div, {className: classes.metaTags}, tags && tags.map((tag) => [
                 Span, {innerHTML: tag},
               ])],
               [Div, {className: classes.metaColours}, colours && colours.map((colour) => [
@@ -78,10 +99,10 @@ function ProductCard(parentElement, productObj) {
                 (self) => renderImageGallery(self),
               ],
             }],
-            [Div, {className: classes.info}, [
-              [Div, {className: classes.infoTitle, innerHTML: title}],
-              [Div, {className: classes.infoFooter}, [
-                [Div, {className: classes.infoFooterPrice, innerHTML: renderPriceText()}],
+            [Div, {className: classes.details}, [
+              [Div, {className: classes.detailsTitle, innerHTML: title}],
+              [Div, {className: classes.detailsFooter}, [
+                [Div, {className: classes.detailsFooterPrice, innerHTML: renderPriceText()}],
               ]],
             ]],
           ],

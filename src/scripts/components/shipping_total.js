@@ -70,10 +70,10 @@ function ShippingTotal(parentElem, items = []) {
         Sorry, we are unable to deliver some of these products to your selected area as standard. Please contact us for a quote.
       </p>`;
     } else if (price === 0) {
-      display = `<p>Free delivery</p><p>${deliveryDisplayTexts[time]}</p>`;
+      display = `<p><strong>Free delivery</strong></p><p>${deliveryDisplayTexts[time]}</p>`;
     } else {
       display =
-      `<p>Delivery cost: ${formatMoney(price, theme.moneyFormat)}</p><p>${deliveryDisplayTexts[time]}</p>`;
+      `<p>Delivery cost: <strong>${formatMoney(price, theme.moneyFormat)}</strong></p><p>${deliveryDisplayTexts[time]}</p>`;
     }
     return display;
   }

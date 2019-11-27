@@ -1,70 +1,53 @@
-import {ProductCard} from '../components/product_card';
 import {getCollectionProducts} from '../utils/api';
-import {render, elems} from '../utils/Renderer';
-import {globalState, globalEvents} from '../utils/global_events';
-import {Loader} from '../components/loader';
+import {Store} from '../utils/Store';
+import {ImageGallery} from '../components/image_gallery_view';
 
-const {Root, Link} = elems;
-
+let observer;
 const url = window.location.pathname;
 const collectionHandle = url.split('/')[2];
-const loaderDataAttr = `data-loader-collection-${collectionHandle}`;
 
-const getElements = {
-  productsContainer: () => document.querySelector('[data-collection-products]'),
-  collectionLoader: () => document.querySelector(`[${loaderDataAttr}]`),
-};
-
-const classes = {
-  productLink: 'collection__products__product-link',
-};
-
-function renderLoader() {
-  const productsContainer = getElements.productsContainer();
-
-  render([
-    Root, {rootElem: productsContainer}, [
-      Loader(null, loaderDataAttr),
-    ],
-  ]);
+// Renders a single image gallery component.
+function renderImageGallery(parentElem, images) {
+  // The observer callback will render the ImageGallery once it is entering the viewport.
+  let hasRendered = false;
+  observer = new IntersectionObserver(
+    (entries) => {
+      if (hasRendered) {
+        // Is unobserver and / or disconnect actually doing anything here? Not working on Chrome 13.11.19.
+        observer.unobserve(parentElem);
+        return;
+      }
+      if (entries[0].isIntersecting) {
+        const galleryState = Store({curIndex: 0}, 'collection-product-gallery');
+        const {getActionsElem} = ImageGallery(parentElem, images, galleryState);
+        galleryState.setState({getActionsElem});
+        hasRendered = true;
+      }
+    },
+    {
+      rootMargin: '300px 0px 300px 0px',
+      threshold: 1.0,
+    },
+  );
+  observer.observe(parentElem);
 }
 
-function renderProductsList({products}) {
-  const productsContainer = getElements.productsContainer();
-  const urlRoot = `/collections/${collectionHandle}/products`;
-  const sortedProducts = products.sort((prodA, prodB) =>
-    (parseFloat(prodA.variants[0].price) <= parseFloat(prodB.variants[0].price) ? -1 : 1));
-
-  const eventId = `collection-${collectionHandle}-rendered`;
-
-  globalState.subscribe(`${globalEvents.DOMUPDATED}-${eventId}`, () => {
-    const loaderElem = getElements.collectionLoader();
-    loaderElem.classList.add('hide');
+// Renders all the image gallery components - one for each product image.
+function renderProductImages({products}) {
+  // For each product. Find the parent element for the image gallery.
+  // Then run renderImageGallery()
+  const productCardElems = document.querySelectorAll('[data-product-card]');
+  productCardElems.forEach((elem) => {
+    const {images} = products.find((product) => product.id === parseInt(elem.dataset.productId, 10));
+    renderImageGallery(elem, images);
   });
-
-  render([
-    Root, {rootElem: productsContainer, eventCompleteId: eventId}, [
-      ...sortedProducts
-        .map((product) =>
-          [
-            Link,
-            {
-              className: classes.productLink,
-              attributes: {href: `${urlRoot}/${product.handle}`},
-              postMountCallbacks: [
-                (self) => ProductCard(self, product),
-              ],
-            },
-            [],
-          ]),
-    ],
-  ]);
 }
 
 async function initCollection() {
-  renderLoader();
+  // Need this call to get collection product which have image objects at {image}, not just urls.
+  // We are using the image alt to label images as different colours.
   const data = await getCollectionProducts(collectionHandle);
-  renderProductsList(data);
+  renderProductImages(data);
 }
 
 initCollection();
