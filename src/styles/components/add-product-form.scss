@@ -32,7 +32,7 @@ $radio-button-width: 32px;
       @include media-min-size($screen-medium) {
         display: block;
       }
-      h3 { margin: 0; font-size: 1em; }
+      h3 { margin: 0; font-size: 1em; color: #565656; }
       &__Colour {
         padding: 0;
         display: flex;
