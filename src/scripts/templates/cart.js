@@ -57,6 +57,11 @@ const classes = {
 
 (async function getInitialState() {
   const cartData = await getCartData();
+
+  if (cartData && cartData.items.length < 1) {
+    return;
+  }
+
   cartStates.cartData = cartData;
 
   const lineRows = [...getElements.lineRows()];
@@ -93,15 +98,17 @@ const classes = {
       checkInputChange(newLineState);
     });
   });
+
   // Setup shipping state and render UI component.
   const shippingState = ShippingTotal(getElements.shippingPrice(), cartStates.cartData.items);
   cartStates.shippingState = shippingState;
   shippingState.onAttributeUpdate(() => updateTotal(), 'shippingPrice');
 
+  addEventListeners();
   updateTotal();
 })();
 
-(function addEventListeners() {
+function addEventListeners() {
   // Listen to quantity events
   getElements.quantityInputs().forEach((input) => {
     input.addEventListener('change', (event) => {
@@ -191,7 +198,7 @@ const classes = {
       confirmNoteSaved.classList.remove(classes.show);
     }, 2000);
   }));
-})();
+}
 
 function onUpdateSuccess(lineKey) {
   // If quantity === 0 then you need to remove the whole lineRow element.
