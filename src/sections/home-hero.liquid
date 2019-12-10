@@ -31,7 +31,7 @@
       </div>
       <div class="home-hero__content__left__collections">
         {% for collection in collections %}
-          {% unless collection.title == "Everything" %}
+          {% unless collection.title == "Everything" or collection.title == "The Riverboat Gaming Poker Range" %}
           <a href="{{ collection.url }}" class="home-hero__content__left__collections__collection">
             <div class="home-hero__content__left__collections__collection__content">
               <h2 class="home-hero__content__left__collections__collection__content__title">
