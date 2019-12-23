@@ -1,0 +1,57 @@
+.message-modal {
+  position: fixed;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0,0,0,0.6);
+  z-index: 15;
+  display: none;
+  &__content {
+    background: white;
+    width: calc(100vw - 20px);
+    padding: 10px 20px;
+    margin: 10px;
+    border-radius: 6px;
+    box-shadow: 0 0 10px 6px rgba(0,0,0,0.3);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    box-sizing: border-box;
+    max-height: calc(100vh - 20px);
+    @include media-min-size($screen-tablet) {
+      width: 600px;
+      margin: 20px auto;
+    }
+    &__top-icon {
+      display: block;
+      font-size: 2.2em;
+      color: $color-main-green;
+    }
+    &__message {
+      h2 { color: #bb2528; margin-top: 0; margin-bottom: 5px; }
+      font-size: 1.1em;
+      text-align: center;
+      &__two {
+        margin-top: 8px;
+        color: $color-main-green;
+        font-weight: bold;
+      }
+    }
+    &__bottom-icon {
+      display: block;
+      font-size: 2em;
+      color: $color-main-gold;
+    }
+    &__confirm {
+      @include primary-btn;
+      @include media-min-size($screen-medium) {
+        @include secondary-btn;
+      }
+      cursor: pointer;
+      z-index: 13;
+      font-size: 1.2em;
+      span { padding: 4px; }
+      i { font-size: 0.8em; }
+    }
+  }
+}
