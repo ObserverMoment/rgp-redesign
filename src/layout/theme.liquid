@@ -64,6 +64,11 @@
 
 <body id="{{ page_title | handle }}" class="template-{{ template.name | handle }}">
 
+  {% comment %}
+    Modal for displaying messages to customers when they first arrive on the website. Comment out when not needed.
+  {% endcomment %}
+  {% include 'message-modal' %}
+
   <a class="in-page-link visually-hidden skip-link" href="#MainContent">{{ 'general.accessibility.skip_to_content' | t }}</a>
 
   {% section 'header' %}

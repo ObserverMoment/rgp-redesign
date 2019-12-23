@@ -75,6 +75,7 @@ $grid-gutter: 30px;
 // Device specific widths. Always use min-width for these.
 // Design should only break upwards to 'less' mobile when size is greater than. 'Mobile first with buffer'
 // https://ricostacruz.com/til/css-media-query-breakpoints
+// Uxsed with {media-min-size} mixin.
 $screen-mobile: 23.438em; // 375px
 $screen-tablet: 41.688em; // 677px.
 $screen-landscape: 52em;

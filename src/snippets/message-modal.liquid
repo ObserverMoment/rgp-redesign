@@ -1,0 +1,40 @@
+<div class="message-modal" data-landing-message-modal>
+  <div class="message-modal__content">
+    <div class="message-modal__content__top-icon">
+      <i class="fas fa-holly-berry"></i>
+    </div>
+    <div class="message-modal__content__message">
+      <h2>Holiday opening times</h2>
+      <div class="message-modal__content__message__one">
+        Our warehouse is now closed for the holidays and will re-open on <strong>January 2nd</strong>. All orders placed before then will be dispatched as soon as we re-open.
+      </div>
+      <div class="message-modal__content__message__two">
+        We wish you all a very Merry Christmas and a Happy New Year! :-)
+      </div>
+    </div>
+    <div class="message-modal__content__bottom-icon">
+      <i class="fas fa-gifts"></i>
+    </div>
+    <div class="message-modal__content__confirm" data-landing-message-btn>
+      <span>Continue</span><span><i class="fas fa-glass-cheers"></i></span>
+    </div>
+  </div>
+</div>
+
+<script type="text/javascript">
+  window.addEventListener('DOMContentLoaded', (event) => {
+    const modal = document.querySelector('[data-landing-message-modal]');
+    // Check if the user has already confirmed this modal.
+    if (!localStorage.getItem('landing-message-confirmed')) {
+      modal.style.display = 'block';
+
+      // Add listener to confirm bitton.
+      const confirmBtn = document.querySelector('[data-landing-message-btn]');
+      confirmBtn.addEventListener('click', () => {
+        localStorage.setItem('landing-message-confirmed', 'confirmed');
+        modal.style.display = 'none';
+      })
+
+    }
+  });
+</script>
