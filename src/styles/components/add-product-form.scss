@@ -15,6 +15,7 @@ $radio-button-width: 32px;
     transition: all 0.2s ease-in-out;
     @include media-min-size($screen-tablet) {
       transform-origin: top;
+      margin-bottom: 8px;
     }
     &.show {
       transform: scaleY(1);
@@ -32,7 +33,11 @@ $radio-button-width: 32px;
       @include media-min-size($screen-medium) {
         display: block;
       }
-      h3 { margin: 0; font-size: 1em; color: #565656; }
+      h3 {
+        margin: 0;
+        font-size: 1em;
+        color: #565656;
+      }
       &__Colour {
         padding: 0;
         display: flex;
@@ -44,14 +49,14 @@ $radio-button-width: 32px;
         &__value {
           position: relative;
           padding: 0 12px;
-          input[type="radio"] {
+          input[type='radio'] {
             position: absolute;
             top: 10px;
             display: none;
             width: $radio-button-width;
             height: $radio-button-height;
           }
-          input[type="radio"] + label {
+          input[type='radio'] + label {
             display: flex;
             display: inline-block;
             justify-content: center;
@@ -59,10 +64,18 @@ $radio-button-width: 32px;
             margin: 10px;
             cursor: pointer;
             color: #666666;
-            &.red::before { background: $variant-red; }
-            &.blue::before { background: $variant-blue; }
-            &.green::before { background: $variant-green; }
-            &.black::before { background: $variant-black; }
+            &.red::before {
+              background: $variant-red;
+            }
+            &.blue::before {
+              background: $variant-blue;
+            }
+            &.green::before {
+              background: $variant-green;
+            }
+            &.black::before {
+              background: $variant-black;
+            }
             &::before {
               content: '';
               position: absolute;
@@ -86,14 +99,14 @@ $radio-button-width: 32px;
               opacity: 0;
             }
           }
-          input[type="radio"]:checked + label::after {
+          input[type='radio']:checked + label::after {
             content: '\2713';
             display: flex;
             justify-content: center;
             border: 1px solid #708090;
             border-radius: 3px;
             opacity: 0.9;
-            color: white;;
+            color: white;
           }
         }
       }
@@ -122,10 +135,15 @@ $radio-button-width: 32px;
         color: $color-body-text-1;
         opacity: 0.6;
         user-select: none;
-        @include hover { cursor: pointer; opacity: 0.8; }
+        @include hover {
+          cursor: pointer;
+          opacity: 0.8;
+        }
       }
       input {
-        @include hover { cursor: pointer; }
+        @include hover {
+          cursor: pointer;
+        }
         user-select: none;
         text-align: center;
         width: 40px;
@@ -134,10 +152,10 @@ $radio-button-width: 32px;
         transition: border-color 0.3s;
         outline: none;
         border-radius: 2px;
-        &[type=number]::-webkit-inner-spin-button,
-        &[type=number]::-webkit-outer-spin-button {
-            appearance: none;
-            margin: 0;
+        &[type='number']::-webkit-inner-spin-button,
+        &[type='number']::-webkit-outer-spin-button {
+          appearance: none;
+          margin: 0;
         }
         &:focus {
           border-color: rgba($color-main-blue, 0.7);
@@ -155,7 +173,7 @@ $radio-button-width: 32px;
   &__submit-btn {
     position: relative;
     background: #1e1e1e;
-    box-shadow: 1px 1px 10px 1px rgba(0,0,0,0.1);
+    box-shadow: 1px 1px 10px 1px rgba(0, 0, 0, 0.1);
     padding: 12px 28px;
     color: $color-text-light-1;
     border: none;
@@ -180,7 +198,7 @@ $radio-button-width: 32px;
     }
     &:hover:not(:disabled) i {
       opacity: 1;
-      transform: translate3d(0,0,0);
+      transform: translate3d(0, 0, 0);
       left: 75%;
     }
   }
@@ -201,7 +219,8 @@ $radio-button-width: 32px;
     }
     &__btns {
       display: flex;
-      button, a {
+      button,
+      a {
         width: 120px;
         height: 40px;
         margin: 6px;
@@ -212,7 +231,10 @@ $radio-button-width: 32px;
       }
       &__review-cart {
         @include secondary-btn;
-        i { font-size: 0.9em; margin-right: 8px; }
+        i {
+          font-size: 0.9em;
+          margin-right: 8px;
+        }
       }
     }
   }
