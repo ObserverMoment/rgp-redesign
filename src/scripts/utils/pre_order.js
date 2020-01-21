@@ -29,7 +29,8 @@ const availableForPreOrder = [
   'rgftourn213blue',
   'rgftourn213black',
   'pt2400blue',
-  'rtminiblue'
+  'rtminiblue',
+  'tourneypro1000high'
 ]
 
 function getDueDate () {
