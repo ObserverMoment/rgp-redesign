@@ -1,7 +1,9 @@
 const availableForPreOrder = [
   'dice500',
   'wpc300high',
+  'wpc500high',
   'rgfdealer213blue',
+  'rgfdealer213black',
   'rgfpremier213black',
   'rgfpremier213blue',
   'rgfpremier213green',
@@ -21,6 +23,7 @@ const availableForPreOrder = [
   'cs500green',
   'cs500blue',
   'rt400black',
+  'rt300black',
   'rt200green',
   'ptf301black',
   'ptf301blue',
@@ -30,7 +33,9 @@ const availableForPreOrder = [
   'rgftourn213black',
   'pt2400blue',
   'rtminiblue',
-  'tourneypro1000high'
+  'tourneypro500low',
+  'tourneypro1000high',
+  'propoker500high'
 ]
 
 function getDueDate () {
