@@ -34,7 +34,7 @@
     "bezier-easing": "^2.1.0",
     "eventemitter3": "^4.0.0",
     "intersection-observer": "^0.7.0",
-    "lazysizes": "^5.1.2",
+    "lazysizes": "^5.2.1",
     "normalize.css": "^7.0.0",
     "qrcode": "^1.4.4",
     "query-string": "^6.8.2",
