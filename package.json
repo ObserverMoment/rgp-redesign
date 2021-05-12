@@ -38,7 +38,7 @@
     "normalize.css": "^7.0.0",
     "qrcode": "^1.4.4",
     "query-string": "^6.8.2",
-    "swiper": "^4.5.0",
+    "swiper": "^6.5.1",
     "throttle-debounce": "^2.1.0",
     "whatwg-fetch": "^3.0.0"
   },
